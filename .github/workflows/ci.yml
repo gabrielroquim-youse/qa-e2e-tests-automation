@@ -1,0 +1,133 @@
+name: Testes E2E com Playwright
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Executar Testes E2E
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 1] # Ajuste para [1, 2] ou [1, 3] se quiser paralelização
+    
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Instalar dependências
+        run: yarn install --frozen-lockfile
+
+      - name: Instalar navegadores do Playwright
+        run: npx playwright install --with-deps
+
+      - name: Executar testes Playwright
+        run: yarn test
+        env:
+          CI: true
+          BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:3000' }}
+          # Descomente e configure se usar Qase
+          # QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+          # QASE_PROJECT_CODE: ${{ secrets.QASE_PROJECT_CODE }}
+
+      - name: Upload do relatório Playwright
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.shard }}
+          path: playwright-report/
+          retention-days: 30
+
+      - name: 📸 Upload de screenshots e vídeos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.shard }}
+          path: test-results/
+          retention-days: 30
+
+      - name: Upload dos resultados Allure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ matrix.shard }}
+          path: allure-results/
+          retention-days: 30
+
+  # Job opcional para gerar relatório Allure
+  allure-report:
+    name: Gerar Relatório Allure
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Download dos resultados Allure
+        uses: actions/download-artifact@v4
+        with:
+          pattern: allure-results-*
+          path: allure-results
+          merge-multiple: true
+
+      - name: 🔧 Instalar Allure
+        run: |
+          wget https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
+          tar -zxvf allure-2.24.0.tgz
+          sudo mv allure-2.24.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+
+      - name: Gerar relatório Allure
+        run: allure generate --clean allure-results -o allure-report
+
+      - name: Upload do relatório Allure HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-html
+          path: allure-report/
+          retention-days: 30
+
+      # Opcional: Publicar no GitHub Pages
+      # - name: Deploy no GitHub Pages
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_dir: ./allure-report
+
+  # Job de notificação (opcional)
+  notify:
+    name: Notificação de Resultado
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Status dos testes
+        run: |
+          if [ "${{ needs.test.result }}" == "success" ]; then
+            echo "✅ Todos os testes passaram com sucesso!"
+          else
+            echo "❌ Alguns testes falharam. Verifique os artefatos."
+            exit 1
+          fi
+
