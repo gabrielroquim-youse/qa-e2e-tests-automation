@@ -26,7 +26,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'yarn'
+
+      - name: Habilitar Corepack
+        run: corepack enable
 
       - name: Instalar dependências
         run: yarn install --immutable

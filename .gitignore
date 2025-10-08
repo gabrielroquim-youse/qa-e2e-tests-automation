@@ -3,9 +3,13 @@ node_modules/
 .DS_Store
 .vscode/
 playwright-report/
-<<<<<<< HEAD
 test-results/
 allure-results/
-=======
-test-results/
->>>>>>> 546e9d1126550008cb6af1d2fa91575dd2fd87d6
+
+# Yarn v4 - NÃO ignorar .yarn/releases e .yarnrc.yml
+!.yarn/releases
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
