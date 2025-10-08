@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "playwright test",
+    "test:qase": "cross-env QASE_MODE=testops playwright test",
+    "allure:generate": "allure generate --clean ./allure-results -o ./allure-report",
+    "allure:open": "allure open ./allure-report",
+    "allure:serve": "allure serve ./allure-results"
   },
   "keywords": [],
   "author": "",
@@ -13,11 +17,14 @@
     "@faker-js/faker": "^10.0.0",
     "@playwright/test": "^1.55.0",
     "@types/node": "^20.19.17",
+    "allure-playwright": "^3.4.1",
     "cpf-cnpj-validator": "^1.0.3",
+    "cross-env": "^10.1.0",
     "dotenv": "^17.2.2",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-playwright": "^2.2.2",
+    "playwright-qase-reporter": "^2.1.6",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2",

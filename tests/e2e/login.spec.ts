@@ -1,5 +1,7 @@
 import { test, expect, request } from '@playwright/test'
 import { LoginPage } from "../pages/LoginPage";
+import { allure } from 'allure-playwright';
+import { qase } from 'playwright-qase-reporter';
 
 let login: LoginPage;
 

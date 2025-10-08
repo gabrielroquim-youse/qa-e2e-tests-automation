@@ -1,0 +1,15 @@
+{
+  "mode": "testops",
+  "testops": {
+    "api": {
+      "token": "ENV"
+    },
+    "project": "ENV",
+    "uploadAttachments": true,
+    "run": {
+      "title": "Playwright Automated Run",
+      "description": "Execução Playwright",
+      "complete": true
+    }
+  }
+}
