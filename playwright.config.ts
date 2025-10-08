@@ -13,7 +13,7 @@ export default defineConfig({
     ['list'],
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
     ['allure-playwright'],
-    ['playwright-qase-reporter'] //{
+    //['playwright-qase-reporter'] //{
   //     testops: {
   //       api: { token: process.env.QASE_API_TOKEN! },
   //       project: process.env.QASE_PROJECT_CODE!,
@@ -36,8 +36,15 @@ export default defineConfig({
     // storageState: 'storage/auth.json', // login reutilizável
   },
   projects: [
+    { 
+      name: 'Automação de Testes - Playwright', 
+      use: { 
+        ...devices['Desktop Chrome'], 
+        channel: 'chrome', 
+        headless: process.env.CI ? true : false // headless no CI, com interface localmente
+      } 
+    },
     //{ name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'Automação de Testes - Playwright', use: { ...devices['Desktop Chrome'], channel: 'chrome', headless: false } },
     //{ name: 'firefox',  use: { ...devices['Desktop Firefox'] } },
     //{ name: 'webkit',   use: { ...devices['Desktop Safari'] } },
     // mobile exemplo:

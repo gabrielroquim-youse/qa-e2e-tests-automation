@@ -4,7 +4,6 @@
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
-    "test:qase": "cross-env QASE_MODE=testops playwright test",
     "allure:generate": "allure generate --clean ./allure-results -o ./allure-report",
     "allure:open": "allure open ./allure-report",
     "allure:serve": "allure serve ./allure-results"
@@ -24,11 +23,8 @@
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-playwright": "^2.2.2",
-    "playwright-qase-reporter": "^2.1.6",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2",
-    "yarn": "^1.22.22"
-  },
-  "packageManager": "yarn@4.10.2"
+    "typescript": "^5.9.2"
+  }
 }
