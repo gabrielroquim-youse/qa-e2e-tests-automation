@@ -29,7 +29,7 @@ jobs:
           cache: 'yarn'
 
       - name: Instalar dependências
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: Instalar navegadores do Playwright
         run: npx playwright install --with-deps
@@ -51,7 +51,7 @@ jobs:
           path: playwright-report/
           retention-days: 30
 
-      - name: 📸 Upload de screenshots e vídeos
+      - name: Upload de screenshots e vídeos
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -90,7 +90,7 @@ jobs:
           path: allure-results
           merge-multiple: true
 
-      - name: 🔧 Instalar Allure
+      - name: Instalar Allure
         run: |
           wget https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
           tar -zxvf allure-2.24.0.tgz
