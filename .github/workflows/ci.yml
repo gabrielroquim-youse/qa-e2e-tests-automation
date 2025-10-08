@@ -13,11 +13,6 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1, 1] # Ajuste para [1, 2] ou [1, 3] se quiser paralelização
-    
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
@@ -26,30 +21,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      - name: Habilitar Corepack
-        run: corepack enable
+          cache: 'npm'
 
       - name: Instalar dependências
-        run: yarn install --immutable
+        run: npm ci
 
       - name: Instalar navegadores do Playwright
         run: npx playwright install --with-deps
 
       - name: Executar testes Playwright
-        run: yarn test
+        run: npm test
         env:
           CI: true
           BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:3000' }}
-          # Descomente e configure se usar Qase
-          # QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
-          # QASE_PROJECT_CODE: ${{ secrets.QASE_PROJECT_CODE }}
 
       - name: Upload do relatório Playwright
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ matrix.shard }}
+          name: playwright-report
           path: playwright-report/
           retention-days: 30
 
@@ -57,7 +47,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results-${{ matrix.shard }}
+          name: test-results
           path: test-results/
           retention-days: 30
 
@@ -65,11 +55,10 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results-${{ matrix.shard }}
+          name: allure-results
           path: allure-results/
           retention-days: 30
 
-  # Job opcional para gerar relatório Allure
   allure-report:
     name: Gerar Relatório Allure
     needs: test
@@ -80,17 +69,11 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Download dos resultados Allure
         uses: actions/download-artifact@v4
         with:
-          pattern: allure-results-*
+          name: allure-results
           path: allure-results
-          merge-multiple: true
 
       - name: Instalar Allure
         run: |
@@ -109,14 +92,6 @@ jobs:
           path: allure-report/
           retention-days: 30
 
-      # Opcional: Publicar no GitHub Pages
-      # - name: Deploy no GitHub Pages
-      #   uses: peaceiris/actions-gh-pages@v3
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     publish_dir: ./allure-report
-
-  # Job de notificação (opcional)
   notify:
     name: Notificação de Resultado
     needs: test
@@ -132,4 +107,3 @@ jobs:
             echo "❌ Alguns testes falharam. Verifique os artefatos."
             exit 1
           fi
-
