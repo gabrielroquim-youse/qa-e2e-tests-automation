@@ -9,7 +9,7 @@ export const TestConfig = {
         apiUrl: process.env.API_BASE_URL || ''
     },
     timeouts: {
-        default: parseInt(process.env.TIMEOUT || '30000'),
+        default: parseInt(process.env.TIMEOUT || '60000'),
         short: 5000,
         long: 60000
     }

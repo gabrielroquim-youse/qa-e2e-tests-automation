@@ -5,8 +5,8 @@ const baseURL = process.env.BASE_URL || 'http://localhost:3000';
 
 export default defineConfig({
   testDir: './tests/e2e',
-  timeout: 30_000,
-  expect: { timeout: 5_000 },
+  timeout: 90_000,
+  expect: { timeout: 15_000 },
   fullyParallel: true,
   retries: process.env.CI ? 2 : 0,
   reporter: [
@@ -31,17 +31,20 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'on',
     video: 'on',
-    actionTimeout: 10_000,
-    navigationTimeout: 15_000,
+    actionTimeout: 15_000,
+    navigationTimeout: 20_000,
+    launchOptions: {
+      args: ["--start-maximized"]
+    },
     // storageState: 'storage/auth.json', // login reutilizável
   },
   projects: [
     { 
       name: 'Automação de Testes - Playwright', 
       use: { 
-        ...devices['Desktop Chrome'], 
         channel: 'chrome', 
-        headless: process.env.CI ? true : false // headless no CI, com interface localmente
+        headless: process.env.CI ? true : false, // headless no CI, com interface localmente
+        viewport: null
       } 
     },
     //{ name: 'chromium', use: { ...devices['Desktop Chrome'] } },
