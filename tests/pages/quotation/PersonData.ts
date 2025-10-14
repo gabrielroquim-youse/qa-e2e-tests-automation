@@ -1,20 +1,22 @@
-import { Page } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 import { BasePage } from '../BasePage';
+import { MaritalStatuses } from '../../enum/MaritalStatuses';
 
 export class PersonData extends BasePage {
-
-  readonly btnContinue = this.page.getByRole('button', {name: /continuar/});
-  readonly documentNumber = this.page.getByRole('textbox', { name: 'CPF do segurado' });
-  readonly maritalStatus = this.page.getByRole('combobox');
+  readonly documentNumber: Locator;
+  readonly maritalStatus: Locator;
 
   constructor(page: Page) {
     super(page);
+    this.documentNumber = this.page.getByRole('textbox', { name: 'CPF do segurado' });
+    this.maritalStatus = this.page.getByRole('combobox');
   }
 
-  async execute() {
-    await this.isVisible(this.documentNumber);
-    await this.fill(this.documentNumber, '12345676108')
-    await this.maritalStatus.selectOption('Solteiro(a)')
-    await this.btnContinue.click()
+  async fillDocumentNumber() {
+    await this.documentNumber.fill('12345676108');
+  }
+
+  async selectMaritalStatus(maritalStatus: MaritalStatuses) {
+    await this.maritalStatus.selectOption(maritalStatus);
   }
 }

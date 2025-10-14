@@ -1,15 +1,11 @@
-import { expect, Page } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 import { BasePage } from '../BasePage';
 
 export class Issuance extends BasePage {
-
-  readonly title = this.page.getByRole('heading', { name: 'seu pagamento foi aprovado', exact: false })
+  readonly title: Locator;
 
   constructor(page: Page) {
     super(page);
-  }
-
-  async execute() {
-    expect(this.title.isVisible());
+    this.title = this.page.getByTestId('title');
   }
 }

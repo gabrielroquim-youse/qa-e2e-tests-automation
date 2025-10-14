@@ -1,5 +1,5 @@
 import { Page, Locator, expect, LocatorScreenshotOptions } from '@playwright/test';
-import { TestConfig } from '../../config/test.config'
+import { TestConfig } from '../../config/test.config';
 
 export interface ClickOptions {
   timeout?: number;
@@ -21,7 +21,7 @@ export interface WaitOptions {
 
 export class BasePage {
   constructor(protected readonly page: Page) {}
-    
+
   async goto(path = '/') {
     await this.page.goto(path);
   }
@@ -95,7 +95,7 @@ export class BasePage {
   async waitForVisible(target: Locator | string, options: WaitOptions = {}) {
     const el = this.getLocator(target);
     const timeout = options.timeout || TestConfig.timeouts.default;
-    
+
     try {
       await el.waitFor({ state: 'visible', timeout });
     } catch (error) {
@@ -110,7 +110,7 @@ export class BasePage {
   async waitForHidden(target: Locator | string, options: WaitOptions = {}) {
     const el = this.getLocator(target);
     const timeout = options.timeout || TestConfig.timeouts.default;
-    
+
     try {
       await el.waitFor({ state: 'hidden', timeout });
     } catch (error) {
@@ -138,7 +138,7 @@ export class BasePage {
   async waitForText(target: Locator | string, expected: string, timeout?: number) {
     const el = this.getLocator(target);
     const waitTimeout = timeout || TestConfig.timeouts.default;
-    
+
     try {
       await expect(el).toContainText(expected, { timeout: waitTimeout });
     } catch (error) {
@@ -189,13 +189,13 @@ export class BasePage {
       } catch (error) {
         lastError = error as Error;
         console.warn(`Tentativa ${i + 1} falhou, tentando novamente...`);
-        
+
         if (i < tentativas - 1) {
           await this.page.waitForTimeout(delay);
         }
       }
     }
-    
+
     console.error(`Todas as ${tentativas} tentativas falharam`);
     throw lastError!;
   }
@@ -207,12 +207,12 @@ export class BasePage {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const filename = `${nome}_${timestamp}.png`;
     const path = `screenshots/${filename}`;
-    
+
     try {
-      await this.page.screenshot({ 
-        path, 
+      await this.page.screenshot({
+        path,
         fullPage: true,
-        ...options 
+        ...options,
       });
       console.log(`Screenshot salvo: ${path}`);
     } catch (error) {
@@ -289,7 +289,7 @@ export class BasePage {
   async waitForElementToDisappear(target: Locator | string, timeout?: number) {
     const el = this.getLocator(target);
     const waitTimeout = timeout || TestConfig.timeouts.default;
-    
+
     try {
       await el.waitFor({ state: 'hidden', timeout: waitTimeout });
     } catch (error) {
@@ -304,7 +304,7 @@ export class BasePage {
   async getText(target: Locator | string): Promise<string> {
     const el = this.getLocator(target);
     try {
-      return await el.textContent() || '';
+      return (await el.textContent()) || '';
     } catch (error) {
       console.error(`Erro ao obter texto do elemento: ${target}`);
       return '';
@@ -322,5 +322,9 @@ export class BasePage {
       console.error(`Erro ao obter valor do input: ${target}`);
       return '';
     }
+  }
+
+  async clickContinueBtn() {
+    this.page.getByRole('button', { name: /continuar/ }).click();
   }
 }

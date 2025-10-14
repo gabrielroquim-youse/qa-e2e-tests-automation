@@ -1,22 +1,41 @@
-import { Page, expect } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
 import { BasePage } from '../BasePage';
-import { DataGenerator } from '../../helpers/data';
 
 export class VehicleDetails extends BasePage {
-
-  readonly btnContinue = this.page.getByRole('button', {name: /continuar/});
-  readonly licensePlate = this.page.getByRole('textbox', { name: 'Placa do carro*' });
-  readonly switchBrandNew = this.page.locator('div').filter({ hasText: /^O carro é zero Km\?$/ }).locator('div').nth(1);
-  readonly switchBulletproof = this.page.locator('div').filter({ hasText: /^O carro é blindado\?$/ }).locator('div').nth(1);
+  readonly licensePlate: Locator;
+  readonly switchBrandNew: Locator;
+  readonly switchBulletproof: Locator;
 
   constructor(page: Page) {
     super(page);
+    this.licensePlate = this.page.getByRole('textbox', {
+      name: 'Placa do carro*',
+    });
+    this.switchBrandNew = this.page
+      .locator('div')
+      .filter({ hasText: /^O carro é zero Km\?$/ })
+      .locator('div')
+      .nth(1);
+    this.switchBulletproof = this.page
+      .locator('div')
+      .filter({ hasText: /^O carro é blindado\?$/ })
+      .locator('div')
+      .nth(1);
   }
 
-  async execute() {
-    await this.isVisible(this.licensePlate);
-    await this.fill(this.licensePlate, DataGenerator.placaGenerator());
-    await this.click(this.switchBrandNew, { force: true });
-    await this.click(this.btnContinue);
+  async fillLicensePlate() {
+    await this.licensePlate.fill('YOU0020');
+  }
+
+  async brandNew(brandNew: boolean = false) {
+    if (brandNew) {
+      await this.switchBrandNew.click();
+    }
+  }
+
+  async bulletproof(bulletproof: boolean = false) {
+    if (bulletproof) {
+      await this.switchBulletproof.click();
+    }
   }
 }
