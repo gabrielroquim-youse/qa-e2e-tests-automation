@@ -9,12 +9,14 @@ import { Checkout } from '../pages/quotation/Checkout';
 import { Issuance } from '../pages/quotation/Issuance';
 import { VehicleUsages } from '../enum/VehicleUsages';
 import { MaritalStatuses } from '../enum/MaritalStatuses';
+import { markAsUntransferable } from 'worker_threads';
 
 type FixtureQuotation = {
     leadInfo: LeadInfo;
     veheicleDetatils: VehicleDetails;
     vehicleAdditionalDetails: VehicleAdditionalDetails;
     personData: PersonData;
+    maritalStatus: MaritalStatuses
     bonusesClass: BonusesClass;
     planSelection: PlanSelection;
     checkout: Checkout;
@@ -47,10 +49,13 @@ export const quotation = test.extend<FixtureQuotation>({
         await vehicleAdditionalDetails.clickContinueBtn();
         await use(vehicleAdditionalDetails);
     },
-    personData: async({page, vehicleAdditionalDetails}, use) =>{
+    maritalStatus: async ({}, use) => {
+        await use(MaritalStatuses.MARRIED)
+    },
+    personData: async({page, maritalStatus, vehicleAdditionalDetails}, use ) =>{
         const personData = new PersonData(page);
         await personData.fillDocumentNumber();
-        await personData.selectMaritalStatus(MaritalStatuses.MARRIED);
+        await personData.selectMaritalStatus(maritalStatus);
         await personData.clickContinueBtn();
         await use(personData);
     },
