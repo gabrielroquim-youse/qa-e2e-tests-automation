@@ -7,5 +7,7 @@ export class Issuance extends BasePage {
   constructor(page: Page) {
     super(page);
     this.title = this.page.getByTestId('title');
+    
   }
+
 }

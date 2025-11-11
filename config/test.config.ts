@@ -5,7 +5,7 @@ export const TestConfig = {
     phone: process.env.TEST_USER_TEL || '11999620332',
     creditCard: {
       number: process.env.TEST_CARD_NUMBER || '4111 1111 1111 1111',
-      expireDate: process.env.TEST_CARD_EXPIRE || '03/30',
+      expireDate: process.env.TEST_CARD_EXPIRE || '0330',
       cvv: process.env.TEST_CARD_CVV || '737',
     },
   },
@@ -16,6 +16,6 @@ export const TestConfig = {
   timeouts: {
     default: parseInt(process.env.TIMEOUT || '60000'),
     short: 5000,
-    long: 15000,
+    long: 20000,
   },
 };

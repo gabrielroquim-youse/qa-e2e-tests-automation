@@ -8,7 +8,7 @@ export class BonusesClass extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.title = this.page.getByText('Você pode ganhar até 50% de desconto');
+    this.title = this.page.getByText('Você tem ou teve Seguro Auto nos últimos 12 meses?');
     this.btnNo = this.page.getByRole('button', { name: 'Não', exact: true });
     this.btnYes = this.page.getByRole('button', { name: 'Sim', exact: true });
   }

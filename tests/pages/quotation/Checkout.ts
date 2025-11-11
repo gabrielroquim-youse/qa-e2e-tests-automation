@@ -13,8 +13,8 @@ export class Checkout extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.title = this.page.getByText('Confirme os valores e pague o seguro');
-    this.cardNumber = this.page
+    this.title = page.getByText('Confirme os valores e pague o seguro');
+    this.cardNumber = page
       .locator('iframe[title="Iframe para número de cartão seguro"]')
       .contentFrame()
       .getByRole('textbox', { name: 'Campo de número de cartão' });
@@ -32,6 +32,7 @@ export class Checkout extends BasePage {
   }
 
   async fillCreditCardData() {
+    await expect(this.cardNumber && this.cardCvv && this.cardExpireDate && this.cardHolderName).toBeVisible()
     await this.cardNumber.fill(TestConfig.credentials.creditCard.number);
     await this.cardExpireDate.fill(TestConfig.credentials.creditCard.expireDate);
     await this.cardCvv.fill(TestConfig.credentials.creditCard.cvv);
@@ -43,6 +44,7 @@ export class Checkout extends BasePage {
   }
 
   async clickFinishBtn() {
+    await this.fillCreditCardData()
     await this.click(this.btnFinish);
     expect(this.page.getByText('estamos processando o seu pagamento', { exact: false }).isVisible());
   }
