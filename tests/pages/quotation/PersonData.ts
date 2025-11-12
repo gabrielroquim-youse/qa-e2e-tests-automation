@@ -17,6 +17,7 @@ export class PersonData extends BasePage {
   }
 
   async selectMaritalStatus(maritalStatus: MaritalStatuses) {
+    await this.maritalStatus.waitFor({state: 'visible'});
     await this.maritalStatus.selectOption(maritalStatus);
   }
 }

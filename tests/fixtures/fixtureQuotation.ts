@@ -10,6 +10,9 @@ import { Issuance } from '../pages/quotation/Issuance';
 import { VehicleUsages } from '../enum/VehicleUsages';
 import { MaritalStatuses } from '../enum/MaritalStatuses';
 import { markAsUntransferable } from 'worker_threads';
+import { setTimeout } from 'timers';
+import { BlobOptions } from 'buffer';
+import { UserBonusClass } from '../enum/UserBonusClass';
 
 type FixtureQuotation = {
     leadInfo: LeadInfo;
@@ -18,6 +21,8 @@ type FixtureQuotation = {
     personData: PersonData;
     maritalStatus: MaritalStatuses
     bonusesClass: BonusesClass;
+    hasBonus: boolean
+    userBonusClass: UserBonusClass
     planSelection: PlanSelection;
     checkout: Checkout;
     issuance: Issuance;
@@ -27,6 +32,7 @@ type FixtureQuotation = {
 export const quotation = test.extend<FixtureQuotation>({
     leadInfo: async({page}, use)=>{
         const leadInfo = new LeadInfo(page);
+
         await leadInfo.open();
         await leadInfo.fillLeadData();
         await leadInfo.clickContinueBtn();
@@ -35,6 +41,7 @@ export const quotation = test.extend<FixtureQuotation>({
 
     veheicleDetatils: async ({page, leadInfo}, use) => {
         const veheicleDetatils = new VehicleDetails(page);
+
         await veheicleDetatils.fillLicensePlate();
         await veheicleDetatils.brandNew(false);
         await veheicleDetatils.bulletproof(false);
@@ -43,6 +50,7 @@ export const quotation = test.extend<FixtureQuotation>({
     },
     vehicleAdditionalDetails: async ({page, veheicleDetatils}, use) => {
         const vehicleAdditionalDetails = new VehicleAdditionalDetails(page);
+
         await vehicleAdditionalDetails.fillAddress();
         await vehicleAdditionalDetails.overnightGarage(true);
         await vehicleAdditionalDetails.selectUsage(VehicleUsages.PRIVATE);
@@ -54,27 +62,39 @@ export const quotation = test.extend<FixtureQuotation>({
     },
     personData: async({page, maritalStatus, vehicleAdditionalDetails}, use ) =>{
         const personData = new PersonData(page);
+
         await personData.fillDocumentNumber();
         await personData.selectMaritalStatus(maritalStatus);
         await personData.clickContinueBtn();
         await use(personData);
     },
-    bonusesClass: async ({page, personData}, use) => {
+
+    hasBonus: async ({}, use) => {
+        await use(false); 
+    },
+    
+    userBonusClass: async ({}, use) => {
+        await use(UserBonusClass.ONE); 
+    },
+    
+    bonusesClass: async ({page, personData, hasBonus, userBonusClass}, use) => {
         const bonusesClass = new BonusesClass(page);
+
         await bonusesClass.onPageCheck();
-        await bonusesClass.useBonusClass(false);
+        await bonusesClass.typeBonusClass(hasBonus, userBonusClass);
         await bonusesClass.clickContinueBtn();
         await use(bonusesClass);
     },
 
     planSelection: async ({page, bonusesClass}, use) => {
         const planSelection = new PlanSelection(page);
+
         await planSelection.selectPreFormatedPlan();
         await use(planSelection);
     },
     checkout: async ({page, planSelection}, use) => {
         const checkout = new Checkout(page);
-        await page.waitForTimeout(10000)
+
         await checkout.fillCreditCardData();
         await checkout.fillEmailConfirmation();
         await checkout.clickFinishBtn();
@@ -82,8 +102,8 @@ export const quotation = test.extend<FixtureQuotation>({
     },
     issuance: async ({page, checkout}, use) => {
         const issuance = new Issuance(page)
-        await page.waitForTimeout(20000)
-        await issuance.title.waitFor()
+
+        await issuance.title.waitFor({state: 'visible'})
         await use(issuance)
     }
 });

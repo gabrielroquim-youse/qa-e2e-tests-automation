@@ -47,7 +47,7 @@ test.describe('Auto quotation', { tag: ['@b2c', '@auto_quotation'] }, () => {
     await personData.selectMaritalStatus(MaritalStatuses.MARRIED);
     await personData.clickContinueBtn();
     await bonusesClass.onPageCheck();
-    await bonusesClass.useBonusClass(false);
+    await bonusesClass.userBonusClass(false);
     await bonusesClass.clickContinueBtn();
     await planSelection.selectPreFormatedPlan();
     await page.waitForTimeout(5000); //Wait for order processing
