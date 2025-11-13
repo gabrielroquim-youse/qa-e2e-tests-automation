@@ -12,7 +12,6 @@ export class BonusesClass extends BasePage {
     this.title = this.page.getByText('Você tem ou teve Seguro Auto nos últimos 12 meses?');
     this.btnNo = this.page.getByRole('button', { name: 'Não', exact: true });
     this.btnYes = this.page.getByRole('button', { name: 'Sim', exact: true });
-
   }
 
   async onPageCheck() {
@@ -23,10 +22,15 @@ export class BonusesClass extends BasePage {
     if (hasBonus) {
       await this.btnYes.click();
       await this.page.getByRole('textbox', { name: 'Informe a sua Classe de Bônus' }).click(); 
-      await this.page.getByText(useBonusClass, {exact: true}).click(); 
+      await this.page.getByText(useBonusClass, {exact: true}).click();
     } else {
       await this.btnNo.click();
     }
+  }
+
+  async dontKnowBunusClass(){
+    await this.btnYes.click();
+    await this.page.getByRole('button', {name: 'Não sei minha Classe de Bônus'}).click()
   }
 
 

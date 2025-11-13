@@ -1,4 +1,4 @@
-import {test, expect} from '@playwright/test'
+import {test} from '@playwright/test'
 import { LeadInfo } from '../pages/quotation/LeadInfo'
 import { VehicleDetails } from '../pages/quotation/VehicleDetails';
 import { VehicleAdditionalDetails } from '../pages/quotation/VehicleAdditionalDetaisl';
@@ -9,9 +9,6 @@ import { Checkout } from '../pages/quotation/Checkout';
 import { Issuance } from '../pages/quotation/Issuance';
 import { VehicleUsages } from '../enum/VehicleUsages';
 import { MaritalStatuses } from '../enum/MaritalStatuses';
-import { markAsUntransferable } from 'worker_threads';
-import { setTimeout } from 'timers';
-import { BlobOptions } from 'buffer';
 import { UserBonusClass } from '../enum/UserBonusClass';
 
 type FixtureQuotation = {
@@ -76,7 +73,7 @@ export const quotation = test.extend<FixtureQuotation>({
     userBonusClass: async ({}, use) => {
         await use(UserBonusClass.ONE); 
     },
-    
+
     bonusesClass: async ({page, personData, hasBonus, userBonusClass}, use) => {
         const bonusesClass = new BonusesClass(page);
 
