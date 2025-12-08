@@ -2,7 +2,7 @@ import { Page, Locator } from '@playwright/test';
 import { BasePage } from '../BasePage';
 import proxymise from 'proxymise';
 
-export class QuotationLayout<T> extends BasePage {
+export class QuotationPageLayout<T> extends BasePage {
   readonly btnContinue: Locator;
   readonly nextPage: new (page: Page) => T;
 
@@ -17,4 +17,4 @@ export class QuotationLayout<T> extends BasePage {
     return new this.nextPage(this.page);
   }
 }
-export default proxymise(QuotationLayout);
+export default proxymise(QuotationPageLayout);

@@ -14,18 +14,18 @@ export default defineConfig({
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
     ['allure-playwright'],
     //['playwright-qase-reporter'] //{
-  //     testops: {
-  //       api: { token: process.env.QASE_API_TOKEN! },
-  //       project: process.env.QASE_PROJECT_CODE!,
-  //       uploadAttachments: true,
-  //     },
-  //     run: {
-  //       title: `PW Run ${new Date().toISOString()}`,
-  //       description: 'Execução via Playwright CI',
-  //       complete: true
-  //     },
-  //   }],
-   ],
+    //     testops: {
+    //       api: { token: process.env.QASE_API_TOKEN! },
+    //       project: process.env.QASE_PROJECT_CODE!,
+    //       uploadAttachments: true,
+    //     },
+    //     run: {
+    //       title: `PW Run ${new Date().toISOString()}`,
+    //       description: 'Execução via Playwright CI',
+    //       complete: true
+    //     },
+    //   }],
+  ],
   use: {
     baseURL,
     trace: 'on-first-retry',
@@ -34,20 +34,20 @@ export default defineConfig({
     actionTimeout: 15_000,
     navigationTimeout: 20_000,
     launchOptions: {
-      args: ["--start-maximized"]
+      args: ['--start-maximized'],
     },
     // storageState: 'storage/auth.json', // login reutilizável
   },
   projects: [
-    { 
-      name: 'Automação de Testes - Playwright', 
-      use: { 
-        channel: 'chrome', 
-        headless: process.env.CI ? true : false, // headless no CI, com interface localmente
-        viewport: null
-      } 
-    },
-    //{ name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    // {
+    //   name: 'Automação de Testes - Playwright',
+    //   use: {
+    //     channel: 'chrome',
+    //     headless: process.env.CI ? true : false, // headless no CI, com interface localmente
+    //     viewport: null
+    //   }
+    // },
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     //{ name: 'firefox',  use: { ...devices['Desktop Firefox'] } },
     //{ name: 'webkit',   use: { ...devices['Desktop Safari'] } },
     // mobile exemplo:

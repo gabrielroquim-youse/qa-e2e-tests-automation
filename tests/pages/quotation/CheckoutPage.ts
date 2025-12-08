@@ -1,8 +1,10 @@
-import { expect, Page, Locator } from '@playwright/test';
-import { BasePage } from '../BasePage';
+import { expect, Locator, Page } from '@playwright/test';
 import { TestConfig } from '../../../config/test.config';
+import { BasePage } from '../BasePage';
+import proxymise from 'proxymise';
+import { IssuancePage } from './IssuancePage';
 
-export class Checkout extends BasePage {
+export class CheckoutPage extends BasePage {
   readonly title: Locator;
   readonly cardNumber: Locator;
   readonly cardExpireDate: Locator;
@@ -27,25 +29,29 @@ export class Checkout extends BasePage {
       .contentFrame()
       .getByRole('textbox', { name: 'Campo de código de segurança' });
     this.cardHolderName = this.page.getByRole('textbox', { name: 'Nome no cartão' });
-    this.emailConfirmation = this.page.getByRole('textbox', { name: 'Repita o e-mail' });
+    this.emailConfirmation = this.page.getByTitle('Confirmo que o e-mail e').locator('span');
     this.btnFinish = this.page.getByRole('button', { name: /^Finalizar Compra$/ });
   }
 
+  async checkEmailConfirmation() {
+    await this.emailConfirmation.click({ timeout: 20_000 });
+    return this;
+  }
+
   async fillCreditCardData() {
-    await expect(this.cardNumber && this.cardCvv && this.cardExpireDate && this.cardHolderName).toBeVisible()
+    await this.page.waitForLoadState('domcontentloaded');
     await this.cardNumber.fill(TestConfig.credentials.creditCard.number);
     await this.cardExpireDate.fill(TestConfig.credentials.creditCard.expireDate);
     await this.cardCvv.fill(TestConfig.credentials.creditCard.cvv);
     await this.cardHolderName.fill(TestConfig.credentials.name);
-  }
-
-  async fillEmailConfirmation() {
-    await this.emailConfirmation.fill(TestConfig.credentials.email);
+    return this;
   }
 
   async clickFinishBtn() {
-    await this.fillCreditCardData()
-    await this.click(this.btnFinish);
-    expect(this.page.getByText('estamos processando o seu pagamento', { exact: false }).isVisible());
+    await this.fillCreditCardData();
+    await this.btnFinish.click();
+    return new IssuancePage(this.page);
   }
 }
+
+export default proxymise(CheckoutPage);
