@@ -1,7 +1,7 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
+import proxymise from 'proxymise';
 import { TestConfig } from '../../../config/test.config';
 import { BasePage } from '../BasePage';
-import proxymise from 'proxymise';
 import { IssuancePage } from './IssuancePage';
 
 export class CheckoutPage extends BasePage {

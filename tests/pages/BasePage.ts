@@ -1,6 +1,6 @@
-import { Page, Locator, expect, LocatorScreenshotOptions } from '@playwright/test';
-import { TestConfig } from '../../config/test.config';
+import { expect, Locator, LocatorScreenshotOptions, Page } from '@playwright/test';
 import proxymise from 'proxymise';
+import { TestConfig } from '../../config/test.config';
 
 export interface ClickOptions {
   timeout?: number;

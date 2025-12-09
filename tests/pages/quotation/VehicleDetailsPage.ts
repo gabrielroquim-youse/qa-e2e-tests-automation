@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
-import { QuotationPageLayout } from './QuotationPageLayout';
 import proxymise from 'proxymise';
+import { QuotationPageLayout } from './QuotationPageLayout';
 import { VehicleAdditionalDetailsPage } from './VehicleAdditionalDetailsPage';
 
 export class VehicleDetailsPage extends QuotationPageLayout<VehicleAdditionalDetailsPage> {

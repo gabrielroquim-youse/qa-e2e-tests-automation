@@ -1,8 +1,8 @@
 import { Locator, Page } from '@playwright/test';
-import { VehicleUsages } from '../../enum/VehicleUsages';
-import { QuotationPageLayout } from './QuotationPageLayout';
-import { PersonDataPage } from './PersonDataPage';
 import proxymise from 'proxymise';
+import { VehicleUsages } from '../../enum/VehicleUsages';
+import { PersonDataPage } from './PersonDataPage';
+import { QuotationPageLayout } from './QuotationPageLayout';
 
 export class VehicleAdditionalDetailsPage extends QuotationPageLayout<PersonDataPage> {
   readonly zipCode: Locator;

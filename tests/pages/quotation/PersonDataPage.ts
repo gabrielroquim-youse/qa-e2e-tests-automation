@@ -1,8 +1,8 @@
 import { Locator, Page } from '@playwright/test';
+import proxymise from 'proxymise';
 import { MaritalStatuses } from '../../enum/MaritalStatuses';
 import { BonusesClassPage } from './BonusesClassPage';
 import { QuotationPageLayout } from './QuotationPageLayout';
-import proxymise from 'proxymise';
 
 export class PersonDataPage extends QuotationPageLayout<BonusesClassPage> {
   readonly documentNumber: Locator;

@@ -1,7 +1,7 @@
 import { Locator, Page } from '@playwright/test';
+import proxymise from 'proxymise';
 import { CheckoutPage } from './CheckoutPage';
 import { QuotationPageLayout } from './QuotationPageLayout';
-import proxymise from 'proxymise';
 
 export class PlanSelectionPage extends QuotationPageLayout<CheckoutPage> {
   readonly title: Locator;

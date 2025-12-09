@@ -1,6 +1,6 @@
-import { Page, Locator } from '@playwright/test';
-import { BasePage } from '../BasePage';
+import { Locator, Page } from '@playwright/test';
 import proxymise from 'proxymise';
+import { BasePage } from '../BasePage';
 
 export class QuotationPageLayout<T> extends BasePage {
   readonly btnContinue: Locator;
