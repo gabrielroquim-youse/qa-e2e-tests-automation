@@ -1,3 +1,5 @@
+const { rules } = require("eslint-config-prettier");
+
 module.exports = {
     root: true,
     parser: "@typescript-eslint/parser",
@@ -8,5 +10,8 @@ module.exports = {
         "plugin:playwright/recommended",
         "prettier"
     ],
-    ignorePatterns: ["dist", "storage"]
+    ignorePatterns: ["dist", "storage"],
+    rules: {
+        "@typescript-eslint/no-floating-promises": "error"
+    }
 };

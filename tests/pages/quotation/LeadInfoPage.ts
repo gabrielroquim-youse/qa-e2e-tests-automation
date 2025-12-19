@@ -1,28 +1,32 @@
-import { Page, expect, Locator } from '@playwright/test';
-import { BasePage } from '../BasePage';
+import { Locator, Page } from '@playwright/test';
+import proxymise from 'proxymise';
 import { TestConfig } from '../../../config/test.config';
-import { DataGenerator } from '../../helpers/data';
+import { QuotationPageLayout } from './QuotationPageLayout';
+import { VehicleDetailsPage } from './VehicleDetailsPage';
 
-export class LeadInfo extends BasePage {
+export class LeadInfoPage extends QuotationPageLayout<VehicleDetailsPage> {
   readonly nome: Locator;
   readonly email: Locator;
   readonly tel: Locator;
 
   constructor(page: Page) {
-    super(page);
+    super(page, VehicleDetailsPage);
     this.nome = this.page.getByRole('textbox', { name: 'Nome completo*' });
     this.email = this.page.getByRole('textbox', { name: 'E-mail*' });
     this.tel = this.page.getByRole('textbox', { name: 'Telefone com DDD*' });
   }
 
-  async open() {
-    await this.page.goto(TestConfig.urls.baseUrl);
-    await expect(this.email).toBeVisible();
+  static async open(page: Page): Promise<LeadInfoPage> {
+    await page.goto(TestConfig.urls.baseUrl);
+    return new LeadInfoPage(page);
   }
 
-  async fillLeadData() {
+  async fillLeadData(): Promise<LeadInfoPage> {
     await this.nome.fill(TestConfig.credentials.name);
     await this.email.fill(TestConfig.credentials.email);
     await this.tel.fill(TestConfig.credentials.phone);
+    return this;
   }
 }
+
+export default proxymise(LeadInfoPage);

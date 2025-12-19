@@ -1,13 +1,15 @@
-import { Page, Locator } from '@playwright/test';
-import { BasePage } from '../BasePage';
+import { Locator, Page } from '@playwright/test';
+import proxymise from 'proxymise';
+import { CheckoutPage } from './CheckoutPage';
+import { QuotationPageLayout } from './QuotationPageLayout';
 
-export class PlanSelection extends BasePage {
+export class PlanSelectionPage extends QuotationPageLayout<CheckoutPage> {
   readonly title: Locator;
   readonly btnPlan: Locator;
   readonly loadingMsg: Locator;
 
   constructor(page: Page) {
-    super(page);
+    super(page, CheckoutPage);
     this.title = this.page.getByText('Escolha um plano ou personalize do seu jeito');
     this.btnPlan = this.page.getByRole('button', { name: 'QUERO ESSE' }).last();
     this.loadingMsg = this.page.getByText('estamos montando o seu seguro', { exact: false });
@@ -15,5 +17,8 @@ export class PlanSelection extends BasePage {
 
   async selectPreFormatedPlan() {
     await this.btnPlan.click();
+    return new CheckoutPage(this.page);
   }
 }
+
+export default proxymise(PlanSelectionPage);
