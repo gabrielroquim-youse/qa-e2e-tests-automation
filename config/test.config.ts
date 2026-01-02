@@ -12,7 +12,7 @@ export const TestConfig = {
   urls: {
     qa: {
       autoQuotationUrl: process.env.BASE_URL || 'https://qa-cotacao.youse.io/seguro-auto/',
-      testUtilsUrl: process.env.TEST_UTILS_URL || 'https://qa-test-utils-service.youse.io',
+      testUtilsUrl: process.env.TEST_UTILS_URL || 'https://qa-test-utils-service.youse.io/v1/orders/',
       apiUrl: process.env.API_BASE_URL || '',
     },
   },
