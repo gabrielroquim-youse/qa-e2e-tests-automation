@@ -2,7 +2,7 @@ import { test as base } from '@playwright/test';
 import { TestUtilsService } from '../services/TestUtilsService';
 import { Product } from '../enum/Product';
 
-export type Fixtures = {
+type Fixtures = {
   autoPolicyDminus1: TestUtilsService;
   homePolicyDminus1: TestUtilsService;
   lifePolicyDminus1: TestUtilsService;
