@@ -2,6 +2,7 @@ import { APIRequestContext } from '@playwright/test';
 import { TestConfig } from '../../config/test.config';
 import { Product } from '../enum/Product';
 import { log } from 'node:console';
+import { da } from '@faker-js/faker/.';
 
 interface TestUtilsResponse {
   flow: string;
@@ -20,8 +21,22 @@ interface TestUtilsPolicyResponse {
 }
 
 export class TestUtilsService {
-  static async getByProtocolNumber(request: APIRequestContext, protocolNumber: string) {
-    return await (await request.get(`${TestConfig.urls.qa.testUtilsUrl}/v1/orders/${protocolNumber}`)).json();
+  static async getOrderByProtocolNumber(request: APIRequestContext, protocolNumber: string) {
+    let orderData: TestUtilsResponse;
+
+    for (let attempt = 0; attempt < 8; attempt++) {
+      orderData = await (await request.get(`${TestConfig.urls.qa.testUtilsUrl}${protocolNumber}`)).json();
+      log(`Attempt ${attempt + 1}: ${orderData.flow} order status is ${orderData.status}`);
+      if (orderData.status === 'done') {
+        return orderData;
+      } else if (orderData.status === 'failed') {
+        throw new Error(`Order creation failed. Reason: "${orderData.failure_reasons}"`);
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+
+    throw new Error('Test data creation timed out after multiple attempts.');
   }
 
   static async createInsurancePolicy(
@@ -29,7 +44,7 @@ export class TestUtilsService {
     product: Product = Product.AUTO,
     data?: { email?: string; license_plate?: string; documentNumber?: string; installmentsPerYear?: string; partnerId?: string },
   ): Promise<TestUtilsPolicyResponse> {
-    const response = await request.post(`${TestConfig.urls.qa.testUtilsUrl}/v1/orders`, {
+    const response = await request.post(TestConfig.urls.qa.testUtilsUrl, {
       data: {
         flow: 'create_insurance_policy',
         data: {
@@ -44,21 +59,59 @@ export class TestUtilsService {
     });
 
     const protocolNumber = (await response.json()).protocol_number;
+    const policyData = await this.getOrderByProtocolNumber(request, protocolNumber);
 
-    let orderData: TestUtilsResponse;
+    return policyData.data as TestUtilsPolicyResponse;
+  }
 
-    for (let attempt = 0; attempt < 8; attempt++) {
-      orderData = await this.getByProtocolNumber(request, protocolNumber);
-      log(`Attempt ${attempt + 1}: Order status is ${orderData.status}`);
-      if (orderData.status === 'done') {
-        return orderData.data as TestUtilsPolicyResponse;
-      } else if (orderData.status === 'failed') {
-        throw new Error(`Order creation failed. Reason: ${orderData.failure_reasons}`);
-      }
+  static async createCustomer(request: APIRequestContext, data?: { email?: string; password?: string; phone?: string }) {
+    const response = await request.post(TestConfig.urls.qa.testUtilsUrl, {
+      data: {
+        flow: 'create_customer',
+        data: {
+          email: data?.email || null,
+          password: data?.password || null,
+          phone: data?.phone || null,
+        },
+      },
+    });
 
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-    }
+    const protocolNumber = (await response.json()).protocol_number;
+    const customerData = await this.getOrderByProtocolNumber(request, protocolNumber);
 
-    throw new Error('Policy creation timed out after multiple attempts.');
+    return customerData.data;
+  }
+
+  static async createClaim(request: APIRequestContext, product: Product) {
+    const response = await request.post(TestConfig.urls.qa.testUtilsUrl, {
+      data: {
+        flow: 'create_claim',
+        data: {
+          product: product,
+        },
+      },
+    });
+
+    const protocolNumber = (await response.json()).protocol_number;
+    const claimData = await this.getOrderByProtocolNumber(request, protocolNumber);
+
+    return claimData.data;
+  }
+
+  static async generateCiNumber(request: APIRequestContext, data?: { bonusClassNumber?: string; insurerCode?: string }) {
+    const response = await request.post(TestConfig.urls.qa.testUtilsUrl, {
+      data: {
+        flow: 'generate_ci_number',
+        data: {
+          bonus_class_number: data?.bonusClassNumber || null,
+          insurance_code: data?.insurerCode || null,
+        },
+      },
+    });
+
+    const protocolNumber = (await response.json()).protocol_number;
+    const ciData = await this.getOrderByProtocolNumber(request, protocolNumber);
+
+    return ciData.data;
   }
 }
