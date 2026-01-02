@@ -1,8 +1,7 @@
 import { APIRequestContext } from '@playwright/test';
+import { log } from 'node:console';
 import { TestConfig } from '../../config/test.config';
 import { Product } from '../enum/Product';
-import { log } from 'node:console';
-import { da } from '@faker-js/faker/.';
 
 interface TestUtilsResponse {
   flow: string;
