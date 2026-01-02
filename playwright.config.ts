@@ -27,7 +27,6 @@ export default defineConfig({
     //   }],
   ],
   use: {
-    baseURL,
     trace: 'on-first-retry',
     screenshot: 'on',
     video: 'on',

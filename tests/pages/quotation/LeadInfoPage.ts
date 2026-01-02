@@ -17,7 +17,7 @@ export class LeadInfoPage extends QuotationPageLayout<VehicleDetailsPage> {
   }
 
   static async open(page: Page): Promise<LeadInfoPage> {
-    await page.goto(TestConfig.urls.baseUrl);
+    await page.goto(TestConfig.urls.qa.autoQuotationUrl);
     return new LeadInfoPage(page);
   }
 

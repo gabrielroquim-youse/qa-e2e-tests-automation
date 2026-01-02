@@ -10,8 +10,11 @@ export const TestConfig = {
     },
   },
   urls: {
-    baseUrl: process.env.BASE_URL || 'https://qa-cotacao.youse.io/seguro-auto/',
-    apiUrl: process.env.API_BASE_URL || '',
+    qa: {
+      autoQuotationUrl: process.env.BASE_URL || 'https://qa-cotacao.youse.io/seguro-auto/',
+      testUtilsUrl: process.env.TEST_UTILS_URL || 'https://qa-test-utils-service.youse.io',
+      apiUrl: process.env.API_BASE_URL || '',
+    },
   },
   timeouts: {
     default: parseInt(process.env.TIMEOUT || '60000'),
