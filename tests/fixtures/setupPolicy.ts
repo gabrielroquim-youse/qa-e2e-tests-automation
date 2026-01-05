@@ -6,8 +6,8 @@ type Fixtures = {
   autoPolicyDminus1: TestUtilsService;
   homePolicyDminus1: TestUtilsService;
   lifePolicyDminus1: TestUtilsService;
-  autoPolicyNoInpsection: TestUtilsService;
-  autoPolicyOnlienInspection: TestUtilsService;
+  autoPolicyNoInspection: TestUtilsService;
+  autoPolicyOnlineInspection: TestUtilsService;
   autoPolicyOnSiteInspection: TestUtilsService;
   autoPolicyVideoInspection: TestUtilsService;
 };
@@ -25,11 +25,11 @@ export const test = base.extend<Fixtures>({
     const policyData = await TestUtilsService.createInsurancePolicy(request, Product.LIFE, { documentNumber: '123.456.761-08' });
     use(policyData);
   },
-  autoPolicyNoInpsection: async ({ request }, use) => {
+  autoPolicyNoInspection: async ({ request }, use) => {
     const policyData = await TestUtilsService.createInsurancePolicy(request, Product.AUTO, { license_plate: 'YOU-0020' });
     use(policyData);
   },
-  autoPolicyOnlienInspection: async ({ request }, use) => {
+  autoPolicyOnlineInspection: async ({ request }, use) => {
     const policyData = await TestUtilsService.createInsurancePolicy(request, Product.AUTO, { license_plate: 'YOU-0003' });
     use(policyData);
   },
