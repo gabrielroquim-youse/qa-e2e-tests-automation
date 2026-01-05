@@ -7,20 +7,19 @@ interface TestUtilsResponse {
   flow: string;
   protocol_number: string;
   status: string;
-  data: object;
+  data: TestUtilsData;
   failure_reasons: string[];
 }
 
-interface TestUtilsPolicyResponse {
-  data: {
-    email: string;
-    password: string;
-    policy_number: string;
-  };
+interface TestUtilsData {
+  number?: string;
+  email?: string;
+  password?: string;
+  policy_number?: string;
 }
 
 export class TestUtilsService {
-  static async getOrderByProtocolNumber(request: APIRequestContext, protocolNumber: string) {
+  static async getOrderByProtocolNumber(request: APIRequestContext, protocolNumber: string): Promise<TestUtilsResponse> {
     let orderData: TestUtilsResponse;
 
     for (let attempt = 0; attempt < 8; attempt++) {
@@ -42,7 +41,7 @@ export class TestUtilsService {
     request: APIRequestContext,
     product: Product = Product.AUTO,
     data?: { email?: string; license_plate?: string; documentNumber?: string; installmentsPerYear?: string; partnerId?: string },
-  ): Promise<TestUtilsPolicyResponse> {
+  ): Promise<TestUtilsData> {
     const response = await request.post(TestConfig.urls.qa.testUtilsUrl, {
       data: {
         flow: 'create_insurance_policy',
@@ -60,10 +59,10 @@ export class TestUtilsService {
     const protocolNumber = (await response.json()).protocol_number;
     const policyData = await this.getOrderByProtocolNumber(request, protocolNumber);
 
-    return policyData.data as TestUtilsPolicyResponse;
+    return policyData.data;
   }
 
-  static async createCustomer(request: APIRequestContext, data?: { email?: string; password?: string; phone?: string }) {
+  static async createCustomer(request: APIRequestContext, data?: { email?: string; password?: string; phone?: string }): Promise<TestUtilsData> {
     const response = await request.post(TestConfig.urls.qa.testUtilsUrl, {
       data: {
         flow: 'create_customer',
@@ -81,7 +80,7 @@ export class TestUtilsService {
     return customerData.data;
   }
 
-  static async createClaim(request: APIRequestContext, product: Product) {
+  static async createClaim(request: APIRequestContext, product: Product): Promise<TestUtilsData> {
     const response = await request.post(TestConfig.urls.qa.testUtilsUrl, {
       data: {
         flow: 'create_claim',
@@ -97,7 +96,7 @@ export class TestUtilsService {
     return claimData.data;
   }
 
-  static async generateCiNumber(request: APIRequestContext, data?: { bonusClassNumber?: string; insurerCode?: string }) {
+  static async generateCiNumber(request: APIRequestContext, data?: { bonusClassNumber?: string; insurerCode?: string }): Promise<TestUtilsData> {
     const response = await request.post(TestConfig.urls.qa.testUtilsUrl, {
       data: {
         flow: 'generate_ci_number',
