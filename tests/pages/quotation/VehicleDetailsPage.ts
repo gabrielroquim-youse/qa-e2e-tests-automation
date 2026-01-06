@@ -1,13 +1,15 @@
 import { Locator, Page } from '@playwright/test';
-import { BasePage } from '../BasePage';
+import proxymise from 'proxymise';
+import { QuotationPageLayout } from './QuotationPageLayout';
+import { VehicleAdditionalDetailsPage } from './VehicleAdditionalDetailsPage';
 
-export class VehicleDetails extends BasePage {
+export class VehicleDetailsPage extends QuotationPageLayout<VehicleAdditionalDetailsPage> {
   readonly licensePlate: Locator;
   readonly switchBrandNew: Locator;
   readonly switchBulletproof: Locator;
 
   constructor(page: Page) {
-    super(page);
+    super(page, VehicleAdditionalDetailsPage);
     this.licensePlate = this.page.getByRole('textbox', {
       name: 'Placa do carro*',
     });
@@ -25,17 +27,22 @@ export class VehicleDetails extends BasePage {
 
   async fillLicensePlate() {
     await this.licensePlate.fill('YOU0020');
+    return this;
   }
 
-  async brandNew(brandNew: boolean = false) {
+  async selectBrandNew(brandNew: boolean = false) {
     if (brandNew) {
       await this.switchBrandNew.click();
     }
+    return this;
   }
 
-  async bulletproof(bulletproof: boolean = false) {
+  async selectBulletproof(bulletproof: boolean = false) {
     if (bulletproof) {
       await this.switchBulletproof.click();
     }
+    return this;
   }
 }
+
+export default proxymise(VehicleDetailsPage);

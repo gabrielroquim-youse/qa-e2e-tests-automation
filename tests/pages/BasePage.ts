@@ -1,4 +1,5 @@
-import { Page, Locator, expect, LocatorScreenshotOptions } from '@playwright/test';
+import { expect, Locator, LocatorScreenshotOptions, Page } from '@playwright/test';
+import proxymise from 'proxymise';
 import { TestConfig } from '../../config/test.config';
 
 export interface ClickOptions {
@@ -20,7 +21,11 @@ export interface WaitOptions {
 }
 
 export class BasePage {
-  constructor(protected readonly page: Page) {}
+  protected readonly page: Page;
+
+  constructor(page: Page) {
+    this.page = page;
+  }
 
   async goto(path = '/') {
     await this.page.goto(path);
@@ -323,8 +328,6 @@ export class BasePage {
       return '';
     }
   }
-
-  async clickContinueBtn() {
-    this.page.getByRole('button', { name: /continuar/ }).click();
-  }
 }
+
+export default proxymise(BasePage);

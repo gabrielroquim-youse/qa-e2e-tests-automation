@@ -16,6 +16,7 @@
     "@faker-js/faker": "^10.0.0",
     "@playwright/test": "^1.55.0",
     "@types/node": "^20.19.17",
+    "@types/proxymise": "^1.0.3",
     "allure-playwright": "^3.4.1",
     "cpf-cnpj-validator": "^1.0.3",
     "cross-env": "^10.1.0",
@@ -25,6 +26,10 @@
     "eslint-plugin-playwright": "^2.2.2",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "proxymise": "^1.0.2",
+    "tsc": "^2.0.4"
   }
 }
