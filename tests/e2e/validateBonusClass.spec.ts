@@ -1,50 +1,83 @@
-import { quotation as test, expect } from "../fixtures/fixtureQuotation";
+import { expect, test } from "@playwright/test";
+import { VehicleUsages } from "../enum/VehicleUsages";
+import { MaritalStatuses } from "../enum/MaritalStatuses";
+import LeadInfoPage  from "../pages/quotation/LeadInfoPage";
 import { UserBonusClass } from "../enum/UserBonusClass";
 
-test.describe('Validate Bonus Class', () => {
-    test.describe.configure({mode: 'serial'});
 
-    test('Not use bonus class', async ({bonusesClass, hasBonus, page}) => {
-        expect(hasBonus).toBe(false);
-        
-        const cardWhatsapp = {
-            textWhatsapp: page.getByText('Quer ajuda para descobrir se você tem Classe de Bônus?'),
-            buttonWhatsapp: page.getByRole('button',{name: 'Chame no whatsapp'})
-        }
-        
-        expect(cardWhatsapp.textWhatsapp).toContainText('Quer ajuda para descobrir se você tem Classe de Bônus?')
-        expect(cardWhatsapp.buttonWhatsapp).toHaveText('Chame no whatsapp')
-    });
-    
-    test('Info dont know bonus class modal', async ({bonusesClass, page}) => {
-        await bonusesClass.dontKnowBunusClass();
+test.describe('Validate Bonus Class', {tag:['@b2c', '@quotation_auto']}, () => {
+    test('Not use bonus class', async({page}) => {
+        const result = await LeadInfoPage.open(page)
+            .fillLeadData()
+            .clickContinueBtn()
+            .fillLicensePlate()
+            .selectBrandNew(false)
+            .selectBulletproof(false)
+            .clickContinueBtn()
+            .fillAddress()
+            .isOvernightGarage(true)
+            .selectUsage(VehicleUsages.PRIVATE)
+            .clickContinueBtn()
+            .fillDocumentNumber()
+            .selectMaritalStatus(MaritalStatuses.SINGLE)
+            .clickContinueBtn()
+            .useBonusClass(false);
+        await expect(result.whatsappBtn).toHaveText('Chame no whatsapp')
+    })
+    test('Info dont know bonus class modal', async({page}) => {
+        const result = await LeadInfoPage.open(page)
+            .fillLeadData()
+            .clickContinueBtn()
+            .fillLicensePlate()
+            .selectBrandNew(false)
+            .selectBulletproof(false)
+            .clickContinueBtn()
+            .fillAddress()
+            .isOvernightGarage(true)
+            .selectUsage(VehicleUsages.PRIVATE)
+            .clickContinueBtn()
+            .fillDocumentNumber()
+            .selectMaritalStatus(MaritalStatuses.SINGLE)
+            .clickContinueBtn()
+            .useBonusClass(false);
+        await expect(result.whatsappBtn).toHaveText('Chame no whatsapp')
+    })
+    test('With Bonus Class 1', async({page}) => {
+        const result = await LeadInfoPage.open(page)
+            .fillLeadData()
+            .clickContinueBtn()
+            .fillLicensePlate()
+            .selectBrandNew(false)
+            .selectBulletproof(false)
+            .clickContinueBtn()
+            .fillAddress()
+            .isOvernightGarage(true)
+            .selectUsage(VehicleUsages.PRIVATE)
+            .clickContinueBtn()
+            .fillDocumentNumber()
+            .selectMaritalStatus(MaritalStatuses.SINGLE)
+            .clickContinueBtn()
+            .useBonusClass(true)
+            .infoKnowNotBonusClass();
+        await expect(result.modalKnowNotBonusClassTitle).toBeVisible();
+    })
+    test('With Bonus Class "Não quero informar"', async({page}) => {
+        const result = await LeadInfoPage.open(page)
+            .fillLeadData()
+            .clickContinueBtn()
+            .fillLicensePlate()
+            .selectBrandNew(false)
+            .selectBulletproof(false)
+            .clickContinueBtn()
+            .fillAddress()
+            .isOvernightGarage(true)
+            .selectUsage(VehicleUsages.PRIVATE)
+            .clickContinueBtn()
+            .fillDocumentNumber()
+            .selectMaritalStatus(MaritalStatuses.SINGLE)
+            .clickContinueBtn()
+            .useBonusClass(true, UserBonusClass.NAN);
+        await expect(result.userBonusesClass).toHaveValue('Não quero informar')
+    })
 
-        const modalDontKnowBonusClass = {
-            buttonWhatsapp: page.getByRole('button', {name: 'Chamar pelo WhatsApp', exact: true}),
-            buttonContinue: page.getByRole('button', {name: 'continuar a cotação por aqui', exact: true})
-        }
-
-        expect(modalDontKnowBonusClass.buttonWhatsapp).toBeVisible();
-        expect(modalDontKnowBonusClass.buttonContinue).toBeVisible();
-    });
-
-    test.describe('With Bonus Class 1', () => {
-        test.use({hasBonus: true, userBonusClass: UserBonusClass.ONE});
-        
-        test('should validate Bonus Class 1 settings', async ({bonusesClass, hasBonus, userBonusClass}) => {
-            expect(hasBonus).toBe(true);
-            expect(userBonusClass).toBe(UserBonusClass.ONE);
-        });
-    });
-
-    test.describe('With Bonus Class "Não quero informar"', () => {
-        test.use({hasBonus: true, userBonusClass: UserBonusClass.NAN});
-        
-        test('should validate Bonus Class NAN settings', async ({bonusesClass, hasBonus, userBonusClass}) => {
-            expect(hasBonus).toBe(true);
-            expect(userBonusClass).toBe(UserBonusClass.NAN);
-        });
-    });
-
-});
-    
+})
