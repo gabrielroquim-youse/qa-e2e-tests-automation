@@ -11,7 +11,7 @@ export class BonusesClassPage extends QuotationPageLayout<PlanSelectionPage> {
   readonly whatsappBtn: Locator;
   readonly userBonusesClass: Locator;
   readonly knowNotBonusClass: Locator;
-  readonly modalKnowNotBonusClassTitle: Locator;
+  readonly modalDontKnowBonusClassTitle: Locator;
 
   constructor(page: Page) {
     super(page, PlanSelectionPage);
@@ -21,7 +21,7 @@ export class BonusesClassPage extends QuotationPageLayout<PlanSelectionPage> {
     this.whatsappBtn = this.page.getByRole('button', { name: 'Chame no whatsapp' });
     this.userBonusesClass = this.page.getByRole('textbox', { name: 'Selecione sua Classe de Bônus'});
     this.knowNotBonusClass = this.page.getByRole('button', { name: 'Não sei minha Classe de Bônus', exact: true});
-    this.modalKnowNotBonusClassTitle = this.page.getByRole('heading', { name: 'Não sabe sua Classe de Bônus?' });
+    this.modalDontKnowBonusClassTitle = this.page.getByRole('heading', { name: 'Não sabe sua Classe de Bônus?' });
   }
 
   async useBonusClass(useBonusClass: boolean = false, userBonusClass: UserBonusClass = UserBonusClass.ONE) {

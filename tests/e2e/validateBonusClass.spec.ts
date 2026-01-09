@@ -59,7 +59,7 @@ test.describe('Validate Bonus Class', {tag:['@b2c', '@quotation_auto']}, () => {
             .clickContinueBtn()
             .useBonusClass(true)
             .infoKnowNotBonusClass();
-        await expect(result.modalKnowNotBonusClassTitle).toBeVisible();
+        await expect(result.modalDontKnowBonusClassTitle).toBeVisible();
     })
     test('With Bonus Class "Não quero informar"', async({page}) => {
         const result = await LeadInfoPage.open(page)
