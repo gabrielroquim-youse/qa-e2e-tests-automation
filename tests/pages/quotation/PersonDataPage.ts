@@ -20,7 +20,6 @@ export class PersonDataPage extends QuotationPageLayout<BonusesClassPage> {
   }
 
   async selectMaritalStatus(maritalStatus: MaritalStatuses) {
-    await this.maritalStatus.waitFor({state: 'visible'});
     await this.maritalStatus.selectOption(maritalStatus);
     return this;
   }
