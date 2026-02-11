@@ -1,34 +1,29 @@
 import { APIRequestContext } from '@playwright/test';
-import { log } from 'node:console';
-import { TestConfig } from '../../config/test.config';
-import { Product } from '../enum/Product';
-
-interface TestUtilsResponse {
-  flow: string;
-  protocol_number: string;
-  status: string;
-  data: TestUtilsData;
-  failure_reasons: string[];
-}
-
-interface TestUtilsData {
-  number?: string;
-  email?: string;
-  password?: string;
-  policy_number?: string;
-}
+import TestConfig from '../../../config/test.config';
+import { Product } from '../../enum/Product';
+import {
+  TestUtilsClaimData,
+  TestUtilsCiData,
+  TestUtilsCustomerData,
+  TestUtilsPolicyData,
+  TestUtilsProtocolData,
+} from '../../schemas/test-utils/TestUtilsServiceSchemas';
 
 export class TestUtilsService {
-  static async getOrderByProtocolNumber(request: APIRequestContext, protocolNumber: string): Promise<TestUtilsResponse> {
-    let orderData: TestUtilsResponse;
+  static async getOrderByProtocolNumber(
+    request: APIRequestContext,
+    protocolNumber: string,
+    maxAttempts: number = 10,
+  ): Promise<TestUtilsProtocolData> {
+    let orderData: TestUtilsProtocolData;
 
-    for (let attempt = 0; attempt < 8; attempt++) {
-      orderData = await (await request.get(`${TestConfig.urls.qa.testUtilsUrl}${protocolNumber}`)).json();
-      log(`Attempt ${attempt + 1}: ${orderData.flow} order status is ${orderData.status}`);
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      orderData = await (await request.get(`${TestConfig.urls.testUtilsUrl}/${protocolNumber}`)).json();
+      console.log(`Attempt ${attempt + 1}: ${orderData.flow} order status is ${orderData.status}`);
       if (orderData.status === 'done') {
         return orderData;
       } else if (orderData.status === 'failed') {
-        throw new Error(`Order creation failed. Reason: "${orderData.failure_reasons}"`);
+        throw new Error(`Order creation failed. Reason: "${JSON.stringify(orderData.failure_reasons, null, 2)}"`);
       }
 
       await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -41,8 +36,8 @@ export class TestUtilsService {
     request: APIRequestContext,
     product: Product = Product.AUTO,
     data?: { email?: string; license_plate?: string; documentNumber?: string; installmentsPerYear?: string; partnerId?: string },
-  ): Promise<TestUtilsData> {
-    const response = await request.post(TestConfig.urls.qa.testUtilsUrl, {
+  ): Promise<TestUtilsPolicyData> {
+    const response = await request.post(TestConfig.urls.testUtilsUrl, {
       data: {
         flow: 'create_insurance_policy',
         data: {
@@ -59,11 +54,14 @@ export class TestUtilsService {
     const protocolNumber = (await response.json()).protocol_number;
     const policyData = await this.getOrderByProtocolNumber(request, protocolNumber);
 
-    return policyData.data;
+    return policyData.data as TestUtilsPolicyData;
   }
 
-  static async createCustomer(request: APIRequestContext, data?: { email?: string; password?: string; phone?: string }): Promise<TestUtilsData> {
-    const response = await request.post(TestConfig.urls.qa.testUtilsUrl, {
+  static async createCustomer(
+    request: APIRequestContext,
+    data?: { email?: string; password?: string; phone?: string },
+  ): Promise<TestUtilsCustomerData> {
+    const response = await request.post(TestConfig.urls.testUtilsUrl, {
       data: {
         flow: 'create_customer',
         data: {
@@ -77,11 +75,11 @@ export class TestUtilsService {
     const protocolNumber = (await response.json()).protocol_number;
     const customerData = await this.getOrderByProtocolNumber(request, protocolNumber);
 
-    return customerData.data;
+    return customerData.data as TestUtilsCustomerData;
   }
 
-  static async createClaim(request: APIRequestContext, product: Product): Promise<TestUtilsData> {
-    const response = await request.post(TestConfig.urls.qa.testUtilsUrl, {
+  static async createClaim(request: APIRequestContext, product: Product): Promise<TestUtilsClaimData> {
+    const response = await request.post(TestConfig.urls.testUtilsUrl, {
       data: {
         flow: 'create_claim',
         data: {
@@ -91,13 +89,13 @@ export class TestUtilsService {
     });
 
     const protocolNumber = (await response.json()).protocol_number;
-    const claimData = await this.getOrderByProtocolNumber(request, protocolNumber);
+    const claimData = await this.getOrderByProtocolNumber(request, protocolNumber, 20);
 
-    return claimData.data;
+    return claimData.data as TestUtilsClaimData;
   }
 
-  static async generateCiNumber(request: APIRequestContext, data?: { bonusClassNumber?: string; insurerCode?: string }): Promise<TestUtilsData> {
-    const response = await request.post(TestConfig.urls.qa.testUtilsUrl, {
+  static async generateCiNumber(request: APIRequestContext, data?: { bonusClassNumber?: string; insurerCode?: string }): Promise<TestUtilsCiData> {
+    const response = await request.post(TestConfig.urls.testUtilsUrl, {
       data: {
         flow: 'generate_ci_number',
         data: {
@@ -110,6 +108,6 @@ export class TestUtilsService {
     const protocolNumber = (await response.json()).protocol_number;
     const ciData = await this.getOrderByProtocolNumber(request, protocolNumber);
 
-    return ciData.data;
+    return ciData.data as TestUtilsCiData;
   }
 }
