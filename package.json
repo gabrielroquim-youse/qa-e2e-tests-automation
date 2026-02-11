@@ -24,12 +24,14 @@
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-playwright": "^2.2.2",
+    "playwright-zephyr": "^1.2.0",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "proxymise": "^1.0.2",
-    "tsc": "^2.0.4"
+    "tsc": "^2.0.4",
+    "zod": "^4.3.6"
   }
 }
