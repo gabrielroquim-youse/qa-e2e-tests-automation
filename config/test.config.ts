@@ -1,8 +1,13 @@
-export const TestConfig = {
+import { date } from 'zod';
+
+export default {
   credentials: {
     name: process.env.TEST_NAME || 'John Youser',
-    email: process.env.TEST_EMAIL || 'automation@youse.com.br',
-    phone: process.env.TEST_USER_TEL || '11999620332',
+    documentNumber: process.env.TEST_DOCUMENT_NUMBER || '123.456.761-08',
+    email: process.env.TEST_EMAIL || `automation+${Date.now()}@youse.com.br`,
+    phone: process.env.TEST_USER_TEL || `(11) 9${Math.floor(Math.random() * 9999)}-${Math.floor(Math.random() * 9999)}`,
+    licensePlate: process.env.TEST_LICENSE_PLATE || 'YOU-0020',
+    dateOfBirth: process.env.TEST_DATE_OF_BIRTH || '1980-01-01',
     creditCard: {
       number: process.env.TEST_CARD_NUMBER || '4111 1111 1111 1111',
       expireDate: process.env.TEST_CARD_EXPIRE || '0330',
@@ -10,11 +15,10 @@ export const TestConfig = {
     },
   },
   urls: {
-    qa: {
-      autoQuotationUrl: process.env.BASE_URL || 'https://qa-cotacao.youse.io/seguro-auto/',
-      testUtilsUrl: process.env.TEST_UTILS_URL || 'https://qa-test-utils-service.youse.io/v1/orders/',
-      apiUrl: process.env.API_BASE_URL || '',
-    },
+    autoQuotationUrl: process.env.BASE_URL || `https://${process.env.ENV || 'qa'}-cotacao.youse.io/seguro-auto`,
+    testUtilsUrl: process.env.TEST_UTILS_URL || `https://${process.env.ENV || 'qa'}-test-utils-service.youse.io/v1/orders`,
+    bffUrl: process.env.BFF_URL || `https://${process.env.ENV || 'qa'}-bff.youse.io`,
+    apiUrl: process.env.API_BASE_URL || '',
   },
   timeouts: {
     default: parseInt(process.env.TIMEOUT || '60000'),

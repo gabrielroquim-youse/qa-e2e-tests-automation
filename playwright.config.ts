@@ -4,7 +4,7 @@ import 'dotenv/config';
 const baseURL = process.env.BASE_URL || 'http://localhost:3000';
 
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: './tests/spec',
   timeout: 90_000,
   expect: { timeout: 15_000 },
   fullyParallel: true,
@@ -13,6 +13,17 @@ export default defineConfig({
     ['list'],
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
     ['allure-playwright'],
+    [
+      'playwright-zephyr/lib/src/cloud',
+      {
+        projectKey: process.env.ZEPHYR_PROJECT_KEY || 'POSV', // Replace 'QA' with your Zephyr project key
+        authorizationToken: process.env.ZEPHYR_API_TOKEN, // Set this in your environment
+        autoCreateTestCases: true, // Automatically create test cases if they don't exist
+        testCycle: {
+          name: process.env.ZEPHYR_TEST_CYCLE_NAME || `Playwright Test Cycle - ${new Date().toISOString()}`,
+        },
+      },
+    ],
     //['playwright-qase-reporter'] //{
     //     testops: {
     //       api: { token: process.env.QASE_API_TOKEN! },

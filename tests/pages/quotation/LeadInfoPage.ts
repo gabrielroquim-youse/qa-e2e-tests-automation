@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import proxymise from 'proxymise';
-import { TestConfig } from '../../../config/test.config';
+import TestConfig from '../../../config/test.config';
 import { QuotationPageLayout } from './QuotationPageLayout';
 import { VehicleDetailsPage } from './VehicleDetailsPage';
 
@@ -17,7 +17,7 @@ export class LeadInfoPage extends QuotationPageLayout<VehicleDetailsPage> {
   }
 
   static async open(page: Page): Promise<LeadInfoPage> {
-    await page.goto(TestConfig.urls.qa.autoQuotationUrl);
+    await page.goto(TestConfig.urls.autoQuotationUrl);
     return new LeadInfoPage(page);
   }
 

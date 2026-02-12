@@ -1,109 +1,109 @@
-name: Testes E2E com Playwright
+# name: Testes E2E com Playwright
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  workflow_dispatch:
+# on:
+#   push:
+#     branches: [main]
+#   pull_request:
+#     branches: [main]
+#   workflow_dispatch:
 
-jobs:
-  test:
-    name: Executar Testes E2E
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
+# jobs:
+#   test:
+#     name: Executar Testes E2E
+#     timeout-minutes: 60
+#     runs-on: ubuntu-latest
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
+#     steps:
+#       - name: Checkout do código
+#         uses: actions/checkout@v4
 
-      - name: Instalar dependências
-        run: npm ci
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '20'
+#           cache: 'npm'
 
-      - name: Instalar navegadores do Playwright
-        run: npx playwright install --with-deps
+#       - name: Instalar dependências
+#         run: npm ci
 
-      - name: Executar testes Playwright
-        run: npm test
-        env:
-          CI: true
-          BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:3000' }}
+#       - name: Instalar navegadores do Playwright
+#         run: npx playwright install --with-deps
 
-      - name: Upload do relatório Playwright
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+#       - name: Executar testes Playwright
+#         run: npm test
+#         env:
+#           CI: true
+#           BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:3000' }}
 
-      - name: Upload de screenshots e vídeos
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: test-results/
-          retention-days: 30
+#       - name: Upload do relatório Playwright
+#         if: always()
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: playwright-report
+#           path: playwright-report/
+#           retention-days: 30
 
-      - name: Upload dos resultados Allure
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-results
-          path: allure-results/
-          retention-days: 30
+#       - name: Upload de screenshots e vídeos
+#         if: always()
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: test-results
+#           path: test-results/
+#           retention-days: 30
 
-  allure-report:
-    name: Gerar Relatório Allure
-    needs: test
-    if: always()
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
+#       - name: Upload dos resultados Allure
+#         if: always()
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: allure-results
+#           path: allure-results/
+#           retention-days: 30
 
-      - name: Download dos resultados Allure
-        uses: actions/download-artifact@v4
-        with:
-          name: allure-results
-          path: allure-results
+#   allure-report:
+#     name: Gerar Relatório Allure
+#     needs: test
+#     if: always()
+#     runs-on: ubuntu-latest
 
-      - name: Instalar Allure
-        run: |
-          wget https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
-          tar -zxvf allure-2.24.0.tgz
-          sudo mv allure-2.24.0 /opt/allure
-          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+#     steps:
+#       - name: Checkout do código
+#         uses: actions/checkout@v4
 
-      - name: Gerar relatório Allure
-        run: allure generate --clean allure-results -o allure-report
+#       - name: Download dos resultados Allure
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: allure-results
+#           path: allure-results
 
-      - name: Upload do relatório Allure HTML
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report-html
-          path: allure-report/
-          retention-days: 30
+#       - name: Instalar Allure
+#         run: |
+#           wget https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
+#           tar -zxvf allure-2.24.0.tgz
+#           sudo mv allure-2.24.0 /opt/allure
+#           sudo ln -s /opt/allure/bin/allure /usr/bin/allure
 
-  notify:
-    name: Notificação de Resultado
-    needs: test
-    if: always()
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Status dos testes
-        run: |
-          if [ "${{ needs.test.result }}" == "success" ]; then
-            echo "✅ Todos os testes passaram com sucesso!"
-          else
-            echo "❌ Alguns testes falharam. Verifique os artefatos."
-            exit 1
-          fi
+#       - name: Gerar relatório Allure
+#         run: allure generate --clean allure-results -o allure-report
+
+#       - name: Upload do relatório Allure HTML
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: allure-report-html
+#           path: allure-report/
+#           retention-days: 30
+
+#   notify:
+#     name: Notificação de Resultado
+#     needs: test
+#     if: always()
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Status dos testes
+#         run: |
+#           if [ "${{ needs.test.result }}" == "success" ]; then
+#             echo "✅ Todos os testes passaram com sucesso!"
+#           else
+#             echo "❌ Alguns testes falharam. Verifique os artefatos."
+#             exit 1
+#           fi

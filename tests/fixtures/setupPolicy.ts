@@ -1,15 +1,16 @@
 import { test as base } from '@playwright/test';
-import { TestUtilsService } from '../services/TestUtilsService';
+import { TestUtilsService } from '../services/test-utils/TestUtilsService';
 import { Product } from '../enum/Product';
+import { TestUtilsPolicyData } from '../schemas/test-utils/TestUtilsServiceSchemas';
 
 type Fixtures = {
-  autoPolicyDminus1: TestUtilsService;
-  homePolicyDminus1: TestUtilsService;
-  lifePolicyDminus1: TestUtilsService;
-  autoPolicyNoInspection: TestUtilsService;
-  autoPolicyOnlineInspection: TestUtilsService;
-  autoPolicyOnSiteInspection: TestUtilsService;
-  autoPolicyVideoInspection: TestUtilsService;
+  autoPolicyDminus1: TestUtilsPolicyData;
+  homePolicyDminus1: TestUtilsPolicyData;
+  lifePolicyDminus1: TestUtilsPolicyData;
+  autoPolicyNoInspection: TestUtilsPolicyData;
+  autoPolicyOnlineInspection: TestUtilsPolicyData;
+  autoPolicyOnSiteInspection: TestUtilsPolicyData;
+  autoPolicyVideoInspection: TestUtilsPolicyData;
 };
 
 export const test = base.extend<Fixtures>({
