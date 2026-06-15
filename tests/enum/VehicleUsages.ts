@@ -1,3 +1,7 @@
+/**
+ * Enumeração dos tipos de uso do veículo aceitos no formulário de cotação.
+ * Mapeados para os valores dos radio buttons da tela VehicleAdditionalDetailsPage.
+ */
 export enum VehicleUsages {
   PRIVATE = 'Particular',
   APP = 'Motorista de Aplicativo',

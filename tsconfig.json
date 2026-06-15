@@ -1,31 +1,18 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "lib": [
-      "ES2021",
-      "DOM"
-    ],
+    "lib": ["ES2021", "DOM"],
     "module": "CommonJS",
     "moduleResolution": "Node",
+    "ignoreDeprecations": "5.0",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "skipLibCheck": true,
     "outDir": "dist",
-    "types": [
-      "node",
-      "@playwright/test"
-    ]
+    "types": ["node", "@playwright/test"]
   },
-  "include": [
-    "tests/**/*",
-    "playwright.config.ts"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules",
-    "playwright-report",
-    "storage"
-  ]
+  "include": ["tests/**/*", "playwright.config.ts"],
+  "exclude": ["dist", "node_modules", "playwright-report", "storage"]
 }

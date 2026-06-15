@@ -1,3 +1,10 @@
+/**
+ * Etapa 5 do funil de cotação auto — Histórico de seguro e Classe de Bônus.
+ *
+ * Verifica se o usuário possui seguro ativo nos últimos 12 meses. Se sim,
+ * permite informar a Classe de Bônus (1 a 10 ou "Não quero informar").
+ * Se não, redireciona para o whatsapp sem avançar para seleção de planos.
+ */
 import { Locator, Page } from '@playwright/test';
 import proxymise from 'proxymise';
 import { PlanSelectionPage } from './PlanSelectionPage';
@@ -19,8 +26,8 @@ export class BonusesClassPage extends QuotationPageLayout<PlanSelectionPage> {
     this.btnNo = this.page.getByRole('button', { name: 'Não', exact: true });
     this.btnYes = this.page.getByRole('button', { name: 'Sim', exact: true });
     this.whatsappBtn = this.page.getByRole('button', { name: 'Chame no whatsapp' });
-    this.userBonusesClass = this.page.getByRole('textbox', { name: 'Selecione sua Classe de Bônus'});
-    this.knowNotBonusClass = this.page.getByRole('button', { name: 'Não sei minha Classe de Bônus', exact: true});
+    this.userBonusesClass = this.page.getByRole('textbox', { name: 'Selecione sua Classe de Bônus' });
+    this.knowNotBonusClass = this.page.getByRole('button', { name: 'Não sei minha Classe de Bônus', exact: true });
     this.modalDontKnowBonusClassTitle = this.page.getByRole('heading', { name: 'Não sabe sua Classe de Bônus?' });
   }
 
@@ -30,7 +37,8 @@ export class BonusesClassPage extends QuotationPageLayout<PlanSelectionPage> {
       await this.userBonusesClass.click();
       await this.page.getByText(userBonusClass, { exact: true }).click();
     } else {
-      await this.btnNo.click();
+      await this.btnNo.click({ force: true });
+      await this.page.waitForURL(/\/bonuses_class/, { timeout: 15_000 });
       await this.whatsappBtn.isVisible();
     }
     return this;
@@ -40,7 +48,7 @@ export class BonusesClassPage extends QuotationPageLayout<PlanSelectionPage> {
     await this.whatsappBtn.click();
   }
 
-  async infoKnowNotBonusClass(){
+  async infoKnowNotBonusClass() {
     await this.knowNotBonusClass.click();
     return this;
   }

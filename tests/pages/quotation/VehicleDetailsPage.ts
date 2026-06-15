@@ -1,3 +1,10 @@
+/**
+ * Etapa 2 do funil de cotação auto — Dados do veículo.
+ *
+ * Responsável pelo preenchimento da placa e seleção das características
+ * do veículo (zero km e blindado). A placa informada determina o
+ * fluxo de inspeção subsequente (sem inspeção, online, presencial, etc.).
+ */
 import { Locator, Page } from '@playwright/test';
 import proxymise from 'proxymise';
 import { QuotationPageLayout } from './QuotationPageLayout';
@@ -25,23 +32,29 @@ export class VehicleDetailsPage extends QuotationPageLayout<VehicleAdditionalDet
       .nth(1);
   }
 
-  async fillLicensePlate() {
-    await this.licensePlate.fill('YOU0020');
+  async fillLicensePlate(plate = 'YOU-0020') {
+    await this.licensePlate.waitFor({ state: 'visible' });
+    await this.licensePlate.fill(plate.replace('-', ''));
     return this;
   }
 
   async selectBrandNew(brandNew: boolean = false) {
     if (brandNew) {
-      await this.switchBrandNew.click();
+      await this.switchBrandNew.click({ force: true });
     }
     return this;
   }
 
   async selectBulletproof(bulletproof: boolean = false) {
     if (bulletproof) {
-      await this.switchBulletproof.click();
+      await this.switchBulletproof.click({ force: true });
     }
     return this;
+  }
+
+  /** Retorna mensagem de bloqueio exibida quando o veículo é blindado */
+  get bulletproofBlockMessage() {
+    return this.page.getByText(/blindado/i).first();
   }
 }
 

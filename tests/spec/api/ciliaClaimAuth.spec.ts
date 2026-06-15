@@ -16,7 +16,7 @@ test.describe('Cilia Claim Auth Tests', { tag: ['@whatsapp_claim'] }, () => {
 
     expect(response.status()).toBe(200);
     expect(authResponse.length).toBeGreaterThan(1);
-    expect(authResponse).toMatchSchema(CiliaClaimAuthSchema);
+    await expect(authResponse).toMatchSchema(CiliaClaimAuthSchema);
   });
 
   test('[T40] Insured person can authenticate via whatsapp using license plate', async ({ request }) => {
@@ -24,7 +24,7 @@ test.describe('Cilia Claim Auth Tests', { tag: ['@whatsapp_claim'] }, () => {
     const authResponse = await response.json();
 
     expect(response.status()).toBe(200);
-    expect(authResponse).toMatchSchema(CiliaClaimAuthSchema);
+    await expect(authResponse).toMatchSchema(CiliaClaimAuthSchema);
   });
 
   test('[T39] Third party can authenticate via whatsapp using protocol number', async ({ request, partialLossClaim }) => {

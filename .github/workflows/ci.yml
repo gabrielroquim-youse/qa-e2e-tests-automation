@@ -1,4 +1,174 @@
-# name: Testes E2E com Playwright
+##
+## GitHub Actions — CI Pipeline — Seguro Auto E2E
+##
+## Estrutura da esteira:
+##   1. validate    → typecheck + lint + format check (rápido, roda primeiro)
+##   2. test        → Playwright com sharding (4 shards paralelos)
+##   3. merge-report → consolida relatórios de todos os shards
+##
+## Gatilhos:
+##   - Pull Request para main  → valida + testa antes do merge
+##   - Push em main            → executa a suíte completa
+##   - workflow_dispatch       → execução manual com filtro de tag opcional
+##
+## Pré-requisitos (GitHub Secrets):
+##   BASE_URL           → URL do ambiente QA (ex: https://qa-cotacao.youse.io/seguro-auto)
+##   ZEPHYR_API_TOKEN   → Token do Zephyr Scale (Jira)
+##   ZEPHYR_PROJECT_KEY → Chave do projeto no Zephyr (ex: POSV)
+##
+
+name: CI — Playwright E2E
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      grep:
+        description: 'Filtrar testes por tag (ex: @smoke, @regression)'
+        required: false
+        default: ''
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# JOB 1 — Validação estática (typecheck + lint + prettier)
+# Roda em ~30 s e bloqueia o pipeline antes de desperdiçar tempo com testes
+# ─────────────────────────────────────────────────────────────────────────────
+jobs:
+  validate:
+    name: Validação Estática (Lint + Types + Format)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Verificar tipos TypeScript
+        run: npm run typecheck
+
+      - name: Lint (ESLint + regras Playwright)
+        run: npm run lint
+
+      - name: Verificar formatação (Prettier)
+        run: npm run format:check
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # JOB 2 — Testes Playwright (4 shards paralelos)
+  # Cada shard roda em uma VM independente; os artefatos são consolidados depois.
+  # ─────────────────────────────────────────────────────────────────────────────
+  test:
+    name: Testes E2E — Shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Instalar navegadores Playwright
+        run: npx playwright install chromium --with-deps
+
+      - name: Executar testes (shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
+        run: |
+          GREP_FLAG=""
+          if [ -n "${{ github.event.inputs.grep }}" ]; then
+            GREP_FLAG="--grep \"${{ github.event.inputs.grep }}\""
+          fi
+          npx playwright test \
+            --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} \
+            $GREP_FLAG
+        env:
+          CI: 'true'
+          BASE_URL: ${{ secrets.BASE_URL }}
+          ZEPHYR_API_TOKEN: ${{ secrets.ZEPHYR_API_TOKEN }}
+          ZEPHYR_PROJECT_KEY: ${{ secrets.ZEPHYR_PROJECT_KEY }}
+
+      - name: Upload blob report (shard ${{ matrix.shardIndex }})
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blob-report-${{ matrix.shardIndex }}
+          path: blob-report/
+          retention-days: 3
+
+      - name: Upload artefatos de debug em falha (shard ${{ matrix.shardIndex }})
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-artifacts-shard-${{ matrix.shardIndex }}
+          path: test-results/
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # JOB 3 — Consolidação dos relatórios de todos os shards
+  # ─────────────────────────────────────────────────────────────────────────────
+  merge-report:
+    name: Consolidar Relatório HTML
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Download de todos os blob reports
+        uses: actions/download-artifact@v4
+        with:
+          path: all-blob-reports
+          pattern: blob-report-*
+          merge-multiple: true
+
+      - name: Consolidar relatório HTML
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
+
+      - name: Upload relatório HTML consolidado
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-full
+          path: playwright-report/
+          retention-days: 30
 
 # on:
 #   push:

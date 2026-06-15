@@ -4,9 +4,27 @@
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:regression": "playwright test --grep @regression",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,json,yml,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,json,yml,md}\"",
+    "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit",
+    "validate": "npm run typecheck && npm run lint && npm run format:check",
     "allure:generate": "allure generate --clean ./allure-results -o ./allure-report",
     "allure:open": "allure open ./allure-report",
-    "allure:serve": "allure serve ./allure-results"
+    "allure:serve": "allure serve ./allure-results",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "**/*.ts": [
+      "eslint --max-warnings=0",
+      "prettier --write"
+    ],
+    "**/*.{json,yml,md}": [
+      "prettier --write"
+    ]
   },
   "keywords": [],
   "author": "",
@@ -17,6 +35,8 @@
     "@playwright/test": "^1.55.0",
     "@types/node": "^20.19.17",
     "@types/proxymise": "^1.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.61.0",
+    "@typescript-eslint/parser": "^8.61.0",
     "allure-playwright": "^3.4.1",
     "cpf-cnpj-validator": "^1.0.3",
     "cross-env": "^10.1.0",
@@ -24,14 +44,16 @@
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-playwright": "^2.2.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.7",
     "playwright-zephyr": "^1.2.0",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "esutils": "^2.0.3",
     "proxymise": "^1.0.2",
-    "tsc": "^2.0.4",
     "zod": "^4.3.6"
   }
 }

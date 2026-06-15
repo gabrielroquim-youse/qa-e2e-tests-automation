@@ -13,8 +13,6 @@ export const TestUtilsCustomerDataSchema = z.object({
   password: z.string(),
 });
 
-z.object({});
-
 export const TestUtilsPolicyDataSchema = z.object({
   policy_number: z.string(),
   email: z.string(),

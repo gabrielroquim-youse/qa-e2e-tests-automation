@@ -1,11 +1,18 @@
-import { date } from 'zod';
-
+/**
+ * Configuração centralizada de testes.
+ *
+ * Todas as variáveis sensíveis (tokens, URLs, credenciais) devem ser
+ * fornecidas via variáveis de ambiente (.env). Os valores hardcoded aqui
+ * são usados apenas como fallback para execução local em QA.
+ *
+ * Nunca commite dados reais no .env nem altere os fallbacks para valores de produção.
+ */
 export default {
   credentials: {
     name: process.env.TEST_NAME || 'John Youser',
     documentNumber: process.env.TEST_DOCUMENT_NUMBER || '123.456.761-08',
     email: process.env.TEST_EMAIL || `automation+${Date.now()}@youse.com.br`,
-    phone: process.env.TEST_USER_TEL || `(11) 9${Math.floor(Math.random() * 9999)}-${Math.floor(Math.random() * 9999)}`,
+    phone: process.env.TEST_USER_TEL || `(11) 9${Math.floor(Math.random() * 9000) + 1000}-${Math.floor(Math.random() * 9000) + 1000}`,
     licensePlate: process.env.TEST_LICENSE_PLATE || 'YOU-0020',
     dateOfBirth: process.env.TEST_DATE_OF_BIRTH || '1980-01-01',
     creditCard: {

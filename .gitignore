@@ -6,3 +6,7 @@ playwright-report/
 test-results/
 allure-results/
 allure-report/
+
+# Agentes Playwright (gerados pelo Copilot — não versionar)
+.github/agents/
+.github/chatmodes/

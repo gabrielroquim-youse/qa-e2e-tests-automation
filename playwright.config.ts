@@ -1,63 +1,49 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 import 'dotenv/config';
-
-const baseURL = process.env.BASE_URL || 'http://localhost:3000';
 
 export default defineConfig({
   testDir: './tests/spec',
   timeout: 90_000,
   expect: { timeout: 15_000 },
   fullyParallel: true,
+  workers: process.env.CI ? 4 : 1,
   retries: process.env.CI ? 2 : 0,
-  reporter: [
-    ['list'],
-    ['html', { outputFolder: 'playwright-report', open: 'never' }],
-    ['allure-playwright'],
-    [
-      'playwright-zephyr/lib/src/cloud',
-      {
-        projectKey: process.env.ZEPHYR_PROJECT_KEY || 'POSV', // Replace 'QA' with your Zephyr project key
-        authorizationToken: process.env.ZEPHYR_API_TOKEN, // Set this in your environment
-        autoCreateTestCases: true, // Automatically create test cases if they don't exist
-        testCycle: {
-          name: process.env.ZEPHYR_TEST_CYCLE_NAME || `Playwright Test Cycle - ${new Date().toISOString()}`,
-        },
-      },
-    ],
-    //['playwright-qase-reporter'] //{
-    //     testops: {
-    //       api: { token: process.env.QASE_API_TOKEN! },
-    //       project: process.env.QASE_PROJECT_CODE!,
-    //       uploadAttachments: true,
-    //     },
-    //     run: {
-    //       title: `PW Run ${new Date().toISOString()}`,
-    //       description: 'Execução via Playwright CI',
-    //       complete: true
-    //     },
-    //   }],
-  ],
+  reporter: process.env.CI
+    ? [
+        ['blob'], // necessário para merge-reports no sharding
+        ['list'],
+        ['allure-playwright'],
+        [
+          'playwright-zephyr/lib/src/cloud',
+          {
+            projectKey: process.env.ZEPHYR_PROJECT_KEY || 'POSV',
+            authorizationToken: process.env.ZEPHYR_API_TOKEN,
+            autoCreateTestCases: true,
+            testCycle: {
+              name: process.env.ZEPHYR_TEST_CYCLE_NAME || `Playwright Test Cycle - ${new Date().toISOString()}`,
+            },
+          },
+        ],
+      ]
+    : [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }], ['allure-playwright']],
   use: {
     trace: 'on-first-retry',
-    screenshot: 'on',
-    video: 'on',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
     actionTimeout: 15_000,
     navigationTimeout: 20_000,
-    launchOptions: {
-      args: ['--start-maximized'],
-    },
-    // storageState: 'storage/auth.json', // login reutilizável
   },
   projects: [
-    // {
-    //   name: 'Automação de Testes - Playwright',
-    //   use: {
-    //     channel: 'chrome',
-    //     headless: process.env.CI ? true : false, // headless no CI, com interface localmente
-    //     viewport: null
-    //   }
-    // },
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    {
+      name: 'chromium',
+      use: {
+        channel: process.env.CI ? undefined : 'chrome', // Chrome instalado localmente; Chromium no CI
+        headless: !!process.env.CI, // sempre abre o navegador localmente; headless só no CI
+        launchOptions: {
+          args: ['--start-maximized'],
+        },
+      },
+    },
     //{ name: 'firefox',  use: { ...devices['Desktop Firefox'] } },
     //{ name: 'webkit',   use: { ...devices['Desktop Safari'] } },
     // mobile exemplo:

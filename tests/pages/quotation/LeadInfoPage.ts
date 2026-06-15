@@ -1,8 +1,20 @@
+/**
+ * Etapa 1 do funil de cotação auto — Dados de contato do lead.
+ *
+ * Responsável por abrir a URL de cotação e preencher nome, e-mail e telefone.
+ * É sempre o ponto de entrada do fluxo; use LeadInfoPage.open(page) para iniciar.
+ */
 import { Locator, Page } from '@playwright/test';
 import proxymise from 'proxymise';
 import TestConfig from '../../../config/test.config';
 import { QuotationPageLayout } from './QuotationPageLayout';
 import { VehicleDetailsPage } from './VehicleDetailsPage';
+
+export interface LeadData {
+  name?: string;
+  email?: string;
+  phone?: string;
+}
 
 export class LeadInfoPage extends QuotationPageLayout<VehicleDetailsPage> {
   readonly nome: Locator;
@@ -17,14 +29,19 @@ export class LeadInfoPage extends QuotationPageLayout<VehicleDetailsPage> {
   }
 
   static async open(page: Page): Promise<LeadInfoPage> {
-    await page.goto(TestConfig.urls.autoQuotationUrl);
-    return new LeadInfoPage(page);
+    const instance = new LeadInfoPage(page);
+    await page.goto(TestConfig.urls.autoQuotationUrl, {
+      waitUntil: 'domcontentloaded',
+      timeout: 60_000,
+    });
+    await instance.nome.waitFor({ state: 'visible', timeout: 60_000 });
+    return instance;
   }
 
-  async fillLeadData(): Promise<LeadInfoPage> {
-    await this.nome.fill(TestConfig.credentials.name);
-    await this.email.fill(TestConfig.credentials.email);
-    await this.tel.fill(TestConfig.credentials.phone);
+  async fillLeadData(data?: LeadData): Promise<LeadInfoPage> {
+    await this.nome.fill(data?.name ?? TestConfig.credentials.name);
+    await this.email.fill(data?.email ?? TestConfig.credentials.email);
+    await this.tel.fill(data?.phone ?? TestConfig.credentials.phone);
     return this;
   }
 }
