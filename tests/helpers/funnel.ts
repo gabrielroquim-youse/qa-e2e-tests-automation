@@ -115,16 +115,31 @@ export async function navigateToCoverages(page: Page, scenario: QuotationScenari
   return coveragesPage;
 }
 
+/** Opções de navegação para a tela de assistências. */
+export interface AssistancesNavOptions {
+  /**
+   * Se `true` (padrão), dispensa o modal promocional de lançamento ao entrar
+   * na tela. Passe `false` quando o teste precisar interagir com o modal
+   * (ex.: promo do RPS no plano personalizado).
+   */
+  dismissPromo?: boolean;
+}
+
 /**
  * Navega até a tela de seleção de assistências, dispensando o modal promocional
  * e aguardando o preço anual ser calculado.
  */
-export async function navigateToAssistances(page: Page, scenario: QuotationScenario = {}): Promise<AssistancesSelectionPage> {
+export async function navigateToAssistances(
+  page: Page,
+  scenario: QuotationScenario = {},
+  options: AssistancesNavOptions = {},
+): Promise<AssistancesSelectionPage> {
+  const { dismissPromo = true } = options;
   const coveragesPage = await navigateToCoverages(page, scenario);
 
   const assistancesPage: AssistancesSelectionPage = await coveragesPage.clickContinueBtn();
   await assistancesPage.heading.waitFor({ state: 'visible', timeout: 30_000 });
-  await assistancesPage.dismissPromoModal();
+  if (dismissPromo) await assistancesPage.dismissPromoModal();
   await assistancesPage.waitForPrice();
 
   return assistancesPage;

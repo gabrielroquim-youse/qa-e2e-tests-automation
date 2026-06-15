@@ -134,6 +134,44 @@ export class AssistancesSelectionPage extends QuotationPageLayout<CheckoutPage> 
     return { value, perMonth, raw };
   }
 
+  // ── Promo RPS (Proteção de Rodas, Pneu e Suspensão) ──────────────────────
+  // No plano personalizado, ao chegar nas assistências, abre um modal de
+  // lançamento do RPS. Durante a campanha (junho/2026) o item é "por nossa
+  // conta!" (grátis); após a campanha passa a ser cobrado. Os seletores abaixo
+  // são tentativas tolerantes — confirmar contra o DOM real do QA.
+
+  /** Modal de lançamento do RPS (aparece no plano personalizado). */
+  get rpsLaunchModal(): Locator {
+    return this.page.getByText(/proteção de rodas, pneu e suspensão/i).first();
+  }
+
+  /** Selo "Assistência por nossa conta!" exibido durante a promo. */
+  get rpsFreePledge(): Locator {
+    return this.page.getByText(/por nossa conta/i).first();
+  }
+
+  /** Botão do modal que adiciona o RPS ao plano. */
+  get addRpsButton(): Locator {
+    return this.page.getByRole('button', { name: /adicionar|incluir|quero|adicione/i }).first();
+  }
+
+  /**
+   * Indica se o modal de lançamento do RPS está visível.
+   * Usa um timeout curto para não travar quando o modal não aparece.
+   */
+  async isRpsLaunchModalVisible(timeout = 6_000): Promise<boolean> {
+    return this.rpsLaunchModal.isVisible({ timeout }).catch(() => false);
+  }
+
+  /**
+   * Adiciona o RPS pelo modal de lançamento e aguarda o modal fechar.
+   * Não assume mudança de preço — quem valida o delta é o spec.
+   */
+  async addRpsViaModal(): Promise<void> {
+    await this.addRpsButton.click();
+    await this.rpsLaunchModal.waitFor({ state: 'hidden', timeout: 10_000 }).catch(() => undefined);
+  }
+
   /**
    * Dispensa o modal "Combo de assistências" se estiver visível.
    * O modal aparece automaticamente ao ativar "Assistência a automóvel"
