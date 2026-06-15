@@ -103,14 +103,14 @@ Assistência nova (`bra/auto/assistance/27`) com campanha de lançamento.
 
 | Período | Comportamento | Delta esperado no total |
 |---------|---------------|-------------------------|
-| **Junho/2026 (todo o mês)** | "Assistência por nossa conta!" → **grátis** | `delta == 0` (± tolerância) |
-| **A partir de julho/2026** | passa a ser **cobrado** | `delta > 0` |
+| **22/06/2026 a 31/07/2026** | "Assistência por nossa conta!" → **grátis** | `delta == 0` (± tolerância) |
+| **A partir de 01/08/2026** | passa a ser **cobrado** | `delta > 0` |
 
 ### Por que NÃO há valor numérico fixo na tabela
 
 - O prêmio do RPS é **calculado dinamicamente** pelo motor de preços (fórmula +
   perfil/CPF). Não existe um número fixo a documentar — cravar valor = flaky.
-- A regra "grátis em junho" **não foi encontrada como regra de data no código**
+- A regra "grátis de 22/06 a 31/07" **não foi encontrada como regra de data no código**
   do pricing-engine vasculhado; aparenta ser aplicada por campanha/frontend.
 - Único valor fixo achado ligado ao RPS: **franquia R$ 190,00** (não é o prêmio).
 - Por isso o teste usa a **UI como oráculo** e valida a **regra** (grátis vs
@@ -125,8 +125,8 @@ Assistência nova (`bra/auto/assistance/27`) com campanha de lançamento.
 
 ### Estratégia de teste (ciente da data)
 
-- `isRpsPromoActive()` decide a expectativa pela data corrente (junho/2026) e
-  pode ser forçada em CI por `RPS_PROMO_OVERRIDE = 'free' | 'charged'`.
+- `isRpsPromoActive()` decide a expectativa pela data corrente (janela
+  22/06–31/07/2026) e pode ser forçada em CI por `RPS_PROMO_OVERRIDE = 'free' | 'charged'`.
 - `navigateToAssistances(page, {}, { dismissPromo: false })` mantém o modal.
 - Promo ativa → assertar selo "por nossa conta!" e `delta == 0` ao adicionar.
 - Fora da promo → `delta > 0` ao adicionar.

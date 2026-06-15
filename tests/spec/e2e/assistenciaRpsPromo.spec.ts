@@ -2,9 +2,9 @@
  * Promo RPS — "Proteção de Rodas, Pneu e Suspensão" (Seguro Auto).
  *
  * Regra de negócio (campanha):
- *   - Durante junho/2026: o RPS é "Assistência por nossa conta!" → GRÁTIS.
+ *   - Gratuidade de 22/06/2026 a 31/07/2026: "Assistência por nossa conta!" → GRÁTIS.
  *     Ao adicioná-lo, o total anual NÃO deve mudar (delta == 0).
- *   - A partir de julho/2026: o RPS passa a ser COBRADO.
+ *   - Fora dessa janela (a partir de 01/08/2026): o RPS passa a ser COBRADO.
  *     Ao adicioná-lo, o total anual deve AUMENTAR (delta > 0).
  *
  * O teste é "ciente da data": decide a expectativa a partir da data corrente
@@ -24,14 +24,18 @@ const TEST_TIMEOUT = 180_000;
 const DELTA_TOLERANCE = 0.05; // Tolerância em reais para arredondamento
 
 /**
- * Janela da promo: todo o mês de junho/2026. A partir de julho passa a cobrar.
+ * Janela da gratuidade: 22/06/2026 00:00 até 31/07/2026 23:59 (horário local).
+ * Fora dessa janela o RPS é cobrado.
  * Permite forçar o cenário em CI via RPS_PROMO_OVERRIDE = 'free' | 'charged'.
  */
+const RPS_PROMO_START = new Date(2026, 5, 22, 0, 0, 0); // 22/06/2026 (mês 5 = junho)
+const RPS_PROMO_END = new Date(2026, 6, 31, 23, 59, 59, 999); // 31/07/2026 (mês 6 = julho)
+
 function isRpsPromoActive(now = new Date()): boolean {
   const override = process.env.RPS_PROMO_OVERRIDE;
   if (override === 'free') return true;
   if (override === 'charged') return false;
-  return now.getFullYear() === 2026 && now.getMonth() === 5; // mês 5 = junho
+  return now >= RPS_PROMO_START && now <= RPS_PROMO_END;
 }
 
 test.describe('Promo RPS — Proteção de Rodas, Pneu e Suspensão', { tag: ['@value', '@assistencias', '@rps', '@quotation_auto'] }, () => {
