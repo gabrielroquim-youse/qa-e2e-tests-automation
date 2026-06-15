@@ -123,6 +123,16 @@ Assistência nova (`bra/auto/assistance/27`) com campanha de lançamento.
 - Nos **demais planos**, aparece a tag "Proteção de Rodas, Pneu e Suspensão —
   Assistência por nossa conta!".
 
+### Resultado observado no QA (15/06/2026, pré-promo)
+
+Execução do spec (cenário "cobrado", pela data atual — **passou**):
+
+- Total antes: **R$ 2.823,40/ano** → depois de adicionar o RPS: **R$ 2.857,74/ano**.
+- **Δ = R$ 34,34/ano** → preço de referência do RPS **quando cobrado**.
+- Modal de lançamento detectado e total recalculado corretamente.
+- ⚠️ O valor R$ 34,34 é **referência observada**, não asserção fixa — o teste
+  segue validando por **delta** (grátis = Δ 0 na janela; cobrado = Δ > 0 fora dela).
+
 ### Estratégia de teste (ciente da data)
 
 - `isRpsPromoActive()` decide a expectativa pela data corrente (janela
