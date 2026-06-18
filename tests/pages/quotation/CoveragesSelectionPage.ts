@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Tela de personalização de coberturas — Seguro Auto.
  *
  * Exibida quando o usuário opta por "Personalizar" a partir da seleção de planos.
@@ -32,12 +32,44 @@ export class CoveragesSelectionPage extends QuotationPageLayout<AssistancesSelec
     });
   }
 
+  private coverageSwitchRow(name: CoverageName): Locator {
+    return this.page.locator(`xpath=//p[contains(normalize-space(.), "${name}")]/ancestor::*[.//*[@role="switch"]][1]`).first();
+  }
+
+  /** Bloco completo da cobertura (switch + franquia/indenização). */
+  private coverageSection(name: CoverageName): Locator {
+    return this.coverageSwitchRow(name).locator('xpath=parent::*');
+  }
+
   /**
    * Retorna o toggle switch de uma cobertura pelo nome.
-   * O <p> com o nome e o switch são irmãos dentro do container de cabeçalho.
    */
   coverageSwitch(name: CoverageName): Locator {
-    return this.page.locator(`xpath=//p[normalize-space(text())="${name}"]/following-sibling::*[@role="switch"]`).first();
+    return this.coverageSwitchRow(name).getByRole('switch').first();
+  }
+
+  async clickCoverageToggle(name: CoverageName): Promise<void> {
+    const sw = this.coverageSwitch(name);
+    await sw.scrollIntoViewIfNeeded();
+    try {
+      await sw.click({ timeout: 5_000 });
+    } catch {
+      await sw.evaluate((el) => (el as HTMLElement).click());
+    }
+  }
+
+  coverageName(name: CoverageName): Locator {
+    return this.page.locator(`xpath=//p[contains(normalize-space(.), "${name}")]`).first();
+  }
+
+  async isCoverageChecked(name: CoverageName): Promise<boolean> {
+    const sw = this.coverageSwitch(name);
+    if ((await sw.count()) === 0) return true;
+    return (await sw.getAttribute('aria-checked', { timeout: 10_000 })) === 'true';
+  }
+
+  async isCoverageSwitchDisabled(name: CoverageName): Promise<boolean> {
+    return this.coverageSwitch(name).isDisabled();
   }
 
   /**
@@ -68,6 +100,20 @@ export class CoveragesSelectionPage extends QuotationPageLayout<AssistancesSelec
   }
 
   /**
+   * Lê a franquia exibida no painel lateral (atualiza ao mover o slider).
+   */
+  async getSidebarFranquiaValue(): Promise<number> {
+    const el = this.page
+      .locator('p')
+      .filter({ hasText: /^Franquia$/ })
+      .locator('xpath=following-sibling::p[1]');
+    const text = (await el.textContent()) ?? '';
+    const match = text.match(/R\$\s*([\d.]+),([\d]{2})/);
+    if (!match) throw new Error(`Franquia lateral não encontrada. Texto: "${text}"`);
+    return parseFloat(match[1].replace(/\./g, '') + '.' + match[2]);
+  }
+
+  /**
    * Aguarda o preço anual mudar após uma ação (toggle ou ajuste de slider).
    * Garante que a API de recálculo respondeu antes de ler o novo valor.
    */
@@ -92,10 +138,10 @@ export class CoveragesSelectionPage extends QuotationPageLayout<AssistancesSelec
    * Franquia menor → prêmio maior (menor deductible = maior risco assumido).
    */
   franquiaDecreaseBtn(): Locator {
-    return this.page
-      .locator('div')
-      .filter({ has: this.page.getByText('Valor da Franquia:', { exact: false }) })
-      .locator('button')
+    return this.coverageSection('Vale pra qualquer batida')
+      .getByText('Valor da Franquia:', { exact: false })
+      .locator('xpath=ancestor::*[1]/following-sibling::*[1]')
+      .getByRole('button')
       .first();
   }
 
@@ -104,11 +150,10 @@ export class CoveragesSelectionPage extends QuotationPageLayout<AssistancesSelec
    * Indenização maior → prêmio maior.
    */
   indemnityIncreaseBtn(coverageName: CoverageName): Locator {
-    return this.page
-      .locator('div')
-      .filter({ has: this.page.getByText(coverageName, { exact: true }) })
-      .filter({ has: this.page.getByText('Valor da Indenização:', { exact: false }) })
-      .locator('button')
+    return this.coverageSection(coverageName)
+      .getByText('Valor da Indenização:', { exact: false })
+      .locator('xpath=ancestor::*[1]/following-sibling::*[1]')
+      .getByRole('button')
       .last();
   }
 }

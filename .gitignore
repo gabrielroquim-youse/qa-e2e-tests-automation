@@ -4,6 +4,8 @@ node_modules/
 .vscode/
 playwright-report/
 test-results/
+reports/e2e-timing-raw.json
+reports/e2e-last-run.log
 allure-results/
 allure-report/
 

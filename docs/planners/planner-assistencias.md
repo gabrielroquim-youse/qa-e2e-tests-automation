@@ -218,15 +218,18 @@ Testa que ativar cada assistência independente (fora do combo) aumenta o prêmi
 
 ## Mapeamento de Cobertura de Testes
 
-| #   | Cenário                                      | Arquivo                  | Status          | Tags          |
-| --- | -------------------------------------------- | ------------------------ | --------------- | ------------- |
-| 1   | Visibilidade — título e 7 assistências       | `assistencias.spec.ts`   | ✅ Implementado | `@smoke`      |
-| 2   | Restituição de IPVA aumenta prêmio           | `assistencias.spec.ts`   | ✅ Implementado | `@regression` |
-| 3   | Assistência a bike aumenta prêmio            | `assistencias.spec.ts`   | ✅ Implementado | `@regression` |
-| 4   | Serviço de histórico veicular aumenta prêmio | `assistencias.spec.ts`   | ✅ Implementado | `@regression` |
-| 5   | Serviço de leva e traz aumenta prêmio        | `assistencias.spec.ts`   | ✅ Implementado | `@regression` |
-| 6   | Combo Assistência a automóvel aumenta prêmio | `assistencias.spec.ts`   | ✅ Implementado | `@regression` |
-| 7   | Carro reserva aumenta prêmio                 | `personalizacao.spec.ts` | ✅ Implementado | `@regression` |
+| #   | Cenário                                       | Arquivo                  | Status          | Tags          |
+| --- | --------------------------------------------- | ------------------------ | --------------- | ------------- |
+| 1   | Visibilidade — título e 7 assistências        | `assistencias.spec.ts`   | ✅ Implementado | `@smoke`      |
+| 2   | Restituição de IPVA aumenta prêmio            | `assistencias.spec.ts`   | ✅ Implementado | `@regression` |
+| 3   | Assistência a bike aumenta prêmio             | `assistencias.spec.ts`   | ✅ Implementado | `@regression` |
+| 4   | Serviço de histórico veicular aumenta prêmio  | `assistencias.spec.ts`   | ✅ Implementado | `@regression` |
+| 5   | Serviço de leva e traz aumenta prêmio         | `assistencias.spec.ts`   | ✅ Implementado | `@regression` |
+| 6   | Combo Assistência a automóvel aumenta prêmio  | `assistencias.spec.ts`   | ✅ Implementado | `@regression` |
+| 7   | Carro reserva aumenta prêmio                  | `personalizacao.spec.ts` | ✅ Implementado | `@regression` |
+| 8   | Toggles dependentes disabled sem guincho      | `assistencias.spec.ts`   | ✅ Implementado | `@regression` |
+| 9   | Ativar guincho habilita dependentes           | `assistencias.spec.ts`   | ✅ Implementado | `@regression` |
+| 10  | Assistências imutáveis em plano pré-formatado | —                        | ⬜ Pendente     | `@regression` |
 
 ---
 

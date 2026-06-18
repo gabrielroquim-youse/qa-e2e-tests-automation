@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Tela de seleção de assistências — Seguro Auto.
  *
  * Exibida após a personalização de coberturas no fluxo de plano personalizado.
@@ -27,6 +27,17 @@ export type AssistanceName =
   | 'Serviço de histórico veicular'
   | 'Assistência a bike';
 
+/** Assistências do combo — dependem de "Assistência a automóvel" (guincho). */
+export const COMBO_DEPENDENT_ASSISTANCES: AssistanceName[] = [
+  'Proteção de Rodas, Pneu e Suspensão',
+  'Reparos Abaixo da Franquia',
+  'Chaveiro auto',
+  'Vidros + Pequenos Reparos',
+  'Vidros, retrovisores, faróis e lanternas + Pequenos Reparos',
+  'Motorista Parceiro',
+  'Lavagem e higienização',
+];
+
 export class AssistancesSelectionPage extends QuotationPageLayout<CheckoutPage> {
   readonly heading: Locator;
 
@@ -38,11 +49,57 @@ export class AssistancesSelectionPage extends QuotationPageLayout<CheckoutPage> 
   }
 
   /**
+   * Container da linha da assistência (label + switch).
+   * O switch nem sempre é irmão direto do <p> — subimos ao ancestral comum.
+   */
+  private assistanceRow(name: AssistanceName): Locator {
+    return this.page.locator(`xpath=//p[contains(normalize-space(.), "${name}")]/ancestor::*[.//*[@role="switch"]][1]`).first();
+  }
+
+  /**
    * Retorna o toggle switch de uma assistência pelo nome.
-   * O <p> com o nome e o switch são irmãos dentro do container de cabeçalho.
    */
   assistanceSwitch(name: AssistanceName): Locator {
-    return this.page.locator(`xpath=//p[normalize-space(text())="${name}"]/following-sibling::*[@role="switch"]`).first();
+    return this.assistanceRow(name).getByRole('switch').first();
+  }
+
+  /** Clica no toggle após dispensar overlays e garantir visibilidade. */
+  async clickAssistanceToggle(name: AssistanceName): Promise<void> {
+    await this.dismissPromoModal();
+    await this.dismissComboModalIfVisible();
+    const sw = this.assistanceSwitch(name);
+    await sw.scrollIntoViewIfNeeded();
+    try {
+      await sw.click({ timeout: 5_000 });
+    } catch {
+      await sw.evaluate((el) => (el as HTMLElement).click());
+    }
+  }
+
+  async isAssistanceChecked(name: AssistanceName): Promise<boolean> {
+    const sw = this.assistanceSwitch(name);
+    if ((await sw.count()) === 0) return false;
+    return (await sw.getAttribute('aria-checked', { timeout: 10_000 })) === 'true';
+  }
+
+  async isAssistanceSwitchDisabled(name: AssistanceName): Promise<boolean> {
+    return this.assistanceSwitch(name).isDisabled();
+  }
+
+  async ensureAssistanceOff(name: AssistanceName): Promise<void> {
+    const sw = this.assistanceSwitch(name);
+    if ((await sw.count()) === 0) return;
+    if (await this.isAssistanceChecked(name)) {
+      await this.clickAssistanceToggle(name);
+    }
+  }
+
+  async ensureAssistanceOn(name: AssistanceName): Promise<void> {
+    const sw = this.assistanceSwitch(name);
+    if ((await sw.count()) === 0) return;
+    if (!(await this.isAssistanceChecked(name))) {
+      await this.clickAssistanceToggle(name);
+    }
   }
 
   /**
@@ -106,7 +163,7 @@ export class AssistancesSelectionPage extends QuotationPageLayout<CheckoutPage> 
    * (assistências imutáveis não possuem switch visível).
    */
   assistanceName(name: AssistanceName): Locator {
-    return this.page.locator(`xpath=//p[normalize-space(text())="${name}"]`).first();
+    return this.page.locator(`xpath=//p[contains(normalize-space(.), "${name}")]`).first();
   }
 
   /**
@@ -123,7 +180,7 @@ export class AssistancesSelectionPage extends QuotationPageLayout<CheckoutPage> 
    * @throws {Error} se nenhum valor monetário for encontrado na linha do item.
    */
   async getAssistanceItemPrice(name: AssistanceName): Promise<{ value: number; perMonth: boolean; raw: string }> {
-    const row = this.page.locator(`xpath=//p[normalize-space(text())="${name}"]/ancestor::*[.//*[@role="switch"]][1]`).first();
+    const row = this.assistanceRow(name);
     const raw = ((await row.textContent()) ?? '').trim();
     const match = raw.match(/R\$\s*([\d.]+),(\d{2})/);
     if (!match) {
@@ -148,6 +205,27 @@ export class AssistancesSelectionPage extends QuotationPageLayout<CheckoutPage> 
   /** Selo "Assistência por nossa conta!" exibido durante a promo. */
   get rpsFreePledge(): Locator {
     return this.page.getByText(/por nossa conta/i).first();
+  }
+
+  /** Selo ou indicação de gratuidade do RPS na lista (fora do modal). */
+  async isRpsFreeInUi(): Promise<boolean> {
+    return this.rpsFreePledge.isVisible({ timeout: 3_000 }).catch(() => false);
+  }
+
+  /** Adiciona RPS pelo modal (se aberto) ou toggle na lista. */
+  async addRps(): Promise<void> {
+    const name: AssistanceName = 'Proteção de Rodas, Pneu e Suspensão';
+    const modalOpen = await this.isRpsLaunchModalVisible();
+    const modalBtnVisible = modalOpen && (await this.addRpsButton.isVisible({ timeout: 3_000 }).catch(() => false));
+
+    if (modalBtnVisible) {
+      await this.addRpsViaModal();
+      return;
+    }
+
+    if (!(await this.isAssistanceChecked(name))) {
+      await this.clickAssistanceToggle(name);
+    }
   }
 
   /** Botão do modal que adiciona o RPS ao plano. */

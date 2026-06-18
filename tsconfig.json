@@ -13,6 +13,6 @@
     "outDir": "dist",
     "types": ["node", "@playwright/test"]
   },
-  "include": ["tests/**/*", "playwright.config.ts"],
+  "include": ["tests/**/*", "scripts/**/*", "playwright.config.ts"],
   "exclude": ["dist", "node_modules", "playwright-report", "storage"]
 }

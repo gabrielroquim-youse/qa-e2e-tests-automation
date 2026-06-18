@@ -121,12 +121,10 @@ qa-e2e-tests-automation/
 ├── config/
 │   └── test.config.ts              # Configurações globais lidas do .env (URLs, credenciais)
 │
-├── docs/                           # Planos de teste em Markdown (usados pelos Playwright Agents)
-│   ├── planner.md                  # Plano geral de testes
-│   ├── planner-precos.md           # Estratégia e cenários de variação de preços
-│   ├── planner-personalizacao.md   # Cenários de personalização de coberturas
-│   ├── planner-assistencias.md     # Catálogo das 13 assistências + cenários de impacto no preço
-│   └── README.md                   # Guia de uso dos agentes de IA
+├── docs/                           # Documentação (índice: docs/README.md)
+│   ├── planners/                   # Planos de cenário (planner-*.md) — input dos Agents
+│   ├── coverage/                   # Cobertura funcional: README + sync-report + metrics
+│   └── reports/                    # Relatórios auto-gerados (tempo E2E)
 │
 ├── tests/
 │   │
@@ -564,11 +562,11 @@ docs: adiciona seção de troubleshooting no README
 
 O projeto usa os **Playwright Test Agents** integrados ao GitHub Copilot para acelerar a criação de testes.
 
-| Agente        | O que faz                                               |
-| ------------- | ------------------------------------------------------- |
-| **planner**   | Navega no app e gera planos de teste `.md` em `docs/`   |
-| **generator** | Transforma planos `.md` em specs Playwright executáveis |
-| **healer**    | Executa testes com falha e os corrige automaticamente   |
+| Agente        | O que faz                                                      |
+| ------------- | -------------------------------------------------------------- |
+| **planner**   | Navega no app e gera planos de teste `.md` em `docs/planners/` |
+| **generator** | Transforma planos `.md` em specs Playwright executáveis        |
+| **healer**    | Executa testes com falha e os corrige automaticamente          |
 
 ### Setup inicial (uma vez por máquina)
 
@@ -591,7 +589,7 @@ Isso cria os arquivos em `.github/agents/` e configura o `.vscode/mcp.json`.
 "Gere um plano de testes para o fluxo de sinistro por WhatsApp"
 
 # Gerar spec a partir de um plano existente
-"Gere os testes a partir de docs/planner-precos.md"
+"Gere os testes a partir de docs/planners/planner-precos.md"
 
 # Corrigir um teste falhando
 "O teste coberturas.spec.ts está falhando no selector do card — corrija"
@@ -621,7 +619,26 @@ npm run format:check   # apenas verifica sem alterar (usado no CI)
 # Atalhos para execução de testes
 npm run test:smoke      # apenas testes @smoke
 npm run test:regression # apenas testes @regression
+
+# Relatório de tempo E2E (gera docs/reports/e2e-timing-report.md)
+npm run test:e2e:timing                          # roda tests/spec/e2e + gera relatório (~30 min)
+npm run e2e:timing:generate                      # lê reports/e2e-timing-raw.json
+npm run e2e:timing:generate -- --from-log arquivo.log  # a partir do stdout do reporter list
+
+# Cobertura funcional (gera docs/coverage/sync-report.md + metrics.json)
+npm run coverage:sync
+npm run coverage:check   # validação CI — falha se mapa front × POM desatualizado
 ```
+
+### Documentação
+
+Índice central em [`docs/README.md`](docs/README.md):
+
+| Pasta                              | Conteúdo                                                         |
+| ---------------------------------- | ---------------------------------------------------------------- |
+| [`docs/planners/`](docs/planners/) | Planos de cenário (`planner-*.md`) — input dos Playwright Agents |
+| [`docs/coverage/`](docs/coverage/) | Cobertura funcional front × automação                            |
+| [`docs/reports/`](docs/reports/)   | Relatórios auto-gerados (tempo E2E)                              |
 
 ### Pre-commit (Husky + lint-staged)
 

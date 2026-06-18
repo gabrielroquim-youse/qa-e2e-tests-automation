@@ -1,0 +1,538 @@
+{
+  "generatedAt": "2026-06-17T20:17:32.525Z",
+  "source": "reports/e2e-last-run.log",
+  "wallClockMs": 1632000,
+  "workers": null,
+  "totals": {
+    "tests": 49,
+    "passed": 47,
+    "failed": 0,
+    "skipped": 2,
+    "totalMs": 1569700
+  },
+  "bySpec": [
+    {
+      "specFile": "precosPlanos.spec.ts",
+      "tests": 13,
+      "passed": 12,
+      "failed": 0,
+      "skipped": 1,
+      "totalMs": 392900,
+      "avgMs": 32741.666666666668,
+      "maxMs": 50400
+    },
+    {
+      "specFile": "personalizacao.spec.ts",
+      "tests": 9,
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "totalMs": 343700,
+      "avgMs": 38188.88888888889,
+      "maxMs": 59400
+    },
+    {
+      "specFile": "assistencias.spec.ts",
+      "tests": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "totalMs": 267700,
+      "avgMs": 38242.857142857145,
+      "maxMs": 66000
+    },
+    {
+      "specFile": "cotacaoAuto.spec.ts",
+      "tests": 5,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 1,
+      "totalMs": 183800,
+      "avgMs": 45950,
+      "maxMs": 90000
+    },
+    {
+      "specFile": "coberturas.spec.ts",
+      "tests": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "totalMs": 160000,
+      "avgMs": 22857.14285714286,
+      "maxMs": 32800
+    },
+    {
+      "specFile": "validacaoValores.spec.ts",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "totalMs": 131500,
+      "avgMs": 43833.333333333336,
+      "maxMs": 58200
+    },
+    {
+      "specFile": "validateBonusClass.spec.ts",
+      "tests": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "totalMs": 53900,
+      "avgMs": 13475,
+      "maxMs": 14200
+    },
+    {
+      "specFile": "assistenciaRpsPromo.spec.ts",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "totalMs": 36200,
+      "avgMs": 36200,
+      "maxMs": 36200
+    }
+  ],
+  "tests": [
+    {
+      "specFile": "cotacaoAuto.spec.ts",
+      "line": 18,
+      "suite": "B2C - Cotação e Contratação - Seguro Auto",
+      "title": "Deve realizar cotação e contratação com sucesso (Caminho Feliz) @b2c @quotation_auto @happy_path",
+      "status": "passed",
+      "durationMs": 90000,
+      "tags": ["b2c", "quotation_auto", "happy_path"]
+    },
+    {
+      "specFile": "assistencias.spec.ts",
+      "line": 94,
+      "suite": "Assistências — Efeito no Prêmio — Independentes",
+      "title": "Ativar \"Assistência a bike\" deve aumentar o prêmio anual @regression @assistencias @quotation_auto",
+      "status": "passed",
+      "durationMs": 66000,
+      "tags": ["regression", "assistencias", "quotation_auto"]
+    },
+    {
+      "specFile": "personalizacao.spec.ts",
+      "line": 213,
+      "suite": "Personalização — E2E Completo (Smoke)",
+      "title": "Deve contratar o plano personalizado com configurações padrão e emitir a apólice @personalizacao @smoke @quotation_auto",
+      "status": "passed",
+      "durationMs": 59400,
+      "tags": ["personalizacao", "smoke", "quotation_auto"]
+    },
+    {
+      "specFile": "validacaoValores.spec.ts",
+      "line": 14,
+      "suite": "Validação de Valores — delta simétrico",
+      "title": "IPVA ligar/desligar deve ser simétrico no total anual @value @quotation_auto @assistencias",
+      "status": "passed",
+      "durationMs": 58200,
+      "tags": ["value", "quotation_auto", "assistencias"]
+    },
+    {
+      "specFile": "precosPlanos.spec.ts",
+      "line": 114,
+      "suite": "Preços — Classe de Bônus",
+      "title": "Desconto deve crescer progressivamente: Classe 1 > Classe 5 > Classe 10 (prêmio decrescente) @price @bonus_class",
+      "status": "passed",
+      "durationMs": 50400,
+      "tags": ["price", "bonus_class"]
+    },
+    {
+      "specFile": "personalizacao.spec.ts",
+      "line": 147,
+      "suite": "Personalização — Navegação",
+      "title": "Deve chegar ao checkout via helper navigateToCheckout @regression @personalizacao @quotation_auto",
+      "status": "passed",
+      "durationMs": 49200,
+      "tags": ["regression", "personalizacao", "quotation_auto"]
+    },
+    {
+      "specFile": "personalizacao.spec.ts",
+      "line": 131,
+      "suite": "Personalização — Navegação",
+      "title": "Deve navegar coberturas → assistências → checkout sem contratar @regression @personalizacao @quotation_auto",
+      "status": "passed",
+      "durationMs": 46600,
+      "tags": ["regression", "personalizacao", "quotation_auto"]
+    },
+    {
+      "specFile": "personalizacao.spec.ts",
+      "line": 59,
+      "suite": "Personalização — Coberturas",
+      "title": "Desativar a cobertura \"Roubo e furto\" deve reduzir o prêmio anual @personalizacao @coberturas @quotation_auto @regression",
+      "status": "passed",
+      "durationMs": 46500,
+      "tags": ["personalizacao", "coberturas", "quotation_auto", "regression"]
+    },
+    {
+      "specFile": "assistencias.spec.ts",
+      "line": 160,
+      "suite": "Assistências — Combo Assistência a Automóvel",
+      "title": "Ativar \"Assistência a automóvel\" deve aumentar o prêmio anual (efeito combo) @regression @assistencias @quotation_auto",
+      "status": "passed",
+      "durationMs": 40200,
+      "tags": ["regression", "assistencias", "quotation_auto"]
+    },
+    {
+      "specFile": "cotacaoAuto.spec.ts",
+      "line": 128,
+      "suite": "B2C - Cenários Negativos - Cotação Auto",
+      "title": "Não deve contratar ao informar CPF com restrição (blacklist) @b2c @quotation_auto @negative",
+      "status": "passed",
+      "durationMs": 40100,
+      "tags": ["b2c", "quotation_auto", "negative"]
+    },
+    {
+      "specFile": "cotacaoAuto.spec.ts",
+      "line": 169,
+      "suite": "B2C - Cenários Negativos - Cotação Auto",
+      "title": "Não deve contratar ao informar CPF recusado por PEP @b2c @quotation_auto @negative",
+      "status": "passed",
+      "durationMs": 40000,
+      "tags": ["b2c", "quotation_auto", "negative"]
+    },
+    {
+      "specFile": "assistencias.spec.ts",
+      "line": 189,
+      "suite": "Assistências — Dependências do Combo",
+      "title": "Ativar guincho deve habilitar assistências dependentes do combo @regression @assistencias @quotation_auto",
+      "status": "passed",
+      "durationMs": 38900,
+      "tags": ["regression", "assistencias", "quotation_auto"]
+    },
+    {
+      "specFile": "validacaoValores.spec.ts",
+      "line": 24,
+      "suite": "Validação de Valores — delta simétrico",
+      "title": "Assistência a bike ligar/desligar deve ser simétrico @value @quotation_auto @assistencias",
+      "status": "passed",
+      "durationMs": 37900,
+      "tags": ["value", "quotation_auto", "assistencias"]
+    },
+    {
+      "specFile": "precosPlanos.spec.ts",
+      "line": 382,
+      "suite": "Preços — Sanidade e Estabilidade do Motor",
+      "title": "Preço deve ser estável entre duas cotações com os mesmos dados (idempotência) @price @sanity",
+      "status": "passed",
+      "durationMs": 36800,
+      "tags": ["price", "sanity"]
+    },
+    {
+      "specFile": "assistenciaRpsPromo.spec.ts",
+      "line": 21,
+      "suite": "Promo RPS — Proteção de Rodas, Pneu e Suspensão",
+      "title": "RPS grátis vs cobrado — validado pelo delta do total e selo UI @value @assistencias @rps @quotation_auto",
+      "status": "passed",
+      "durationMs": 36200,
+      "tags": ["value", "assistencias", "rps", "quotation_auto"]
+    },
+    {
+      "specFile": "validacaoValores.spec.ts",
+      "line": 34,
+      "suite": "Validação de Valores — delta simétrico",
+      "title": "Danos Morais ligar/desligar deve ser simétrico @value @quotation_auto @coberturas",
+      "status": "passed",
+      "durationMs": 35400,
+      "tags": ["value", "quotation_auto", "coberturas"]
+    },
+    {
+      "specFile": "precosPlanos.spec.ts",
+      "line": 269,
+      "suite": "Preços — Estado Civil",
+      "title": "Segurado casado deve ter prêmio menor ou igual ao de solteiro @price @marital_status",
+      "status": "passed",
+      "durationMs": 35300,
+      "tags": ["price", "marital_status"]
+    },
+    {
+      "specFile": "precosPlanos.spec.ts",
+      "line": 241,
+      "suite": "Preços — Uso do Veículo",
+      "title": "Uso Particular deve ter prêmio menor que Transporte de Carga @price @usage",
+      "status": "passed",
+      "durationMs": 34400,
+      "tags": ["price", "usage"]
+    },
+    {
+      "specFile": "precosPlanos.spec.ts",
+      "line": 180,
+      "suite": "Preços — Uso do Veículo",
+      "title": "Uso Particular deve ter prêmio menor que Motorista de Aplicativo @price @usage",
+      "status": "passed",
+      "durationMs": 33300,
+      "tags": ["price", "usage"]
+    },
+    {
+      "specFile": "assistencias.spec.ts",
+      "line": 132,
+      "suite": "Assistências — Efeito no Prêmio — Independentes",
+      "title": "Ativar \"Serviço de leva e traz\" deve aumentar o prêmio anual @regression @assistencias @quotation_auto",
+      "status": "passed",
+      "durationMs": 33200,
+      "tags": ["regression", "assistencias", "quotation_auto"]
+    },
+    {
+      "specFile": "coberturas.spec.ts",
+      "line": 78,
+      "suite": "Coberturas, Assistências e Integridade de Preço — Seguro Auto",
+      "title": "Cada plano deve exibir suas coberturas esperadas no card @price @quotation_auto @coberturas @regression",
+      "status": "passed",
+      "durationMs": 32800,
+      "tags": ["price", "quotation_auto", "coberturas", "regression"]
+    },
+    {
+      "specFile": "precosPlanos.spec.ts",
+      "line": 75,
+      "suite": "Preços — Classe de Bônus",
+      "title": "Bônus Classe 10 deve resultar em prêmio menor que sem bônus @price @bonus_class",
+      "status": "passed",
+      "durationMs": 32600,
+      "tags": ["price", "bonus_class"]
+    },
+    {
+      "specFile": "precosPlanos.spec.ts",
+      "line": 221,
+      "suite": "Preços — Uso do Veículo",
+      "title": "Uso Particular deve ter prêmio menor que Táxi @price @usage",
+      "status": "passed",
+      "durationMs": 32600,
+      "tags": ["price", "usage"]
+    },
+    {
+      "specFile": "assistencias.spec.ts",
+      "line": 76,
+      "suite": "Assistências — Efeito no Prêmio — Independentes",
+      "title": "Ativar \"Restituição de IPVA\" deve aumentar o prêmio anual @regression @assistencias @quotation_auto",
+      "status": "passed",
+      "durationMs": 32400,
+      "tags": ["regression", "assistencias", "quotation_auto"]
+    },
+    {
+      "specFile": "assistencias.spec.ts",
+      "line": 112,
+      "suite": "Assistências — Efeito no Prêmio — Independentes",
+      "title": "Ativar \"Serviço de histórico veicular\" deve aumentar o prêmio anual @regression @assistencias @quotation_auto",
+      "status": "passed",
+      "durationMs": 32400,
+      "tags": ["regression", "assistencias", "quotation_auto"]
+    },
+    {
+      "specFile": "precosPlanos.spec.ts",
+      "line": 200,
+      "suite": "Preços — Uso do Veículo",
+      "title": "Uso Particular deve ter prêmio menor que Comercial @price @usage",
+      "status": "passed",
+      "durationMs": 31900,
+      "tags": ["price", "usage"]
+    },
+    {
+      "specFile": "precosPlanos.spec.ts",
+      "line": 96,
+      "suite": "Preços — Classe de Bônus",
+      "title": "Desconto de Bônus Classe 10 deve estar entre 30% e 65% @price @bonus_class",
+      "status": "passed",
+      "durationMs": 31300,
+      "tags": ["price", "bonus_class"]
+    },
+    {
+      "specFile": "precosPlanos.spec.ts",
+      "line": 152,
+      "suite": "Preços — Garagem Noturna",
+      "title": "Veículo com garagem deve ter prêmio menor que sem garagem @price @garage",
+      "status": "passed",
+      "durationMs": 30300,
+      "tags": ["price", "garage"]
+    },
+    {
+      "specFile": "personalizacao.spec.ts",
+      "line": 78,
+      "suite": "Personalização — Coberturas",
+      "title": "Reduzir a franquia de \"Vale pra qualquer batida\" deve aumentar o prêmio @personalizacao @coberturas @quotation_auto @regression",
+      "status": "passed",
+      "durationMs": 29900,
+      "tags": ["personalizacao", "coberturas", "quotation_auto", "regression"]
+    },
+    {
+      "specFile": "personalizacao.spec.ts",
+      "line": 40,
+      "suite": "Personalização — Coberturas",
+      "title": "Ativar a cobertura \"Danos Morais\" deve aumentar o prêmio anual @personalizacao @coberturas @quotation_auto @regression",
+      "status": "passed",
+      "durationMs": 28900,
+      "tags": ["personalizacao", "coberturas", "quotation_auto", "regression"]
+    },
+    {
+      "specFile": "personalizacao.spec.ts",
+      "line": 162,
+      "suite": "Personalização — Coberturas Obrigatórias",
+      "title": "Cobertura \"Incêndio\" (Inclusa) não deve exibir toggle desligável @regression @negative @personalizacao",
+      "status": "passed",
+      "durationMs": 28500,
+      "tags": ["regression", "negative", "personalizacao"]
+    },
+    {
+      "specFile": "personalizacao.spec.ts",
+      "line": 180,
+      "suite": "Personalização — Assistências",
+      "title": "Ativar a assistência \"Carro reserva\" deve aumentar o prêmio anual @personalizacao @assistencias @quotation_auto @regression",
+      "status": "passed",
+      "durationMs": 28000,
+      "tags": ["personalizacao", "assistencias", "quotation_auto", "regression"]
+    },
+    {
+      "specFile": "personalizacao.spec.ts",
+      "line": 106,
+      "suite": "Personalização — Coberturas",
+      "title": "Aumentar indenização de \"Danos corporais a terceiros\" deve aumentar o prêmio @personalizacao @coberturas @quotation_auto @regression",
+      "status": "passed",
+      "durationMs": 26700,
+      "tags": ["personalizacao", "coberturas", "quotation_auto", "regression"]
+    },
+    {
+      "specFile": "coberturas.spec.ts",
+      "line": 65,
+      "suite": "Coberturas, Assistências e Integridade de Preço — Seguro Auto",
+      "title": "Deve exibir os três planos pré-formatados na tela de seleção @price @quotation_auto @coberturas @smoke",
+      "status": "passed",
+      "durationMs": 25100,
+      "tags": ["price", "quotation_auto", "coberturas", "smoke"]
+    },
+    {
+      "specFile": "assistencias.spec.ts",
+      "line": 42,
+      "suite": "Assistências — Visibilidade",
+      "title": "Deve exibir o título e as assistências disponíveis na tela de seleção @smoke @assistencias @quotation_auto",
+      "status": "passed",
+      "durationMs": 24600,
+      "tags": ["smoke", "assistencias", "quotation_auto"]
+    },
+    {
+      "specFile": "precosPlanos.spec.ts",
+      "line": 364,
+      "suite": "Preços — Sanidade e Estabilidade do Motor",
+      "title": "Preços de todos os planos devem estar dentro dos guarda-rails @price @sanity",
+      "status": "passed",
+      "durationMs": 23700,
+      "tags": ["price", "sanity"]
+    },
+    {
+      "specFile": "coberturas.spec.ts",
+      "line": 93,
+      "suite": "Coberturas, Assistências e Integridade de Preço — Seguro Auto",
+      "title": "Cada plano deve exibir suas assistências esperadas no card @price @quotation_auto @coberturas @regression",
+      "status": "passed",
+      "durationMs": 21500,
+      "tags": ["price", "quotation_auto", "coberturas", "regression"]
+    },
+    {
+      "specFile": "coberturas.spec.ts",
+      "line": 109,
+      "suite": "Coberturas, Assistências e Integridade de Preço — Seguro Auto",
+      "title": "Essencial deve ter Guincho 200km; Regular e Auto 1504 devem ter Guincho 400km @price @quotation_auto @coberturas @regression",
+      "status": "passed",
+      "durationMs": 21300,
+      "tags": ["price", "quotation_auto", "coberturas", "regression"]
+    },
+    {
+      "specFile": "coberturas.spec.ts",
+      "line": 168,
+      "suite": "Coberturas, Assistências e Integridade de Preço — Seguro Auto",
+      "title": "Preços de todos os planos devem estar dentro dos guarda-rails de sanidade @price @quotation_auto @coberturas @sanity",
+      "status": "passed",
+      "durationMs": 20500,
+      "tags": ["price", "quotation_auto", "coberturas", "sanity"]
+    },
+    {
+      "specFile": "precosPlanos.spec.ts",
+      "line": 332,
+      "suite": "Preços — Hierarquia de Planos",
+      "title": "Prêmio deve crescer conforme a abrangência: Essencial < Regular < Auto 1504 @price @plan_order",
+      "status": "passed",
+      "durationMs": 20300,
+      "tags": ["price", "plan_order"]
+    },
+    {
+      "specFile": "coberturas.spec.ts",
+      "line": 132,
+      "suite": "Coberturas, Assistências e Integridade de Preço — Seguro Auto",
+      "title": "Preço deve crescer conforme a abrangência: Essencial < Regular < Auto 1504 @price @quotation_auto @coberturas @regression @price",
+      "status": "passed",
+      "durationMs": 19600,
+      "tags": ["price", "quotation_auto", "coberturas", "regression", "price"]
+    },
+    {
+      "specFile": "coberturas.spec.ts",
+      "line": 155,
+      "suite": "Coberturas, Assistências e Integridade de Preço — Seguro Auto",
+      "title": "Opção de plano personalizado deve estar disponível na tela @price @quotation_auto @coberturas @smoke",
+      "status": "passed",
+      "durationMs": 19200,
+      "tags": ["price", "quotation_auto", "coberturas", "smoke"]
+    },
+    {
+      "specFile": "validateBonusClass.spec.ts",
+      "line": 54,
+      "suite": "Classe de Bônus - Seguro Auto",
+      "title": "Deve selecionar Classe de Bônus 1 @b2c @quotation_auto",
+      "status": "passed",
+      "durationMs": 14200,
+      "tags": ["b2c", "quotation_auto"]
+    },
+    {
+      "specFile": "validateBonusClass.spec.ts",
+      "line": 34,
+      "suite": "Classe de Bônus - Seguro Auto",
+      "title": "Deve exibir modal ao clicar em \"Não sei minha Classe de Bônus\" @b2c @quotation_auto",
+      "status": "passed",
+      "durationMs": 14000,
+      "tags": ["b2c", "quotation_auto"]
+    },
+    {
+      "specFile": "cotacaoAuto.spec.ts",
+      "line": 93,
+      "suite": "B2C - Cenários Negativos - Cotação Auto",
+      "title": "Não deve avançar ao informar veículo blindado @b2c @quotation_auto @negative",
+      "status": "passed",
+      "durationMs": 13700,
+      "tags": ["b2c", "quotation_auto", "negative"]
+    },
+    {
+      "specFile": "validateBonusClass.spec.ts",
+      "line": 74,
+      "suite": "Classe de Bônus - Seguro Auto",
+      "title": "Deve selecionar \"Não quero informar\" na Classe de Bônus @b2c @quotation_auto",
+      "status": "passed",
+      "durationMs": 13400,
+      "tags": ["b2c", "quotation_auto"]
+    },
+    {
+      "specFile": "validateBonusClass.spec.ts",
+      "line": 15,
+      "suite": "Classe de Bônus - Seguro Auto",
+      "title": "Não deve utilizar classe de bônus @b2c @quotation_auto",
+      "status": "passed",
+      "durationMs": 12300,
+      "tags": ["b2c", "quotation_auto"]
+    },
+    {
+      "specFile": "cotacaoAuto.spec.ts",
+      "line": 109,
+      "suite": "B2C - Cenários Negativos - Cotação Auto",
+      "title": "Não deve avançar ao informar placa com restrição (veículo de leilão) @b2c @quotation_auto @negative",
+      "status": "skipped",
+      "durationMs": null,
+      "tags": ["b2c", "quotation_auto", "negative"]
+    },
+    {
+      "specFile": "precosPlanos.spec.ts",
+      "line": 298,
+      "suite": "Preços — Veículo Zero Km",
+      "title": "Veículo zero km deve gerar prêmio diferente do veículo usado @price @brand_new",
+      "status": "skipped",
+      "durationMs": null,
+      "tags": ["price", "brand_new"]
+    }
+  ]
+}

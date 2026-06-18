@@ -22,7 +22,7 @@ export class PersonDataPage extends QuotationPageLayout<BonusesClassPage> {
   }
 
   async fillDocumentNumber(documentNumber = '12345676108') {
-    await this.documentNumber.waitFor({ state: 'visible' });
+    await this.documentNumber.waitFor({ state: 'visible', timeout: 30_000 });
     await this.documentNumber.fill(documentNumber.replace(/\D/g, ''));
     return this;
   }

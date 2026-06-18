@@ -15,6 +15,7 @@ import { UserBonusClass } from '../enum/UserBonusClass';
 import { VehicleUsages } from '../enum/VehicleUsages';
 import { generateQuotationData } from '../fixtures/setupQuotation';
 import { AssistancesSelectionPage } from '../pages/quotation/AssistancesSelectionPage';
+import { CheckoutPage } from '../pages/quotation/CheckoutPage';
 import { CoveragesSelectionPage } from '../pages/quotation/CoveragesSelectionPage';
 import LeadInfoPage from '../pages/quotation/LeadInfoPage';
 import { PlanSelectionPage } from '../pages/quotation/PlanSelectionPage';
@@ -40,20 +41,24 @@ export type QuotationDataOverride = Partial<ReturnType<typeof generateQuotationD
  * Deve ser chamado enquanto a página ainda está no domínio do app.
  */
 export async function resetSession(page: Page): Promise<void> {
-  await page.evaluate(() => {
-    try {
-      localStorage.clear();
-    } catch {
-      /* no-op */
-    }
-    try {
-      sessionStorage.clear();
-    } catch {
-      /* no-op */
-    }
-  });
+  const onApp = /youse/i.test(page.url());
+  if (onApp) {
+    await page.evaluate(() => {
+      try {
+        localStorage.clear();
+      } catch {
+        /* no-op */
+      }
+      try {
+        sessionStorage.clear();
+      } catch {
+        /* no-op */
+      }
+    });
+  }
   await page.context().clearCookies();
   await page.goto('about:blank');
+  await new Promise((resolve) => setTimeout(resolve, 500));
 }
 
 /**
@@ -63,6 +68,19 @@ export async function resetSession(page: Page): Promise<void> {
  *        BonusClass → PlanSelection
  */
 export async function navigateToPlans(
+  page: Page,
+  scenario: QuotationScenario = {},
+  dataOverride: QuotationDataOverride = {},
+): Promise<PlanSelectionPage> {
+  try {
+    return await navigateToPlansOnce(page, scenario, dataOverride);
+  } catch {
+    await resetSession(page);
+    return navigateToPlansOnce(page, scenario, dataOverride);
+  }
+}
+
+async function navigateToPlansOnce(
   page: Page,
   scenario: QuotationScenario = {},
   dataOverride: QuotationDataOverride = {},
@@ -91,6 +109,7 @@ export async function navigateToPlans(
   await enderecoUsoPage.isOvernightGarage(garage);
   await enderecoUsoPage.selectUsage(usage);
   const dadosPessoaisPage = await enderecoUsoPage.clickContinueBtn();
+  await dadosPessoaisPage.documentNumber.waitFor({ state: 'visible', timeout: 30_000 });
 
   await dadosPessoaisPage.fillDocumentNumber(data.documentNumber);
   await dadosPessoaisPage.selectMaritalStatus(maritalStatus);
@@ -143,4 +162,15 @@ export async function navigateToAssistances(
   await assistancesPage.waitForPrice();
 
   return assistancesPage;
+}
+
+/**
+ * Navega até o checkout (personalizado) sem preencher pagamento.
+ * Útil para smoke de fluxo coberturas → assistências → checkout.
+ */
+export async function navigateToCheckout(page: Page, scenario: QuotationScenario = {}, options: AssistancesNavOptions = {}): Promise<CheckoutPage> {
+  const assistancesPage = await navigateToAssistances(page, scenario, options);
+  const checkoutPage = await assistancesPage.clickContinueBtn();
+  await checkoutPage.title.waitFor({ state: 'visible', timeout: 60_000 });
+  return checkoutPage;
 }

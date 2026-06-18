@@ -110,3 +110,52 @@ Tela de personalização do Seguro Auto Youse — fluxo iniciado ao clicar em "P
 - O toggle 'Carro reserva' aparece desligado por padrão
 - O modal promocional 'AGORA NÃO' é dispensável sem erros
 - Após ativar 'Carro reserva', o prêmio anual deve ser maior que o inicial
+
+### 3. Navegação — Coberturas → Assistências → Checkout (sem contratar)
+
+**File:** `tests/spec/e2e/personalizacao.spec.ts`  
+**Helper:** `navigateToCheckout()` em `tests/helpers/funnel.ts`
+
+**Steps:**
+
+1. Personalizar plano → tela de coberturas
+2. Continuar → assistências (dispensar modal promo)
+3. Continuar → checkout
+4. Validar título "Confirme os valores e pague o seguro" — **sem** preencher cartão
+
+**Expected Results:**
+
+- URL contém `/checkout`
+- Botão "Finalizar" visível, pagamento não iniciado
+
+### 4. Cobertura obrigatória não desliga
+
+**File:** `tests/spec/e2e/personalizacao.spec.ts`  
+**Tags:** `@negative`
+
+**Steps:**
+
+1. Navegar até coberturas (personalizado)
+2. Verificar "Vale pra qualquer batida" ligada
+3. Tentar desligar — switch disabled OU permanece checked após clique
+
+**Expected Results:**
+
+- Cobertura obrigatória não pode ser removida do plano
+
+---
+
+## Mapeamento de Cobertura de Testes
+
+| #   | Cenário                                | Arquivo                  | Status | Tags          |
+| --- | -------------------------------------- | ------------------------ | ------ | ------------- |
+| 1   | Danos Morais ON → sobe                 | `personalizacao.spec.ts` | ✅     | `@regression` |
+| 2   | Roubo e furto OFF → desce              | `personalizacao.spec.ts` | ✅     | `@regression` |
+| 3   | Franquia menor → sobe                  | `personalizacao.spec.ts` | ✅     | `@regression` |
+| 4   | Indenização maior → sobe               | `personalizacao.spec.ts` | ✅     | `@regression` |
+| 5   | Carro reserva ON → sobe                | `personalizacao.spec.ts` | ✅     | `@regression` |
+| 6   | E2E personalizado → emissão            | `personalizacao.spec.ts` | ✅     | `@smoke`      |
+| 7   | Navegação até checkout (sem contratar) | `personalizacao.spec.ts` | ✅     | `@regression` |
+| 8   | Cobertura obrigatória não desliga      | `personalizacao.spec.ts` | ✅     | `@negative`   |
+
+**Helpers:** `tests/helpers/funnel.ts` (`navigateToCoverages`, `navigateToAssistances`, `navigateToCheckout`)

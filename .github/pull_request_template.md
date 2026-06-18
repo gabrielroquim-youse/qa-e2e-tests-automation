@@ -40,7 +40,7 @@
 
 ### Documentação
 
-- [ ] O `planner-*.md` correspondente foi atualizado com os novos cenários
+- [ ] O planner em `docs/planners/planner-*.md` correspondente foi atualizado com os novos cenários
 - [ ] O `README.md` foi atualizado se a estrutura do projeto mudou
 
 ---

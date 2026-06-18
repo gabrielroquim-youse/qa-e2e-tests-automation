@@ -23,7 +23,7 @@
  *   - Serviço de leva e traz
  * (O teste de "Carro reserva" já está em personalizacao.spec.ts.)
  *
- * Fonte: docs/planner-assistencias.md
+ * Fonte: docs/planners/planner-assistencias.md
  * Pré-requisito: VPN Youse ativa com acesso ao ambiente QA.
  * Uso: npx playwright test assistencias --project=chromium --reporter=list
  */
@@ -81,7 +81,7 @@ test.describe('Assistências — Efeito no Prêmio — Independentes', { tag: ['
     const precoInicial = await assistancesPage.getAnnualPrice();
     console.log(`[Restituição de IPVA OFF] R$ ${precoInicial.toFixed(2)}/ano`);
 
-    await assistancesPage.assistanceSwitch('Restituição de IPVA').click();
+    await assistancesPage.clickAssistanceToggle('Restituição de IPVA');
     await assistancesPage.waitForPriceUpdate(precoInicial);
 
     const precoFinal = await assistancesPage.getAnnualPrice();
@@ -99,7 +99,7 @@ test.describe('Assistências — Efeito no Prêmio — Independentes', { tag: ['
     const precoInicial = await assistancesPage.getAnnualPrice();
     console.log(`[Assistência a bike OFF] R$ ${precoInicial.toFixed(2)}/ano`);
 
-    await assistancesPage.assistanceSwitch('Assistência a bike').click();
+    await assistancesPage.clickAssistanceToggle('Assistência a bike');
     await assistancesPage.waitForPriceUpdate(precoInicial);
 
     const precoFinal = await assistancesPage.getAnnualPrice();
@@ -117,7 +117,7 @@ test.describe('Assistências — Efeito no Prêmio — Independentes', { tag: ['
     const precoInicial = await assistancesPage.getAnnualPrice();
     console.log(`[Histórico veicular OFF] R$ ${precoInicial.toFixed(2)}/ano`);
 
-    await assistancesPage.assistanceSwitch('Serviço de histórico veicular').click();
+    await assistancesPage.clickAssistanceToggle('Serviço de histórico veicular');
     await assistancesPage.waitForPriceUpdate(precoInicial);
 
     const precoFinal = await assistancesPage.getAnnualPrice();
@@ -137,7 +137,7 @@ test.describe('Assistências — Efeito no Prêmio — Independentes', { tag: ['
     const precoInicial = await assistancesPage.getAnnualPrice();
     console.log(`[Leva e traz OFF] R$ ${precoInicial.toFixed(2)}/ano`);
 
-    await assistancesPage.assistanceSwitch('Serviço de leva e traz').click();
+    await assistancesPage.clickAssistanceToggle('Serviço de leva e traz');
     await assistancesPage.waitForPriceUpdate(precoInicial);
 
     const precoFinal = await assistancesPage.getAnnualPrice();
@@ -166,7 +166,7 @@ test.describe('Assistências — Combo Assistência a Automóvel', { tag: ['@reg
     console.log(`[Assistência automóvel OFF] R$ ${precoInicial.toFixed(2)}/ano`);
 
     // Ativa o guincho — pode disparar o modal "Combo de assistências"
-    await assistancesPage.assistanceSwitch('Assistência a automóvel').click();
+    await assistancesPage.clickAssistanceToggle('Assistência a automóvel');
 
     // Fecha o modal de combo se aparecer (confirma ou descarta)
     await assistancesPage.dismissComboModalIfVisible();
@@ -177,5 +177,25 @@ test.describe('Assistências — Combo Assistência a Automóvel', { tag: ['@reg
     console.log(`[Assistência automóvel ON]  R$ ${precoFinal.toFixed(2)}/ano`);
 
     expect(precoFinal, `Ativar "Assistência a automóvel" deve aumentar o prêmio de R$ ${precoInicial.toFixed(2)}/ano`).toBeGreaterThan(precoInicial);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CATEGORIA 4 — Dependências do combo (dependsOn guincho)
+// Fonte: docs/planners/planner-assistencias.md #14
+// ═══════════════════════════════════════════════════════════════════════════
+
+test.describe('Assistências — Dependências do Combo', { tag: ['@regression', '@assistencias', '@quotation_auto'] }, () => {
+  test('Ativar guincho deve habilitar assistências dependentes do combo', async ({ page }) => {
+    test.setTimeout(TEST_TIMEOUT);
+
+    const assistancesPage = await navigateToAssistances(page);
+    await assistancesPage.ensureAssistanceOff('Assistência a automóvel');
+
+    await assistancesPage.clickAssistanceToggle('Assistência a automóvel');
+    await assistancesPage.dismissComboModalIfVisible();
+
+    await expect(assistancesPage.assistanceSwitch('Proteção de Rodas, Pneu e Suspensão')).toBeEnabled();
+    await expect(assistancesPage.assistanceSwitch('Chaveiro auto')).toBeEnabled();
   });
 });

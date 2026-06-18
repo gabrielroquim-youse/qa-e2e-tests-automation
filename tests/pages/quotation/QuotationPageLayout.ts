@@ -15,7 +15,7 @@ export class QuotationPageLayout<T> extends BasePage {
 
   constructor(page: Page, nextPage: new (page: Page) => T) {
     super(page);
-    this.btnContinue = this.page.getByRole('button', { name: 'Continuar' });
+    this.btnContinue = this.page.getByRole('button', { name: 'Continuar', exact: true });
     this.nextPage = nextPage;
   }
 

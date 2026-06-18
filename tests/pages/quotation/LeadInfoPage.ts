@@ -30,18 +30,41 @@ export class LeadInfoPage extends QuotationPageLayout<VehicleDetailsPage> {
 
   static async open(page: Page): Promise<LeadInfoPage> {
     const instance = new LeadInfoPage(page);
-    await page.goto(TestConfig.urls.autoQuotationUrl, {
-      waitUntil: 'domcontentloaded',
-      timeout: 60_000,
-    });
-    await instance.nome.waitFor({ state: 'visible', timeout: 60_000 });
-    return instance;
+    const url = TestConfig.urls.autoQuotationUrl;
+    let lastError: unknown;
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        await page.goto(url, {
+          waitUntil: 'domcontentloaded',
+          timeout: 60_000,
+        });
+        await instance.nome.waitFor({ state: 'visible', timeout: 60_000 });
+        return instance;
+      } catch (error) {
+        lastError = error;
+        if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 2_000));
+      }
+    }
+
+    throw lastError;
   }
 
   async fillLeadData(data?: LeadData): Promise<LeadInfoPage> {
-    await this.nome.fill(data?.name ?? TestConfig.credentials.name);
-    await this.email.fill(data?.email ?? TestConfig.credentials.email);
-    await this.tel.fill(data?.phone ?? TestConfig.credentials.phone);
+    const name = data?.name ?? TestConfig.credentials.name;
+    const email = data?.email ?? TestConfig.credentials.email;
+    const phone = data?.phone ?? TestConfig.credentials.phone;
+
+    for (const [field, value] of [
+      [this.nome, name],
+      [this.email, email],
+      [this.tel, phone],
+    ] as const) {
+      await field.click();
+      await field.fill('');
+      await field.fill(value);
+    }
+
     return this;
   }
 }

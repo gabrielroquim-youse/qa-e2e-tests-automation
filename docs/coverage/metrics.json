@@ -1,0 +1,156 @@
+{
+  "generatedAt": "2026-06-18",
+  "github": {
+    "owner": "youse-seguradora",
+    "repo": "sales-frontend",
+    "branch": "main",
+    "sectionsInFront": 12
+  },
+  "structural": {
+    "sectionsWithPom": 10,
+    "sectionsTotal": 13,
+    "percent": 77
+  },
+  "functional": {
+    "testableTotal": 42,
+    "covered": 31,
+    "partial": 4,
+    "missing": 5,
+    "blocked": 2,
+    "percentWeighted": 79,
+    "percentStrict": 74
+  },
+  "byPriority": {
+    "P0": {
+      "total": 13,
+      "covered": 13,
+      "percent": 100
+    },
+    "P1": {
+      "total": 18,
+      "covered": 18,
+      "percent": 100
+    },
+    "P2": {
+      "total": 9,
+      "covered": 0,
+      "percent": 0
+    },
+    "P3": {
+      "total": 2,
+      "covered": 0,
+      "percent": 0
+    }
+  },
+  "gaps": [
+    {
+      "id": "CAP-02",
+      "section": "lead_info",
+      "label": "Validação de campos obrigatórios",
+      "priority": "P2",
+      "status": "missing",
+      "testable": true,
+      "planner": "planner.md",
+      "notes": "Mensagens de erro inline"
+    },
+    {
+      "id": "CAP-17",
+      "section": "data_enrichment",
+      "label": "Tela de enriquecimento de dados",
+      "priority": "P3",
+      "status": "missing",
+      "testable": true,
+      "notes": "Section no front; fluxo QA pode pular"
+    },
+    {
+      "id": "CAP-33",
+      "section": "assistances_selection",
+      "label": "Assistências imutáveis (plano pré-formatado)",
+      "priority": "P2",
+      "status": "missing",
+      "testable": true,
+      "planner": "planner-assistencias.md"
+    },
+    {
+      "id": "CAP-35",
+      "section": "risk_acceptance",
+      "label": "Tela aceite de risco",
+      "priority": "P2",
+      "status": "missing",
+      "testable": true,
+      "notes": "Sem POM; aparece em perfis específicos"
+    },
+    {
+      "id": "CAP-38",
+      "section": "checkout",
+      "label": "Cross-sell residencial / vida",
+      "priority": "P3",
+      "status": "missing",
+      "testable": true,
+      "planner": "planner.md"
+    },
+    {
+      "id": "CAP-10",
+      "section": "vehicle_additional_details",
+      "label": "CEP alto risco × preço",
+      "priority": "P2",
+      "status": "blocked",
+      "testable": true,
+      "planner": "planner-precos.md",
+      "notes": "Massa CEP aceita no QA"
+    },
+    {
+      "id": "CAP-14",
+      "section": "person_data",
+      "label": "Idade motorista × preço",
+      "priority": "P2",
+      "status": "blocked",
+      "testable": true,
+      "planner": "planner-precos.md",
+      "notes": "CPF/DOB fixos"
+    }
+  ],
+  "partials": [
+    {
+      "id": "CAP-04",
+      "section": "vehicle_details",
+      "label": "Toggle zero km",
+      "priority": "P2",
+      "status": "partial",
+      "testable": true,
+      "specs": ["precosPlanos.spec.ts"],
+      "notes": "Só compara diferença, não ordinal estrito"
+    },
+    {
+      "id": "CAP-27",
+      "section": "coverages_selection",
+      "label": "Delta simétrico coberturas",
+      "priority": "P2",
+      "status": "partial",
+      "testable": true,
+      "specs": ["validacaoValores.spec.ts"],
+      "planner": "planner-validacao-valores.md",
+      "notes": "Danos Morais ✅; estender"
+    },
+    {
+      "id": "CAP-34",
+      "section": "assistances_selection",
+      "label": "Delta simétrico assistências",
+      "priority": "P2",
+      "status": "partial",
+      "testable": true,
+      "specs": ["validacaoValores.spec.ts"],
+      "notes": "IPVA parcial no HEAD"
+    },
+    {
+      "id": "CAP-39",
+      "section": "checkout",
+      "label": "Resumo assistências no checkout",
+      "priority": "P2",
+      "status": "partial",
+      "testable": true,
+      "specs": ["cotacaoAuto.spec.ts"],
+      "notes": "Happy path; assert dedicado ⬜"
+    }
+  ]
+}

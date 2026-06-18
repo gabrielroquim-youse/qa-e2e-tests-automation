@@ -21,7 +21,7 @@ import { test, expect } from '@playwright/test';
 import { MaritalStatuses } from '../../enum/MaritalStatuses';
 import { VehicleUsages } from '../../enum/VehicleUsages';
 import { generateQuotationData } from '../../fixtures/setupQuotation';
-import { navigateToCoverages } from '../../helpers/funnel';
+import { navigateToCoverages, navigateToCheckout } from '../../helpers/funnel';
 import { AssistancesSelectionPage } from '../../pages/quotation/AssistancesSelectionPage';
 import { IssuancePage } from '../../pages/quotation/IssuancePage';
 import LeadInfoPage from '../../pages/quotation/LeadInfoPage';
@@ -46,7 +46,7 @@ test.describe('Personalização — Coberturas', { tag: ['@personalizacao', '@co
     console.log(`[Danos Morais OFF] R$ ${precoInicial.toFixed(2)}/ano`);
 
     // Danos Morais inicia desligado — ativar deve aumentar o prêmio
-    await coveragesPage.coverageSwitch('Danos Morais').click();
+    await coveragesPage.clickCoverageToggle('Danos Morais');
     await coveragesPage.waitForPriceUpdate(precoInicial);
 
     const precoFinal = await coveragesPage.getAnnualPrice();
@@ -65,7 +65,7 @@ test.describe('Personalização — Coberturas', { tag: ['@personalizacao', '@co
     console.log(`[Roubo e Furto ON]  R$ ${precoInicial.toFixed(2)}/ano`);
 
     // Roubo e Furto inicia ligado — desativar deve reduzir o prêmio
-    await coveragesPage.coverageSwitch('Roubo e furto').click();
+    await coveragesPage.clickCoverageToggle('Roubo e furto');
     await coveragesPage.waitForPriceUpdate(precoInicial);
 
     const precoFinal = await coveragesPage.getAnnualPrice();
@@ -81,11 +81,18 @@ test.describe('Personalização — Coberturas', { tag: ['@personalizacao', '@co
     const coveragesPage = await navigateToCoverages(page);
 
     const precoInicial = await coveragesPage.getAnnualPrice();
-    console.log(`[Franquia padrão]   R$ ${precoInicial.toFixed(2)}/ano`);
+    const franquiaInicial = await coveragesPage.getSidebarFranquiaValue();
+    console.log(`[Franquia padrão]   R$ ${precoInicial.toFixed(2)}/ano (franquia R$ ${franquiaInicial.toFixed(2)})`);
 
     // Franquia menor = menor deductible = maior risco assumido pela seguradora = prêmio maior
-    await coveragesPage.franquiaDecreaseBtn().click();
-    await coveragesPage.waitForPriceUpdate(precoInicial);
+    const franquiaBtn = coveragesPage.franquiaDecreaseBtn();
+    for (let i = 0; i < 5; i++) {
+      await franquiaBtn.click();
+    }
+
+    await expect.poll(async () => coveragesPage.getSidebarFranquiaValue(), { timeout: 15_000 }).toBeLessThan(franquiaInicial);
+
+    await expect.poll(async () => coveragesPage.getAnnualPrice(), { timeout: 45_000 }).toBeGreaterThan(precoInicial);
 
     const precoFinal = await coveragesPage.getAnnualPrice();
     console.log(`[Franquia reduzida]  R$ ${precoFinal.toFixed(2)}/ano`);
@@ -114,6 +121,55 @@ test.describe('Personalização — Coberturas', { tag: ['@personalizacao', '@co
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
+// CATEGORIA 4 — Fluxo de navegação (sem contratação)
+// Fonte: docs/planners/planner-personalizacao.md #9
+// ═══════════════════════════════════════════════════════════════════════════
+
+test.describe('Personalização — Navegação', { tag: ['@regression', '@personalizacao', '@quotation_auto'] }, () => {
+  test('Deve navegar coberturas → assistências → checkout sem contratar', async ({ page }) => {
+    test.setTimeout(TEST_TIMEOUT);
+
+    const coveragesPage = await navigateToCoverages(page);
+    await expect(coveragesPage.heading).toBeVisible();
+
+    const assistancesPage = await coveragesPage.clickContinueBtn();
+    await assistancesPage.heading.waitFor({ state: 'visible', timeout: 30_000 });
+    await assistancesPage.dismissPromoModal();
+    await assistancesPage.waitForPrice();
+
+    const checkoutPage = await assistancesPage.clickContinueBtn();
+    await expect(checkoutPage.title).toBeVisible({ timeout: 60_000 });
+    await expect(page).toHaveURL(/checkout/);
+  });
+
+  test('Deve chegar ao checkout via helper navigateToCheckout', async ({ page }) => {
+    test.setTimeout(TEST_TIMEOUT);
+
+    const checkoutPage = await navigateToCheckout(page);
+    await expect(checkoutPage.title).toBeVisible();
+    await expect(checkoutPage.btnFinish).toBeVisible();
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CATEGORIA 5 — Coberturas obrigatórias
+// Fonte: docs/planners/planner-personalizacao.md #10
+// ═══════════════════════════════════════════════════════════════════════════
+
+test.describe('Personalização — Coberturas Obrigatórias', { tag: ['@regression', '@negative', '@personalizacao'] }, () => {
+  test('Cobertura "Incêndio" (Inclusa) não deve exibir toggle desligável', async ({ page }) => {
+    test.setTimeout(TEST_TIMEOUT);
+
+    const coveragesPage = await navigateToCoverages(page);
+    const incendioRow = coveragesPage.page.locator('xpath=//p[normalize-space(.)="Incêndio"]/parent::*');
+
+    await expect(incendioRow).toBeVisible();
+    await expect(incendioRow.getByText('Inclusa')).toBeVisible();
+    expect(await incendioRow.getByRole('switch').count()).toBe(0);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
 // CATEGORIA 2 — Assistências
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -133,7 +189,7 @@ test.describe('Personalização — Assistências', { tag: ['@personalizacao', '
     console.log(`[Sem assistências]   R$ ${precoInicial.toFixed(2)}/ano`);
 
     // Carro reserva inicia desligado — ativar deve aumentar o prêmio
-    await assistancesPage.assistanceSwitch('Carro reserva').click();
+    await assistancesPage.clickAssistanceToggle('Carro reserva');
     await assistancesPage.waitForPriceUpdate(precoInicial);
 
     const precoFinal = await assistancesPage.getAnnualPrice();
@@ -201,6 +257,7 @@ test.describe('Personalização — E2E Completo (Smoke)', { tag: ['@personaliza
     const emissaoPage: IssuancePage = await pagamentoPage.clickFinishBtn();
 
     // ── Etapa 10: Validação pós-pagamento (3 caminhos possíveis no QA) ─
+    /* eslint-disable playwright/no-conditional-in-test, playwright/no-conditional-expect -- QA pode redirecionar ou aguardar webhook */
     if (emissaoPage.isOnSuccessPage()) {
       // Caminho A: tela /sucesso com confirmação da apólice
       await expect(emissaoPage.title).toBeVisible({ timeout: 15_000 });
@@ -218,5 +275,6 @@ test.describe('Personalização — E2E Completo (Smoke)', { tag: ['@personaliza
       await expect(page).toHaveURL(/\/issuance/);
       console.log('[Emissão] ✓ Permanece em /issuance — webhook pendente (comportamento esperado no QA)');
     }
+    /* eslint-enable playwright/no-conditional-in-test, playwright/no-conditional-expect */
   });
 });

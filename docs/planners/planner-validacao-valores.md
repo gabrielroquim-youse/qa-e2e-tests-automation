@@ -64,25 +64,25 @@ funcionarem de forma determinística:
 
 ## 4. Dependências técnicas a destravar
 
-| Item | Necessário para | Status |
-|------|-----------------|--------|
-| `getAssistanceItemPrice()` na `AssistancesSelectionPage` | Estratégia A (assist.) | ⚠️ criado, seletor a confirmar no DOM QA |
-| Método equivalente em `CoveragesSelectionPage` | Estratégia A (coberturas) | ⬜ pendente |
-| Cliente `PricingService` (API) | Estratégia C | ⬜ pendente |
-| CPF de teste fixo com perfil conhecido | Estratégias B e C | ⬜ pendente |
+| Item                                                     | Necessário para           | Status                                   |
+| -------------------------------------------------------- | ------------------------- | ---------------------------------------- |
+| `getAssistanceItemPrice()` na `AssistancesSelectionPage` | Estratégia A (assist.)    | ⚠️ criado, seletor a confirmar no DOM QA |
+| Método equivalente em `CoveragesSelectionPage`           | Estratégia A (coberturas) | ⬜ pendente                              |
+| Cliente `PricingService` (API)                           | Estratégia C              | ⬜ pendente                              |
+| CPF de teste fixo com perfil conhecido                   | Estratégias B e C         | ⬜ pendente                              |
 
 ## 5. Matriz de cenários
 
-| # | Cenário | Estratégia | Tags | Prioridade |
-|---|---------|-----------|------|-----------|
-| 1 | Ativar "Restituição de IPVA" soma exatamente o preço do item | A | `@value @assistencias` | P1 (protótipo) |
-| 2 | Ativar "Assistência a bike" soma exatamente o preço do item | A | `@value @assistencias` | P1 |
-| 3 | Desativar item soma negativo simétrico (toggle on→off) | A | `@value @assistencias` | P1 |
-| 4 | Combo "Assistência a automóvel" soma a faixa completa | A | `@value @assistencias @combo` | P2 |
-| 5 | Ativar cobertura "Danos Morais" soma o preço da cobertura | A | `@value @coberturas` | P2 |
-| 6 | Reduzir franquia: delta == diferença tabelada | A/C | `@value @coberturas` | P2 |
-| 7 | UI bate com a API de recálculo (mesmo payload) | C | `@value @api` | P2 |
-| 8 | Golden: CPF fixo + plano Essencial = valor esperado | B | `@value @golden` | P3 |
+| #   | Cenário                                                      | Estratégia | Tags                          | Prioridade     |
+| --- | ------------------------------------------------------------ | ---------- | ----------------------------- | -------------- |
+| 1   | Ativar "Restituição de IPVA" soma exatamente o preço do item | A          | `@value @assistencias`        | P1 (protótipo) |
+| 2   | Ativar "Assistência a bike" soma exatamente o preço do item  | A          | `@value @assistencias`        | P1             |
+| 3   | Desativar item soma negativo simétrico (toggle on→off)       | A          | `@value @assistencias`        | P1             |
+| 4   | Combo "Assistência a automóvel" soma a faixa completa        | A          | `@value @assistencias @combo` | P2             |
+| 5   | Ativar cobertura "Danos Morais" soma o preço da cobertura    | A          | `@value @coberturas`          | P2             |
+| 6   | Reduzir franquia: delta == diferença tabelada                | A/C        | `@value @coberturas`          | P2             |
+| 7   | UI bate com a API de recálculo (mesmo payload)               | C          | `@value @api`                 | P2             |
+| 8   | Golden: CPF fixo + plano Essencial = valor esperado          | B          | `@value @golden`              | P3             |
 
 ## 6. Plano de implementação (fases)
 
@@ -101,10 +101,10 @@ Assistência nova (`bra/auto/assistance/27`) com campanha de lançamento.
 
 ### Regra de negócio
 
-| Período | Comportamento | Delta esperado no total |
-|---------|---------------|-------------------------|
+| Período                     | Comportamento                               | Delta esperado no total     |
+| --------------------------- | ------------------------------------------- | --------------------------- |
 | **22/06/2026 a 31/07/2026** | "Assistência por nossa conta!" → **grátis** | `delta == 0` (± tolerância) |
-| **A partir de 01/08/2026** | passa a ser **cobrado** | `delta > 0` |
+| **A partir de 01/08/2026**  | passa a ser **cobrado**                     | `delta > 0`                 |
 
 ### Por que NÃO há valor numérico fixo na tabela
 

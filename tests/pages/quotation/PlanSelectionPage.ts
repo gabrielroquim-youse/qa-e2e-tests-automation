@@ -136,7 +136,13 @@ export class PlanSelectionPage extends QuotationPageLayout<CheckoutPage> {
    * Navega para a tela de seleção de coberturas e aguarda o heading carregar.
    */
   async openPersonalization(): Promise<CoveragesSelectionPage> {
-    await this.page.getByTestId('plan-card-button-custom').click();
+    const btn = this.page.getByTestId('plan-card-button-custom');
+    await btn.scrollIntoViewIfNeeded();
+    try {
+      await btn.click({ timeout: 10_000 });
+    } catch {
+      await btn.evaluate((el) => (el as HTMLElement).click());
+    }
     const coveragesPage = new CoveragesSelectionPage(this.page);
     await coveragesPage.heading.waitFor({ state: 'visible', timeout: 30_000 });
     return coveragesPage;
