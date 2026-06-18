@@ -27,9 +27,8 @@ storage/
 allure-results/
 allure-report/
 
-# ── Artefatos locais de execução (scratch — saídas finais ficam em docs/) ───
-# scripts gravam JSON/log bruto aqui; relatórios versionados → docs/reports/
-reports/
+# ── Artefatos locais de execução (scratch na raiz — saídas finais em docs/reports/)
+/reports/
 
 # Logs na raiz (Tee-Object, redirects manuais, playwright install)
 /*.log
