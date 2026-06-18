@@ -1,6 +1,6 @@
 # Relatório A11y — Execução QA (axe + teclado)
 
-> **Última execução:** 2026-06-18 · **Ambiente:** `qa-cotacao.youse.io` · **VPN:** ativa  
+> **Última execução:** 2026-06-18 (2ª rodada, ~19:23 UTC) · **Ambiente:** `qa-cotacao.youse.io` · **VPN:** ativa  
 > **Comando:** `npm run test:a11y` (mobile-chrome + tablet, 18 testes)  
 > **Critério axe:** falha em violações **serious** ou **critical**
 
@@ -11,10 +11,10 @@
 | Métrica      | Valor                           |
 | ------------ | ------------------------------- |
 | Total        | 18 testes                       |
-| Passou       | 2                               |
+| Passou       | **4**                           |
 | Falhou       | 4                               |
-| Não executou | 12 (serial — parou após falhas) |
-| Duração      | ~8,5 min                        |
+| Não executou | 10 (serial — parou após falhas) |
+| Duração      | ~9,8 min                        |
 
 ---
 
@@ -22,21 +22,25 @@
 
 | #   | Spec    | Cenário                                    | Resultado                              | Tempo |
 | --- | ------- | ------------------------------------------ | -------------------------------------- | ----- |
-| 1   | axe     | `lead_info`                                | ❌ `aria-roles` (12) + `link-name` (1) | 17s   |
+| 1   | axe     | `lead_info`                                | ❌ `aria-roles` (12) + `link-name` (1) | 10s   |
 | 2–5 | axe     | planos, coberturas, assistências, checkout | ⏭️ não executou                        | —     |
-| 6   | teclado | `lead_info` — preencher e avançar          | ✅                                     | 24s   |
-| 7   | teclado | `vehicle_details` — placa e Continuar      | ✅                                     | 15s   |
+| 6   | teclado | `lead_info` — preencher e avançar          | ✅                                     | 11s   |
+| 7   | teclado | `vehicle_details` — placa e Continuar      | ✅                                     | 9s    |
 | 8   | teclado | `plan_selection` — Continuar por Tab       | ❌ timeout 4 min                       | —     |
 | 9   | teclado | `plan_selection` — card Regular por Tab    | ⏭️ não executou                        | —     |
 
 ## Resultados tablet
 
-| #     | Cenário              | Resultado | Motivo                                                                          |
-| ----- | -------------------- | --------- | ------------------------------------------------------------------------------- |
-| 10–14 | axe (5 telas)        | ❌        | `Unsupported webkit channel "chrome"` — **corrigido** em `playwright.config.ts` |
-| 15–18 | teclado (4 cenários) | ❌ / ⏭️   | mesmo erro de config                                                            |
+| #     | Cenário                                   | Resultado                              | Tempo |
+| ----- | ----------------------------------------- | -------------------------------------- | ----- |
+| 10    | axe `lead_info`                           | ❌ `aria-roles` (12) + `link-name` (1) | 13s   |
+| 11–14 | axe planos, coberturas, assist., checkout | ⏭️ não executou                        | —     |
+| 15    | teclado `lead_info`                       | ✅                                     | 11s   |
+| 16    | teclado `vehicle_details`                 | ✅                                     | 8s    |
+| 17    | teclado `plan_selection` — Continuar      | ❌ timeout 4 min                       | —     |
+| 18    | teclado `plan_selection` — card Regular   | ⏭️ não executou                        | —     |
 
-> **Nota:** tablet local passa a usar Chrome com viewport iPad; CI continua com WebKit real.
+> **Nota:** tablet local usa Chrome com viewport iPad; CI continua com WebKit real. Fix de config validado nesta rodada.
 
 ---
 
