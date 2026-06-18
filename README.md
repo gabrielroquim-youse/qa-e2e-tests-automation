@@ -21,7 +21,7 @@ Suite de testes automatizados da **Youse Seguradora** — fluxos E2E, API e pric
 
 <br/>
 
-[Documentação](./docs/README.md) · [Cobertura](./docs/coverage/README.md) · [Tempo E2E](./docs/reports/e2e-timing-report.md) · [Como executar](#como-executar)
+[Documentação](./docs/README.md) · [Cobertura](./docs/coverage/README.md) · [Troubleshooting](./docs/guides/troubleshooting.md) · [Tempo E2E](./docs/reports/e2e-timing-report.md) · [Como executar](#como-executar)
 
 </div>
 
@@ -149,6 +149,7 @@ qa-e2e-tests-automation/
 ├── docs/                           # Documentação (índice: docs/README.md)
 │   ├── planners/                   # Planos de cenário (planner-*.md) — input dos Agents
 │   ├── coverage/                   # Cobertura funcional: README + sync-report + metrics
+│   ├── guides/                     # Guias de manutenção (troubleshooting)
 │   └── reports/                    # Relatórios auto-gerados (tempo E2E)
 │
 ├── tests/
@@ -663,6 +664,7 @@ npm run coverage:check   # validação CI — falha se mapa front × POM desatua
 | ---------------------------------- | ---------------------------------------------------------------- |
 | [`docs/planners/`](docs/planners/) | Planos de cenário (`planner-*.md`) — input dos Playwright Agents |
 | [`docs/coverage/`](docs/coverage/) | Cobertura funcional front × automação                            |
+| [`docs/guides/`](docs/guides/)     | Guias de manutenção (troubleshooting)                            |
 | [`docs/reports/`](docs/reports/)   | Relatórios auto-gerados (tempo E2E)                              |
 
 ### Pre-commit (Husky + lint-staged)
@@ -701,93 +703,15 @@ Em caso de falha, os traces e screenshots são salvos em `debug-artifacts-shard-
 
 ## Troubleshooting
 
-### Erro: `ZEPHYR_API_TOKEN` não configurado
+Erros comuns ao rodar ou manter a suite. Guia completo: **[`docs/guides/troubleshooting.md`](docs/guides/troubleshooting.md)**
 
-```
-Error: authorizationToken is required
-```
-
-**Solução:** adicione `--reporter=list` no comando local para pular o reporter Zephyr:
-
-```bash
-npx playwright test --reporter=list
-```
-
----
-
-### Timeout em `fillLicensePlate` na segunda cotação
-
-```
-TimeoutError: locator.waitFor: Timeout 15000ms exceeded.
-Call log: waiting for getByRole('textbox', { name: 'Placa do carro*' })
-```
-
-**Causa:** o app QA persiste o ID do pedido no `localStorage`. Ao reabrir a URL, redireciona para a etapa anterior em vez de recomeçar do zero.
-
-**Solução:** use `resetSession(page)` entre cotações (já implementado nos specs de preço):
-
-```ts
-// Limpa storage ANTES de navegar para about:blank
-await page.evaluate(() => {
-  localStorage.clear();
-  sessionStorage.clear();
-});
-await page.context().clearCookies();
-await page.goto('about:blank');
-```
-
----
-
-### Erro: `strict mode violation` — seletor resolve para 2 elementos
-
-```
-Error: locator.click: Error: strict mode violation:
-getByRole('button', { name: 'Não' }) resolved to 2 elements
-```
-
-**Causa:** o seletor sem `exact: true` faz substring match (ex: "Não sei o CEP" também é capturado).
-
-**Solução:** sempre use `{ exact: true }` em botões com nomes curtos:
-
-```ts
-this.overnightGarageNo = this.page.getByRole('button', { name: 'Não', exact: true });
-```
-
----
-
-### Testes de preço passam na primeira cotação mas falham na segunda
-
-**Causa:** `localStorage` não foi limpo antes de navegar para `about:blank`.
-
-**Solução:** siga a ordem correta no `resetSession`:
-
-1. `localStorage.clear()` — ainda no domínio do app
-2. `clearCookies()`
-3. `goto('about:blank')`
-
-A ordem inversa faz o `evaluate` rodar no contexto de `about:blank` (origem nula) e não limpa o storage real.
-
----
-
-### Plano "Auto 1504" não encontrado no card
-
-**Causa:** o texto real no DOM é "Plano auto personalizado 1504", não "Auto 1504".
-
-**Solução:** o `planCard()` do `PlanSelectionPage` já usa regex com `.*` entre palavras:
-
-```ts
-// Regex gerada: /Auto.*1504/i
-planCard('Auto 1504');
-```
-
----
-
-### asynckit corrompido (`Cannot find module 'asynckit/lib/iterate'`)
-
-```bash
-Remove-Item -Recurse -Force node_modules\asynckit
-npm install
-```
+| Sintoma                                | Correção rápida                                                                    |
+| -------------------------------------- | ---------------------------------------------------------------------------------- |
+| `strict mode violation` em botão "Não" | `{ exact: true }` no `getByRole`                                                   |
+| 2ª cotação trava / timeout na placa    | `resetSession(page)` — limpar storage **antes** de `about:blank`                   |
+| Plano "Auto 1504" não encontrado       | `planCard('Auto 1504')` no `PlanSelectionPage` (regex)                             |
+| `authorizationToken is required`       | `npx playwright test --reporter=list`                                              |
+| `asynckit/lib/iterate`                 | Reinstalar pacote — ver [guia](docs/guides/troubleshooting.md#asynckit-corrompido) |
 
 ---
 
