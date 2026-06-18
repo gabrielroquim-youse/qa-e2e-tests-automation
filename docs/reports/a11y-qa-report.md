@@ -118,4 +118,5 @@ npm run test:keyboard
 ## Relacionados
 
 - [Análise estática](../guides/accessibility-analysis.md)
+- [**Mapa de gaps — hoje vs deveria ser**](../guides/a11y-gap-map.md)
 - [Mapa de fluxos](../guides/fluxos-cotacao-auto.md)

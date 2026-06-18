@@ -1,8 +1,8 @@
 # Análise de Acessibilidade — Cotação Seguro Auto
 
 > **Perspectiva:** analista de testes / automação · **Público-alvo do produto:** mobile e tablet (prioridade)  
-> **Base da análise:** Page Objects, specs E2E, convenções do repo e mapeamento do funil (`sales-frontend`)  
-> **Última revisão:** 2026-06-18 · **Ambiente:** QA (`qa-cotacao.youse.io`)
+> **Mapa consolidado (gaps · foco · hoje vs deveria ser):** [a11y-gap-map.md](./a11y-gap-map.md)  
+> **Evidência QA (axe):** [a11y-qa-report.md](../reports/a11y-qa-report.md)
 
 ---
 
@@ -16,7 +16,7 @@
 | **Estratégia de locators**   | ✅ Preferência por `getByRole` nos formulários                | ⚠️ XPath/CSS em toggles, cards e steppers        |
 | **WCAG alvo recomendado**    | **2.2 nível AA** (Brasil: referência LBI 13.146/2015)         | Foco WCAG 2.5.x (alvo/toque) e 1.4.x (contraste) |
 
-**Conclusão:** a automação **indiretamente favorece** acessibilidade ao usar roles e nomes acessíveis, mas **não substitui** auditoria WCAG nem validação em viewports móveis. Recomenda-se camada dedicada de a11y + projeto Playwright mobile.
+**Conclusão:** a automação **indiretamente favorece** acessibilidade ao usar roles e nomes acessíveis, mas **não substitui** auditoria WCAG nem validação em viewports móveis. Camada dedicada: sandbox a11y (web + viewport) · Appium (app nativo).
 
 ---
 
@@ -273,6 +273,7 @@ CAP-35 **missing** — perfis específicos. Validar checkbox/termos legais com f
 | ---------------------- | --------------------------------------------------------------------------------------- |
 | Helper axe             | `tests/helpers/a11y.ts`                                                                 |
 | Helper teclado         | `tests/helpers/a11yKeyboard.ts`                                                         |
+| Helper toque (mobile)  | `tests/helpers/a11yTouch.ts`                                                            |
 | Smoke axe por etapa    | `tests/spec/a11y/cotacaoFunnel.a11y.spec.ts`                                            |
 | Smoke teclado          | `tests/spec/a11y/cotacaoKeyboard.a11y.spec.ts`                                          |
 | Projetos mobile/tablet | `playwright.a11y.config.ts` · `tests/config/a11yDevices.ts`                             |

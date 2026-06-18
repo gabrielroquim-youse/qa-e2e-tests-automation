@@ -1,7 +1,23 @@
-# Sandbox A11y — emulação mobile e tablet
+# Sandbox A11y — mapear acessibilidade em viewport mobile/tablet
 
-> **Objetivo:** rodar axe + teclado em viewports de **celular** e **tablet** sem hardware físico.  
+> **Objetivo:** auditar **WCAG** (axe + teclado) do funil **web** em viewports de celular e tablet — **mapear gaps por categoria de dispositivo**, não expandir E2E mobile.  
 > **Config:** `playwright.a11y.config.ts` · **Perfis:** `tests/config/a11yDevices.ts`
+
+---
+
+## Escopo: o que é isto (e o que não é)
+
+| Camada                                 | Ferramenta            | Responsabilidade                                            |
+| -------------------------------------- | --------------------- | ----------------------------------------------------------- |
+| **E2E funcional mobile (app nativo)**  | **Appium**            | Fluxos no app instalado · gestos · push · deep link         |
+| **E2E funcional web**                  | Playwright `chromium` | Regressão desktop do funil QA                               |
+| **A11y web em viewport mobile/tablet** | **Este sandbox**      | axe + Tab/Enter · mapear violações **por perfil de device** |
+
+**Não vamos expandir** aqui a suíte funcional mobile — os perfis `mobile-chrome`, `mobile-ios` e `tablet` existem só para responder:
+
+> _“Esta tela web, vista como celular Android / iPhone / tablet, tem problemas de acessibilidade?”_
+
+O mapeamento alimenta issues no front (`sales-*`) e o [**mapa de gaps**](./a11y-gap-map.md). Appium cobre acessibilidade/fluxo do **app nativo** quando existir.
 
 ---
 
@@ -21,17 +37,17 @@
 | Teclado virtual sobrepondo CTA          | ❌                  | ✅ manual             |
 | Performance em aparelho fraco           | ❌                  | ✅                    |
 
-**Regra prática:** use o sandbox para **regressão contínua** (violations axe, tab order); complemente com **1 sessão manual/SR** por release nos fluxos P0.
+**Regra prática:** use o sandbox para **mapear e regressão a11y web** por viewport; Appium para **app nativo**; SR manual pontual nos fluxos P0.
 
 ---
 
 ## Perfis disponíveis
 
-| Projeto `--project` | Dispositivo emulado      | Viewport | Uso                           |
-| ------------------- | ------------------------ | -------- | ----------------------------- |
-| `mobile-chrome`     | Pixel 5 · Android Chrome | 393×851  | Celular Android (padrão)      |
-| `mobile-ios`        | iPhone 13 · viewport iOS | 390×844  | Celular iOS (layout estreito) |
-| `tablet`            | iPad 7ª gen              | 810×1080 | Tablet · planos em 2 colunas  |
+| Projeto `--project` | Categoria mapeada    | Viewport | Para que serve (a11y)             |
+| ------------------- | -------------------- | -------- | --------------------------------- |
+| `mobile-chrome`     | Celular Android      | 393×851  | Reflow estreito · touch · axe     |
+| `mobile-ios`        | Celular iOS (layout) | 390×844  | Mesmo funil · viewport iPhone     |
+| `tablet`            | Tablet               | 810×1080 | Planos/coberturas em layout largo |
 
 **Local (Windows):** perfis iOS/iPad rodam com **Chrome + viewport/UA do device** (evita instalar WebKit).  
 **CI:** iOS/iPad usam **WebKit real** quando `CI=true`.
@@ -62,10 +78,40 @@ Relatório HTML: `playwright-report/a11y/` (após execução local).
 
 ---
 
+## Visualizar moldura do celular (DevTools)
+
+O Playwright emula viewport e touch, mas a janela do Chrome abre **sem** bezel do aparelho. Para ver a página **dentro de um iPhone ou Android** enquanto o teste roda:
+
+1. Inicie o sandbox (navegador visível):
+
+   ```bash
+   npm run test:a11y:mobile
+   ```
+
+2. Com o Chrome aberto no QA, pressione **F12** (DevTools).
+3. Ative o **modo dispositivo**: **Ctrl+Shift+M** (Windows) ou ícone 📱 na barra do DevTools.
+4. No topo, escolha o device alinhado ao perfil do teste:
+
+   | Perfil Playwright | Device no DevTools |
+   | ----------------- | ------------------ |
+   | `mobile-chrome`   | Pixel 5            |
+   | `mobile-ios`      | iPhone 13          |
+   | `tablet`          | iPad               |
+
+5. Clique no menu **⋮** (três pontos) da barra de emulação → marque **Show device frame** (_Mostrar moldura do dispositivo_).
+
+A moldura aparece em volta da página — útil para inspecionar layout, foco do Tab e sobreposição de elementos.
+
+> **Limitações:** passo manual (Playwright não liga a moldura sozinho); localmente iOS/iPad ainda usam Chrome por baixo — a moldura é visual, não vira Safari real. Screenshots de falha do Playwright continuam retangulares (sem bezel).
+
+---
+
 ## O que o sandbox **não** faz
 
-- Não roda testes funcionais desktop (`chromium` do `playwright.config.ts` principal).
+- **Não substitui Appium** — app nativo e E2E mobile funcional ficam fora deste repo.
+- Não expande cobertura funcional em viewport mobile (só specs `@a11y` / `@keyboard`).
 - Não substitui auditoria no app React (`eslint-plugin-jsx-a11y` no front).
+- Não simula VoiceOver/TalkBack (mapeamento axe/teclado na **web** em viewport mobile).
 - Não grava vídeo (desligado para evitar dependência de ffmpeg local).
 
 ---

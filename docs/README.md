@@ -23,6 +23,7 @@ docs/
 | **Tempo de execução** por teste            | [`reports/e2e-timing-report.md`](reports/e2e-timing-report.md)         |
 | **Erros comuns** (seletores, sessão, deps) | [`guides/troubleshooting.md`](guides/troubleshooting.md)               |
 | **Acessibilidade** (WCAG, mobile/tablet)   | [`guides/accessibility-analysis.md`](guides/accessibility-analysis.md) |
+| **Gaps a11y** (hoje vs deveria ser · foco) | [`guides/a11y-gap-map.md`](guides/a11y-gap-map.md)                     |
 | **Mapa de fluxos** do funil × automação    | [`guides/fluxos-cotacao-auto.md`](guides/fluxos-cotacao-auto.md)       |
 | Rodar o projeto / CI                       | [`../README.md`](../README.md)                                         |
 

@@ -1,14 +1,39 @@
+# ── Dependências ─────────────────────────────────────────────────────────────
 node_modules/
+
+# ── Ambiente (nunca versionar secrets) ───────────────────────────────────────
 .env
+.env.*
+
+# ── SO / IDE ─────────────────────────────────────────────────────────────────
 .DS_Store
 .vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Build TypeScript ─────────────────────────────────────────────────────────
+dist/
+*.tsbuildinfo
+
+# ── Playwright ───────────────────────────────────────────────────────────────
 playwright-report/
 test-results/
-reports/e2e-timing-raw.json
-reports/e2e-last-run.log
+blob-report/
+all-blob-reports/
+storage/
+
+# ── Allure ───────────────────────────────────────────────────────────────────
 allure-results/
 allure-report/
 
-# Agentes Playwright (gerados pelo Copilot — não versionar)
+# ── Artefatos locais de execução (scratch — saídas finais ficam em docs/) ───
+# scripts gravam JSON/log bruto aqui; relatórios versionados → docs/reports/
+reports/
+
+# Logs na raiz (Tee-Object, redirects manuais, playwright install)
+/*.log
+
+# ── Agentes Playwright (gerados pelo Copilot — não versionar) ───────────────
 .github/agents/
 .github/chatmodes/
