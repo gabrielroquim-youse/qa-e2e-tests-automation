@@ -1,4 +1,4 @@
-import { defineConfig } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
 import 'dotenv/config';
 
 export default defineConfig({
@@ -36,6 +36,7 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
+      testIgnore: /\/a11y\//,
       use: {
         channel: process.env.CI ? undefined : 'chrome', // Chrome instalado localmente; Chromium no CI
         headless: !!process.env.CI, // sempre abre o navegador localmente; headless só no CI
@@ -44,10 +45,22 @@ export default defineConfig({
         },
       },
     },
-    //{ name: 'firefox',  use: { ...devices['Desktop Firefox'] } },
-    //{ name: 'webkit',   use: { ...devices['Desktop Safari'] } },
-    // mobile exemplo:
-    // { name: 'Mobile Chrome', use: { ...devices['Pixel 5'] } },
+    {
+      name: 'mobile-chrome',
+      testMatch: /\/a11y\//,
+      use: {
+        ...devices['Pixel 5'],
+        headless: !!process.env.CI,
+      },
+    },
+    {
+      name: 'tablet',
+      testMatch: /\/a11y\//,
+      use: {
+        ...devices['iPad (gen 7)'],
+        headless: !!process.env.CI,
+      },
+    },
   ],
   // globalSetup: './tests/global-setup.ts', // opcional
 });

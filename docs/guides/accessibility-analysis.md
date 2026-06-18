@@ -234,15 +234,15 @@ CAP-35 **missing** — perfis específicos. Validar checkbox/termos legais com f
 
 ## Matriz: automação vs acessibilidade
 
-| Prática                | Repo hoje  | Recomendado                                         |
-| ---------------------- | ---------- | --------------------------------------------------- |
-| `@axe-core/playwright` | ❌         | Smoke por etapa (serious/critical = fail)           |
-| Navegação teclado      | ❌         | Tab order por tela no `@a11y` tag                   |
-| Screen reader manual   | ❌         | Checklist VoiceOver/TalkBack pré-release            |
-| Viewport mobile CI     | ❌         | Pixel 5 + iPad no happy path                        |
-| Contraste automático   | ❌         | axe + amostragem manual                             |
-| Locators a11y-first    | ✅ Parcial | Eliminar XPath onde possível                        |
-| ESLint jsx-a11y        | ❌         | N/A (front React — responsabilidade sales-frontend) |
+| Prática                | Repo hoje        | Recomendado                                                   |
+| ---------------------- | ---------------- | ------------------------------------------------------------- |
+| `@axe-core/playwright` | ✅ Smoke `@a11y` | 5 telas · serious/critical = fail                             |
+| Navegação teclado      | ❌               | Tab order por tela no `@a11y` tag                             |
+| Screen reader manual   | ❌               | Checklist VoiceOver/TalkBack pré-release                      |
+| Viewport mobile CI     | ✅               | Projetos `mobile-chrome` + `tablet` em `playwright.config.ts` |
+| Contraste automático   | ❌               | axe + amostragem manual                                       |
+| Locators a11y-first    | ✅ Parcial       | Eliminar XPath onde possível                                  |
+| ESLint jsx-a11y        | ❌               | N/A (front React — responsabilidade sales-frontend)           |
 
 ---
 
@@ -250,9 +250,9 @@ CAP-35 **missing** — perfis específicos. Validar checkbox/termos legais com f
 
 ### P0 — Quick wins (1–2 sprints)
 
-1. **Projeto Playwright mobile** — happy path `cotacaoAuto` em Pixel 5.
-2. **Pacote `@axe-core/playwright`** — scan em 5 telas críticas (lead, planos, coberturas, assistências, checkout).
-3. **Tag `@a11y`** — separar suite rápida (~5 min) da regressão funcional.
+1. ~~**Projeto Playwright mobile**~~ ✅ `mobile-chrome` + `tablet` no config.
+2. ~~**Pacote `@axe-core/playwright`**~~ ✅ `tests/spec/a11y/cotacaoFunnel.a11y.spec.ts`.
+3. ~~**Tag `@a11y`**~~ ✅ `npm run test:a11y`.
 
 ### P1 — Cobertura sustentável
 
@@ -269,24 +269,26 @@ CAP-35 **missing** — perfis específicos. Validar checkbox/termos legais com f
 
 ---
 
-## Exemplo: spec a11y sugerida (não implementada)
+## Implementação atual (automação)
 
-```ts
-// tests/spec/a11y/cotacaoSmoke.a11y.spec.ts — proposta
-import AxeBuilder from '@axe-core/playwright';
-import { test, expect } from '@playwright/test';
-import LeadInfoPage from '../../pages/quotation/LeadInfoPage';
+| Artefato               | Caminho                                            |
+| ---------------------- | -------------------------------------------------- |
+| Helper axe             | `tests/helpers/a11y.ts`                            |
+| Smoke por etapa        | `tests/spec/a11y/cotacaoFunnel.a11y.spec.ts`       |
+| Projetos mobile/tablet | `playwright.config.ts` → `mobile-chrome`, `tablet` |
+| Comando                | `npm run test:a11y`                                |
 
-test.describe('A11y smoke — mobile', { tag: ['@a11y'] }, () => {
-  test.use({ ...devices['Pixel 5'] });
+Telas escaneadas: `lead_info` → `plan_selection` → `coverages_selection` → `assistances_selection` → `checkout`.
 
-  test('lead_info sem violações críticas axe', async ({ page }) => {
-    await LeadInfoPage.open(page);
-    const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
-    expect(results.violations.filter((v) => v.impact === 'critical')).toEqual([]);
-  });
-});
+```bash
+# VPN ativa · ~15–25 min (5 testes × 2 viewports, serial)
+npm run test:a11y
+
+# Só mobile
+npx playwright test --grep @a11y --project=mobile-chrome --reporter=list
 ```
+
+Critério de falha: violações axe **serious** ou **critical** (WCAG 2.x AA tags).
 
 ---
 
