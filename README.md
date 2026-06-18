@@ -664,7 +664,7 @@ npm run coverage:check   # validação CI — falha se mapa front × POM desatua
 | ---------------------------------- | ---------------------------------------------------------------- |
 | [`docs/planners/`](docs/planners/) | Planos de cenário (`planner-*.md`) — input dos Playwright Agents |
 | [`docs/coverage/`](docs/coverage/) | Cobertura funcional front × automação                            |
-| [`docs/guides/`](docs/guides/)     | Guias de manutenção (troubleshooting)                            |
+| [`docs/guides/`](docs/guides/)     | Guias de manutenção (troubleshooting, a11y, fluxos)              |
 | [`docs/reports/`](docs/reports/)   | Relatórios auto-gerados (tempo E2E)                              |
 
 ### Pre-commit (Husky + lint-staged)
