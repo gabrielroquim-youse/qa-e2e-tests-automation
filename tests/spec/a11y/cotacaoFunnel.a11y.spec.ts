@@ -1,7 +1,7 @@
 /**
  * Smoke de acessibilidade (axe) nas telas críticas do funil de cotação auto.
  *
- * Roda nos projetos `mobile-chrome` (Pixel 5) e `tablet` (iPad) — ver playwright.config.ts.
+ * Roda no sandbox a11y — projetos `mobile-chrome`, `mobile-ios`, `tablet` (ver playwright.a11y.config.ts).
  * Pré-requisito: VPN Youse + ambiente QA.
  *
  * @see docs/guides/accessibility-analysis.md

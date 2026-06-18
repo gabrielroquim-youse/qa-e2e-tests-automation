@@ -47,20 +47,18 @@
 - Tablet compartilha padrões touch (alvo de toque, reflow, teclado virtual).
 - A suite atual roda **desktop maximizado** — bugs de viewport estreito, teclado virtual sobrepondo CTA e modais off-screen **não são detectados**.
 
-### Gap de configuração Playwright
+### Configuração Playwright (sandbox a11y)
 
-```ts
-// playwright.config.ts — mobile comentado
-// { name: 'Mobile Chrome', use: { ...devices['Pixel 5'] } },
-```
-
-**Recomendação:** adicionar projetos mínimos:
+Projetos de emulação em `playwright.a11y.config.ts` + `tests/config/a11yDevices.ts`:
 
 | Projeto         | Device                 | Objetivo                        |
 | --------------- | ---------------------- | ------------------------------- |
 | `chromium`      | Desktop Chrome (atual) | Regressão funcional             |
-| `mobile-chrome` | Pixel 5                | Fluxo happy path + a11y smoke   |
-| `tablet`        | iPad (gen 7)           | Plan selection + personalização |
+| `mobile-chrome` | Pixel 5                | Celular Android · axe + teclado |
+| `mobile-ios`    | iPhone 13              | Celular iOS · layout estreito   |
+| `tablet`        | iPad (gen 7)           | Tablet · plan selection         |
+
+Guia completo: [a11y-device-sandbox.md](./a11y-device-sandbox.md) (emulação ≠ device real; quando usar cada um).
 
 ---
 
@@ -271,14 +269,14 @@ CAP-35 **missing** — perfis específicos. Validar checkbox/termos legais com f
 
 ## Implementação atual (automação)
 
-| Artefato               | Caminho                                           |
-| ---------------------- | ------------------------------------------------- |
-| Helper axe             | `tests/helpers/a11y.ts`                           |
-| Helper teclado         | `tests/helpers/a11yKeyboard.ts`                   |
-| Smoke axe por etapa    | `tests/spec/a11y/cotacaoFunnel.a11y.spec.ts`      |
-| Smoke teclado          | `tests/spec/a11y/cotacaoKeyboard.a11y.spec.ts`    |
-| Projetos mobile/tablet | `playwright.config.ts` → `headless: false` sempre |
-| Comandos               | `npm run test:a11y` · `npm run test:keyboard`     |
+| Artefato               | Caminho                                                                                 |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| Helper axe             | `tests/helpers/a11y.ts`                                                                 |
+| Helper teclado         | `tests/helpers/a11yKeyboard.ts`                                                         |
+| Smoke axe por etapa    | `tests/spec/a11y/cotacaoFunnel.a11y.spec.ts`                                            |
+| Smoke teclado          | `tests/spec/a11y/cotacaoKeyboard.a11y.spec.ts`                                          |
+| Projetos mobile/tablet | `playwright.a11y.config.ts` · `tests/config/a11yDevices.ts`                             |
+| Comandos               | `npm run test:a11y:sandbox` · `test:a11y:mobile` · `test:a11y:tablet` · `test:keyboard` |
 
 Telas escaneadas: `lead_info` → `plan_selection` → `coverages_selection` → `assistances_selection` → `checkout`.
 

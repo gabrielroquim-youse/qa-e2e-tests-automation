@@ -1,7 +1,7 @@
 /**
  * Navegação por teclado (WCAG 2.1.1 / 2.4.3) nas telas críticas do funil.
  *
- * Projetos mobile-chrome e tablet rodam sempre com navegador visível (headless: false).
+ * Projetos mobile-chrome, mobile-ios e tablet — sandbox a11y, navegador visível (headless: false).
  * Pré-requisito: VPN Youse + ambiente QA.
  *
  * @see docs/guides/accessibility-analysis.md

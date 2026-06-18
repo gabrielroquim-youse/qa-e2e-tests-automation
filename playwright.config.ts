@@ -1,5 +1,6 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 import 'dotenv/config';
+import { createA11yProjects } from './tests/config/a11yDevices';
 
 export default defineConfig({
   testDir: './tests/spec',
@@ -45,29 +46,7 @@ export default defineConfig({
         },
       },
     },
-    {
-      name: 'mobile-chrome',
-      testMatch: /\/a11y\//,
-      use: {
-        ...devices['Pixel 5'],
-        headless: false,
-        channel: process.env.CI ? undefined : 'chrome',
-        video: 'off',
-        trace: 'off',
-      },
-    },
-    {
-      name: 'tablet',
-      testMatch: /\/a11y\//,
-      use: {
-        ...devices['iPad (gen 7)'],
-        headless: false,
-        video: 'off',
-        trace: 'off',
-        // Preset iPad usa WebKit; localmente Chrome + viewport iPad (evita playwright install webkit)
-        ...(process.env.CI ? {} : { browserName: 'chromium', channel: 'chrome' }),
-      },
-    },
+    ...createA11yProjects(),
   ],
   // globalSetup: './tests/global-setup.ts', // opcional
 });
