@@ -646,7 +646,8 @@ npm run format:check   # apenas verifica sem alterar (usado no CI)
 # Atalhos para execução de testes
 npm run test:smoke      # apenas testes @smoke
 npm run test:regression # apenas testes @regression
-npm run test:a11y       # smoke axe mobile (Pixel 5) + tablet (iPad) — requer VPN
+npm run test:a11y       # smoke axe mobile (Pixel 5) + tablet (iPad) — navegador visível · VPN
+npm run test:keyboard   # navegação por teclado (@keyboard) — navegador visível · VPN
 
 # Relatório de tempo E2E (gera docs/reports/e2e-timing-report.md)
 npm run test:e2e:timing                          # roda tests/spec/e2e + gera relatório (~30 min)

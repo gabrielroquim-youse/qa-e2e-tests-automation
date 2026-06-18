@@ -50,7 +50,7 @@ export default defineConfig({
       testMatch: /\/a11y\//,
       use: {
         ...devices['Pixel 5'],
-        headless: !!process.env.CI,
+        headless: false, // a11y/keyboard: sempre navegador visível (local e CI)
       },
     },
     {
@@ -58,7 +58,7 @@ export default defineConfig({
       testMatch: /\/a11y\//,
       use: {
         ...devices['iPad (gen 7)'],
-        headless: !!process.env.CI,
+        headless: false,
       },
     },
   ],

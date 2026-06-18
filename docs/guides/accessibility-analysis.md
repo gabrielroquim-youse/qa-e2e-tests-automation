@@ -8,13 +8,13 @@
 
 ## Resumo executivo
 
-| Dimensão                     | Situação atual                                        | Risco para mobile/tablet                         |
-| ---------------------------- | ----------------------------------------------------- | ------------------------------------------------ |
-| **Automação funcional E2E**  | 79% cobertura ponderada · P0/P1 100%                  | Boa cobertura de negócio, não de a11y            |
-| **Testes de acessibilidade** | ❌ Não existem (`axe`, teclado, SR)                   | Lacuna crítica                                   |
-| **Viewport nos testes**      | Apenas **Desktop Chrome** (`playwright.config.ts`)    | Mobile/tablet **não validados** na CI            |
-| **Estratégia de locators**   | ✅ Preferência por `getByRole` nos formulários        | ⚠️ XPath/CSS em toggles, cards e steppers        |
-| **WCAG alvo recomendado**    | **2.2 nível AA** (Brasil: referência LBI 13.146/2015) | Foco WCAG 2.5.x (alvo/toque) e 1.4.x (contraste) |
+| Dimensão                     | Situação atual                                                | Risco para mobile/tablet                         |
+| ---------------------------- | ------------------------------------------------------------- | ------------------------------------------------ |
+| **Automação funcional E2E**  | 79% cobertura ponderada · P0/P1 100%                          | Boa cobertura de negócio, não de a11y            |
+| **Testes de acessibilidade** | ✅ axe (`@a11y`) + teclado (`@keyboard`) · SR manual pendente | Cobertura automática parcial                     |
+| **Viewport nos testes**      | **Mobile + tablet** (`mobile-chrome`, `tablet`) + desktop E2E | Projetos a11y sempre com navegador visível       |
+| **Estratégia de locators**   | ✅ Preferência por `getByRole` nos formulários                | ⚠️ XPath/CSS em toggles, cards e steppers        |
+| **WCAG alvo recomendado**    | **2.2 nível AA** (Brasil: referência LBI 13.146/2015)         | Foco WCAG 2.5.x (alvo/toque) e 1.4.x (contraste) |
 
 **Conclusão:** a automação **indiretamente favorece** acessibilidade ao usar roles e nomes acessíveis, mas **não substitui** auditoria WCAG nem validação em viewports móveis. Recomenda-se camada dedicada de a11y + projeto Playwright mobile.
 
@@ -237,7 +237,7 @@ CAP-35 **missing** — perfis específicos. Validar checkbox/termos legais com f
 | Prática                | Repo hoje        | Recomendado                                                   |
 | ---------------------- | ---------------- | ------------------------------------------------------------- |
 | `@axe-core/playwright` | ✅ Smoke `@a11y` | 5 telas · serious/critical = fail                             |
-| Navegação teclado      | ❌               | Tab order por tela no `@a11y` tag                             |
+| Navegação teclado      | ✅               | `@keyboard` — `npm run test:keyboard`                         |
 | Screen reader manual   | ❌               | Checklist VoiceOver/TalkBack pré-release                      |
 | Viewport mobile CI     | ✅               | Projetos `mobile-chrome` + `tablet` em `playwright.config.ts` |
 | Contraste automático   | ❌               | axe + amostragem manual                                       |
@@ -256,7 +256,7 @@ CAP-35 **missing** — perfis específicos. Validar checkbox/termos legais com f
 
 ### P1 — Cobertura sustentável
 
-4. Testes teclado: completar funil sem mouse (1 spec transversal).
+4. ~~Testes teclado: completar funil sem mouse~~ ✅ `tests/spec/a11y/cotacaoKeyboard.a11y.spec.ts` (`npm run test:keyboard`).
 5. Assert `aria-live` no painel de preço (personalização).
 6. CAP-02: campos obrigatórios + foco no erro.
 7. Documentar no front: testids estáveis para cards (`plan-card-{slug}`).
@@ -271,12 +271,14 @@ CAP-35 **missing** — perfis específicos. Validar checkbox/termos legais com f
 
 ## Implementação atual (automação)
 
-| Artefato               | Caminho                                            |
-| ---------------------- | -------------------------------------------------- |
-| Helper axe             | `tests/helpers/a11y.ts`                            |
-| Smoke por etapa        | `tests/spec/a11y/cotacaoFunnel.a11y.spec.ts`       |
-| Projetos mobile/tablet | `playwright.config.ts` → `mobile-chrome`, `tablet` |
-| Comando                | `npm run test:a11y`                                |
+| Artefato               | Caminho                                           |
+| ---------------------- | ------------------------------------------------- |
+| Helper axe             | `tests/helpers/a11y.ts`                           |
+| Helper teclado         | `tests/helpers/a11yKeyboard.ts`                   |
+| Smoke axe por etapa    | `tests/spec/a11y/cotacaoFunnel.a11y.spec.ts`      |
+| Smoke teclado          | `tests/spec/a11y/cotacaoKeyboard.a11y.spec.ts`    |
+| Projetos mobile/tablet | `playwright.config.ts` → `headless: false` sempre |
+| Comandos               | `npm run test:a11y` · `npm run test:keyboard`     |
 
 Telas escaneadas: `lead_info` → `plan_selection` → `coverages_selection` → `assistances_selection` → `checkout`.
 
