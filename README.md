@@ -1,6 +1,29 @@
-# qa-e2e-tests-automation
+<div align="center">
 
-Suite de testes automatizados da **Youse Seguradora**, cobrindo fluxos E2E e testes de API com [Playwright](https://playwright.dev/) e TypeScript.
+# QA E2E Tests Automation
+
+Suite de testes automatizados da **Youse Seguradora** — fluxos E2E, API e pricing com Playwright e TypeScript.
+
+<br/>
+
+[![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![Allure Report](https://img.shields.io/badge/Allure-FF6B00?style=for-the-badge&logo=allure&logoColor=white)](https://allurereport.org/)
+
+<br/>
+
+[![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=flat-square&logo=eslint&logoColor=white)](https://eslint.org/)
+[![Prettier](https://img.shields.io/badge/Prettier-F7B93E?style=flat-square&logo=prettier&logoColor=black)](https://prettier.io/)
+[![Husky](https://img.shields.io/badge/Husky-pre--commit-000?style=flat-square&logo=git&logoColor=white)](https://typicode.github.io/husky/)
+[![GitHub Actions](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)](.github/workflows/ci.yml)
+[![Zod](https://img.shields.io/badge/Zod-3E67B1?style=flat-square&logo=zod&logoColor=white)](https://zod.dev/)
+
+<br/>
+
+[Documentação](./docs/README.md) · [Cobertura](./docs/coverage/README.md) · [Tempo E2E](./docs/reports/e2e-timing-report.md) · [Como executar](#como-executar)
+
+</div>
 
 ---
 
@@ -29,34 +52,36 @@ Suite de testes automatizados da **Youse Seguradora**, cobrindo fluxos E2E e tes
 
 Este repositório automatiza os principais fluxos da Youse em três camadas:
 
-| Camada      | O que cobre                                                           | Pasta             |
-| ----------- | --------------------------------------------------------------------- | ----------------- |
-| **E2E**     | Fluxo completo de cotação e contratação de seguro auto no navegador   | `tests/spec/e2e/` |
-| **API**     | Contratos dos serviços internos (CiliaClaimAuth, TestUtils)           | `tests/spec/api/` |
-| **Pricing** | Variação de preços por variáveis de risco e integridade de coberturas | `tests/spec/e2e/` |
+| Camada                                                                                                    | O que cobre                                                           | Pasta             |
+| --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ----------------- |
+| <img src="https://cdn.simpleicons.org/playwright/2EAD33" height="20" align="top" alt="" /> **E2E**        | Fluxo completo de cotação e contratação de seguro auto no navegador   | `tests/spec/e2e/` |
+| <img src="https://cdn.simpleicons.org/openapiinitiative/6BA539" height="20" align="top" alt="" /> **API** | Contratos dos serviços internos (CiliaClaimAuth, TestUtils)           | `tests/spec/api/` |
+| <img src="https://cdn.simpleicons.org/chartdotjs/FF6384" height="20" align="top" alt="" /> **Pricing**    | Variação de preços por variáveis de risco e integridade de coberturas | `tests/spec/e2e/` |
 
 ---
 
 ## Stack e Dependências
 
-| Ferramenta                                  | Versão | Finalidade                                        |
-| ------------------------------------------- | ------ | ------------------------------------------------- |
-| [@playwright/test](https://playwright.dev/) | ^1.55  | Framework de testes E2E e API                     |
-| TypeScript                                  | ^5     | Linguagem de implementação                        |
-| @faker-js/faker                             | ^10    | Geração de dados dinâmicos (nomes, e-mails, etc.) |
-| proxymise                                   | ^1.0   | Encadeamento fluente de Page Objects              |
-| zod                                         | ^4     | Validação de schemas de resposta de API           |
-| allure-playwright                           | ^3     | Relatórios Allure                                 |
-| playwright-zephyr                           | ^1     | Integração com Zephyr Scale (Jira)                |
+|                                                                                          | Ferramenta                                  | Versão | Finalidade                                        |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------- | ------ | ------------------------------------------------- |
+| <img src="https://cdn.simpleicons.org/playwright/2EAD33" height="22" alt="Playwright" /> | [@playwright/test](https://playwright.dev/) | ^1.55  | Framework de testes E2E e API                     |
+| <img src="https://cdn.simpleicons.org/typescript/3178C6" height="22" alt="TypeScript" /> | TypeScript                                  | ^5     | Linguagem de implementação                        |
+| <img src="https://cdn.simpleicons.org/faker/CCAA00" height="22" alt="Faker" />           | @faker-js/faker                             | ^10    | Geração de dados dinâmicos (nomes, e-mails, etc.) |
+| <img src="https://cdn.simpleicons.org/npm/CB3837" height="22" alt="npm" />               | proxymise                                   | ^1.0   | Encadeamento fluente de Page Objects              |
+| <img src="https://cdn.simpleicons.org/zod/3E67B1" height="22" alt="Zod" />               | zod                                         | ^4     | Validação de schemas de resposta de API           |
+| <img src="https://cdn.simpleicons.org/allure/FF6B00" height="22" alt="Allure" />         | allure-playwright                           | ^3     | Relatórios Allure                                 |
+| <img src="https://cdn.simpleicons.org/jira/0052CC" height="22" alt="Jira" />             | playwright-zephyr                           | ^1     | Integração com Zephyr Scale (Jira)                |
 
 ---
 
 ## Pré-requisitos
 
-- **Node.js v18+** — [Download](https://nodejs.org/)
-- **npm v9+** — vem junto com o Node
-- **VPN Youse** ativa — obrigatória para acessar os ambientes `qa` e `staging`
-- **Google Chrome** instalado localmente (para execuções sem `CI=true`)
+|                                                                                        | Requisito         | Detalhe                                     |
+| -------------------------------------------------------------------------------------- | ----------------- | ------------------------------------------- |
+| <img src="https://cdn.simpleicons.org/nodedotjs/339933" height="22" alt="Node.js" />   | **Node.js v18+**  | [Download](https://nodejs.org/)             |
+| <img src="https://cdn.simpleicons.org/npm/CB3837" height="22" alt="npm" />             | **npm v9+**       | Vem junto com o Node                        |
+| <img src="https://cdn.simpleicons.org/googlechrome/4285F4" height="22" alt="Chrome" /> | **Google Chrome** | Para execuções locais sem `CI=true`         |
+|                                                                                        | **VPN Youse**     | Obrigatória para ambientes `qa` e `staging` |
 
 Verifique sua versão:
 
