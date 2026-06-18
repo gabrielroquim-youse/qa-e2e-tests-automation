@@ -1,24 +1,46 @@
-# Relatório A11y — Execução QA (axe)
+# Relatório A11y — Execução QA (axe + teclado)
 
-> **Data:** 2026-06-18 · **Ambiente:** `qa-cotacao.youse.io` · **Viewport:** Pixel 5 (mobile-chrome)  
-> **Spec:** `tests/spec/a11y/cotacaoFunnel.a11y.spec.ts`  
-> **Critério:** falha em violações axe **serious** ou **critical**
-
----
-
-## Resumo da 1ª execução
-
-| Tela                    | Resultado                     | Violations bloqueantes |
-| ----------------------- | ----------------------------- | ---------------------- |
-| `lead_info`             | ❌ **Falhou**                 | 2 regras · 13 nós      |
-| `plan_selection`        | ⏳ não executado nesta rodada | —                      |
-| `coverages_selection`   | ⏳                            | —                      |
-| `assistances_selection` | ⏳                            | —                      |
-| `checkout`              | ⏳                            | —                      |
+> **Última execução:** 2026-06-18 · **Ambiente:** `qa-cotacao.youse.io` · **VPN:** ativa  
+> **Comando:** `npm run test:a11y` (mobile-chrome + tablet, 18 testes)  
+> **Critério axe:** falha em violações **serious** ou **critical**
 
 ---
 
-## `lead_info` — detalhes (URL real do scan)
+## Resumo executivo
+
+| Métrica      | Valor                           |
+| ------------ | ------------------------------- |
+| Total        | 18 testes                       |
+| Passou       | 2                               |
+| Falhou       | 4                               |
+| Não executou | 12 (serial — parou após falhas) |
+| Duração      | ~8,5 min                        |
+
+---
+
+## Resultados por teste (mobile-chrome)
+
+| #   | Spec    | Cenário                                    | Resultado                              | Tempo |
+| --- | ------- | ------------------------------------------ | -------------------------------------- | ----- |
+| 1   | axe     | `lead_info`                                | ❌ `aria-roles` (12) + `link-name` (1) | 17s   |
+| 2–5 | axe     | planos, coberturas, assistências, checkout | ⏭️ não executou                        | —     |
+| 6   | teclado | `lead_info` — preencher e avançar          | ✅                                     | 24s   |
+| 7   | teclado | `vehicle_details` — placa e Continuar      | ✅                                     | 15s   |
+| 8   | teclado | `plan_selection` — Continuar por Tab       | ❌ timeout 4 min                       | —     |
+| 9   | teclado | `plan_selection` — card Regular por Tab    | ⏭️ não executou                        | —     |
+
+## Resultados tablet
+
+| #     | Cenário              | Resultado | Motivo                                                                          |
+| ----- | -------------------- | --------- | ------------------------------------------------------------------------------- |
+| 10–14 | axe (5 telas)        | ❌        | `Unsupported webkit channel "chrome"` — **corrigido** em `playwright.config.ts` |
+| 15–18 | teclado (4 cenários) | ❌ / ⏭️   | mesmo erro de config                                                            |
+
+> **Nota:** tablet local passa a usar Chrome com viewport iPad; CI continua com WebKit real.
+
+---
+
+## `lead_info` — detalhes axe
 
 `https://qa-cotacao.youse.io/seguro-auto/{id}/lead_info`
 
@@ -45,34 +67,47 @@ Roles ARIA **inválidas** no DOM — leitor de tela pode ignorar ou anunciar inc
 
 ---
 
-## O que isso confirma
+## `plan_selection` — teclado
 
-- A análise **no código** (Page Objects) mostrava locators bons nos **campos** — o axe revela que o **HTML subjacente** usa roles customizadas inválidas.
-- Isso é exatamente o valor de rodar axe **no app real**: gap entre “teste passa” e “usuário SR tem boa experiência”.
+O botão **Continuar** não recebeu foco após **60 Tabs** (timeout 4 min). Possíveis causas:
+
+- ordem de tabulação longa (muitos elementos focáveis antes do botão);
+- botão fora da ordem natural do DOM;
+- elemento interceptando foco (modal, overlay, card de plano).
+
+**Ação:** inspecionar manualmente com Tab na tela de planos (mobile) ou aumentar cobertura com skip link / atalho documentado no front.
 
 ---
 
-## Próximas ações recomendadas
+## O que isso confirma
 
-### Front (`sales-frontend` / design system)
+- A análise **no código** (Page Objects) mostrava locators bons nos **campos** — o axe revela que o **HTML subjacente** usa roles customizadas inválidas.
+- Teclado funciona em **lead_info** e **vehicle_details**, mas falha em **plan_selection** — gap real de WCAG 2.1.1 na escolha de plano.
+- Rodar axe **no app real** encontra problemas que testes funcionais não pegam.
 
-1. Remover `role="header"`, `role="title"`, `role="input"`, `role="stepper"` — usar HTML/ARIA padrão.
-2. Link WhatsApp: `aria-label="Falar com especialista no WhatsApp"` ou texto visível.
-3. Stepper: padrão WAI-ARIA `tablist` / `aria-current="step"` ou componente documentado.
+---
+
+## Próximas ações
+
+### Front (`sales-lead-requirements` / design system)
+
+1. Remover `role="header"`, `role="title"`, `role="input"`, `role="stepper"`.
+2. Link WhatsApp: `aria-label="Falar com especialista no WhatsApp"`.
+3. Revisar tab order na tela de planos (botão Continuar e cards).
 
 ### QA / automação
 
 ```bash
-# Suite completa (demora — navega funil inteiro por tela)
+# Re-executar após fix do tablet (config já ajustada)
 npm run test:a11y
 
-# Teclado
+# Só teclado
 npm run test:keyboard
 ```
 
-4. Rodar suite completa e anexar resultados por tela neste relatório.
-5. Abrir issues no Jira vinculadas ao micro-frontend `sales-lead-requirements` (lead_info).
-6. Após fix no front, re-executar para baseline verde.
+4. Completar axe nas 4 telas restantes (depende de passar lead_info ou rodar spec por tela).
+5. Abrir issues Jira vinculadas ao micro-frontend.
+6. Baseline verde após fix no front.
 
 ---
 

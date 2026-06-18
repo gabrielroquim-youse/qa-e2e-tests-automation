@@ -62,9 +62,10 @@ export default defineConfig({
       use: {
         ...devices['iPad (gen 7)'],
         headless: false,
-        channel: process.env.CI ? undefined : 'chrome',
         video: 'off',
         trace: 'off',
+        // Preset iPad usa WebKit; localmente Chrome + viewport iPad (evita playwright install webkit)
+        ...(process.env.CI ? {} : { browserName: 'chromium', channel: 'chrome' }),
       },
     },
   ],
