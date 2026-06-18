@@ -6,6 +6,7 @@ Arquivos produzidos automaticamente pelos scripts — **não editar manualmente*
 | ---------------------------------------------- | ----------------------------- | -------------------------- |
 | [`e2e-timing-report.md`](e2e-timing-report.md) | `npm run e2e:timing:generate` | Tempo por teste e por spec |
 | [`e2e-timing.json`](e2e-timing.json)           | idem                          | Métricas para dashboard/CI |
+| [`a11y-qa-report.md`](a11y-qa-report.md)       | `npm run test:a11y` (manual)  | Violações axe no QA        |
 
 ## Como atualizar
 
