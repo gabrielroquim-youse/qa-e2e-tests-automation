@@ -10,6 +10,7 @@
  *   Plano com mais coberturas/melhores assistências → monthly maior
  *
  * Estratégia:
+ *   - Cada teste é independente: navega o funil do zero (sem mode: 'serial')
  *   - Não fixar valores absolutos de preço
  *   - Validar presença de coberturas/assistências por keyword no DOM
  *   - Validar relações ordinais de preço entre planos
@@ -18,13 +19,12 @@
  * Pré-requisito: VPN Youse ativa com acesso ao ambiente QA.
  * Uso: npx playwright test coberturas --project=chromium --reporter=list
  */
-import { test, expect } from '@playwright/test';
-import { MaritalStatuses } from '../../enum/MaritalStatuses';
-import { VehicleUsages } from '../../enum/VehicleUsages';
-import { generateQuotationData } from '../../fixtures/setupQuotation';
-import { orderedPlans } from '../../data/plans';
-import LeadInfoPage from '../../pages/quotation/LeadInfoPage';
-import { PlanSelectionPage } from '../../pages/quotation/PlanSelectionPage';
+import { expect, test, generateQuotationData } from '../../../fixtures/setupQuotation';
+import { MaritalStatuses } from '../../../enum/MaritalStatuses';
+import { VehicleUsages } from '../../../enum/VehicleUsages';
+import { orderedPlans } from '../../../data/plans';
+import LeadInfoPage from '../../../pages/quotation/LeadInfoPage';
+import { PlanSelectionPage } from '../../../pages/quotation/PlanSelectionPage';
 
 // ─── Helper: navega até a seleção de planos (perfil médio risco) ─────────────
 
@@ -59,8 +59,6 @@ async function goToPlanSelection(page: Parameters<typeof LeadInfoPage.open>[0]):
 // ─── Suite ───────────────────────────────────────────────────────────────────
 
 test.describe('Coberturas, Assistências e Integridade de Preço — Seguro Auto', { tag: ['@price', '@quotation_auto', '@coberturas'] }, () => {
-  test.describe.configure({ mode: 'serial' });
-
   // ── 1. Todos os planos pré-formatados estão visíveis ──────────────────────
   test('Deve exibir os três planos pré-formatados na tela de seleção', { tag: ['@smoke'] }, async ({ page }) => {
     test.setTimeout(180_000);

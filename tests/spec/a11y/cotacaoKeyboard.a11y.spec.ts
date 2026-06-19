@@ -7,17 +7,14 @@
  * @see docs/guides/accessibility-analysis.md
  */
 /* eslint-disable playwright/expect-expect -- asserts em tests/helpers/a11yKeyboard.ts */
-import { expect, test } from '@playwright/test';
+import { expect, test, generateQuotationData } from '../../fixtures/setupQuotation';
 import { activateFocused, expectReachableByTab, tabUntilFocused, typeInFocusedField } from '../../helpers/a11yKeyboard';
 import { navigateToPlans } from '../../helpers/funnel';
-import { generateQuotationData } from '../../fixtures/setupQuotation';
 import LeadInfoPage from '../../pages/quotation/LeadInfoPage';
 
 const KEYBOARD_TIMEOUT = 240_000;
 
 test.describe('Keyboard — funil cotação auto', { tag: ['@a11y', '@keyboard', '@quotation_auto'] }, () => {
-  test.describe.configure({ mode: 'serial' });
-
   test('lead_info — preencher campos e avançar só com teclado', async ({ page }) => {
     test.setTimeout(KEYBOARD_TIMEOUT);
     const data = generateQuotationData();

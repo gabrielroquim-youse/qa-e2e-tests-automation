@@ -74,11 +74,11 @@ Segue a mesma abordagem dos demais testes do projeto (sem valores absolutos):
 
 ### 1. Visibilidade
 
-**Seed:** `tests/spec/e2e/assistencias.spec.ts`
+**Seed:** `tests/spec/e2e/regression/assistencias.spec.ts`
 
 #### 1.1. Exibir título e assistências na tela de seleção
 
-**File:** `tests/spec/e2e/assistencias.spec.ts`
+**File:** `tests/spec/e2e/regression/assistencias.spec.ts`
 
 **Tags:** `@smoke` `@assistencias` `@quotation_auto`
 
@@ -111,7 +111,7 @@ Testa que ativar cada assistência independente (fora do combo) aumenta o prêmi
 
 #### 2.1. Ativar "Restituição de IPVA" deve aumentar o prêmio anual
 
-**File:** `tests/spec/e2e/assistencias.spec.ts`
+**File:** `tests/spec/e2e/regression/assistencias.spec.ts`
 
 **Steps:**
 
@@ -131,7 +131,7 @@ Testa que ativar cada assistência independente (fora do combo) aumenta o prêmi
 
 #### 2.2. Ativar "Assistência a bike" deve aumentar o prêmio anual
 
-**File:** `tests/spec/e2e/assistencias.spec.ts`
+**File:** `tests/spec/e2e/regression/assistencias.spec.ts`
 
 **Steps:**
 
@@ -151,7 +151,7 @@ Testa que ativar cada assistência independente (fora do combo) aumenta o prêmi
 
 #### 2.3. Ativar "Serviço de histórico veicular" deve aumentar o prêmio anual
 
-**File:** `tests/spec/e2e/assistencias.spec.ts`
+**File:** `tests/spec/e2e/regression/assistencias.spec.ts`
 
 **Steps:**
 
@@ -171,7 +171,7 @@ Testa que ativar cada assistência independente (fora do combo) aumenta o prêmi
 
 #### 2.4. Ativar "Serviço de leva e traz" deve aumentar o prêmio anual
 
-**File:** `tests/spec/e2e/assistencias.spec.ts`
+**File:** `tests/spec/e2e/regression/assistencias.spec.ts`
 
 **Steps:**
 
@@ -193,7 +193,7 @@ Testa que ativar cada assistência independente (fora do combo) aumenta o prêmi
 
 #### 3.1. Ativar "Assistência a automóvel" deve aumentar o prêmio anual
 
-**File:** `tests/spec/e2e/assistencias.spec.ts`
+**File:** `tests/spec/e2e/regression/assistencias.spec.ts`
 
 **Tags:** `@regression` `@assistencias` `@quotation_auto`
 

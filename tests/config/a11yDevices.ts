@@ -43,7 +43,7 @@ export const A11Y_DEVICE_PROFILES: Record<A11yDeviceId, A11yDeviceProfile> = {
 };
 
 const A11Y_USE = {
-  headless: false as const,
+  headless: !!process.env.CI,
   video: 'off' as const,
   trace: 'off' as const,
 };

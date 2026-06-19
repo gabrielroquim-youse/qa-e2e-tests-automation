@@ -123,15 +123,16 @@ ZEPHYR_PROJECT_KEY=POSV
 CILIA_TOKEN=              # token do serviço de sinistros
 ```
 
-| Variável             | Descrição                                  | Padrão                                             |
-| -------------------- | ------------------------------------------ | -------------------------------------------------- |
-| `BASE_URL`           | URL base do frontend de cotação            | `https://qa-cotacao.youse.io/seguro-auto`          |
-| `TEST_UTILS_URL`     | URL do serviço de massa de dados           | `https://qa-test-utils-service.youse.io/v1/orders` |
-| `BFF_URL`            | URL do BFF                                 | `https://qa-bff.youse.io`                          |
-| `ZEPHYR_API_TOKEN`   | Token do Zephyr Scale (Jira)               | —                                                  |
-| `ZEPHYR_PROJECT_KEY` | Chave do projeto no Zephyr                 | `POSV`                                             |
-| `CILIA_TOKEN`        | Token do serviço Cilia (sinistros)         | —                                                  |
-| `CI`                 | Se `true`, ativa modo headless e 4 workers | —                                                  |
+| Variável             | Descrição                                                              | Padrão                                             |
+| -------------------- | ---------------------------------------------------------------------- | -------------------------------------------------- |
+| `BASE_URL`           | URL base do frontend de cotação                                        | `https://qa-cotacao.youse.io/seguro-auto`          |
+| `TEST_UTILS_URL`     | URL do serviço de massa de dados                                       | `https://qa-test-utils-service.youse.io/v1/orders` |
+| `BFF_URL`            | URL do BFF                                                             | `https://qa-bff.youse.io`                          |
+| `ZEPHYR_API_TOKEN`   | Token do Zephyr Scale (Jira)                                           | —                                                  |
+| `ZEPHYR_PROJECT_KEY` | Chave do projeto no Zephyr                                             | `POSV`                                             |
+| `CILIA_TOKEN`        | Token do serviço Cilia (sinistros)                                     | —                                                  |
+| `CI`                 | Se `true`, ativa modo headless e 4 workers                             | —                                                  |
+| `PW_WORKERS`         | Override de workers (local: padrão Playwright `50%` dos cores lógicos) | —                                                  |
 
 > **Nunca commite o `.env`.** Ele está no `.gitignore`.
 > Para executar localmente **sem** o Zephyr, use `--reporter=list` (veja [Como Executar](#como-executar)).
@@ -209,12 +210,11 @@ qa-e2e-tests-automation/
 │       │   ├── ciliaClaimAuth.spec.ts    # Autenticação de sinistro via WhatsApp
 │       │   └── testUtils.spec.ts         # Testes do serviço de massa de dados
 │       └── e2e/
-│           ├── cotacaoAuto.spec.ts       # Cotação auto — caminho feliz + cenários negativos (CPF, veículo)
-│           ├── validateBonusClass.spec.ts # Classe de Bônus — modal, seleção, redirecionamento
-│           ├── precosPlanos.spec.ts      # Variação de preços por risco (bônus, garagem, uso, estabilidade)
-│           ├── coberturas.spec.ts        # Coberturas × Assistências × integridade de preço por plano
-│           ├── assistencias.spec.ts      # Assistências — visibilidade e impacto de preço na personalização
-│           └── personalizacao.spec.ts    # Personalização — impacto de coberturas/assistências no prêmio + E2E
+│           ├── README.md                 # Organização journeys / ux / blockers / regression
+│           ├── journeys/                 # Fluxos E2E completos (@journey)
+│           ├── ux/                       # Usabilidade por tela (@ux @smoke)
+│           ├── blockers/                 # Cenários negativos (@negative)
+│           └── regression/               # Preço, coberturas, assistências (@regression)
 │
 ├── .github/
 │   ├── CODEOWNERS                  # Ownership de arquivos críticos
@@ -384,7 +384,7 @@ npx playwright test tests/spec/e2e --project=chromium --reporter=list
 
 ```bash
 # Caminho feliz da cotação
-npx playwright test cotacaoAuto --project=chromium --reporter=list
+npx playwright test tests/spec/e2e/journeys --project=chromium --reporter=list
 
 # Testes de preços
 npx playwright test precosPlanos --project=chromium --reporter=list
@@ -444,7 +444,9 @@ As tags organizam os testes por pipeline e finalidade. Use sempre `--grep` para 
 
 | Tag               | Quando executar                                | Tempo estimado                       |
 | ----------------- | ---------------------------------------------- | ------------------------------------ |
-| `@smoke`          | A cada PR                                      | ~5 min                               |
+| `@smoke`          | A cada PR (`npm run test:smoke`)               | ~5–10 min                            |
+| `@ux`             | Usabilidade por tela (PR)                      | ~5 min                               |
+| `@journey`        | Jornadas E2E completas (nightly)               | ~15–30 min                           |
 | `@a11y`           | On release / PR (com VPN)                      | ~15–25 min (mobile + tablet)         |
 | `@regression`     | Nightly                                        | ~20 min                              |
 | `@price`          | On release                                     | ~30 min (cotações duplas são lentas) |
@@ -562,13 +564,13 @@ expect(precoEssencial).toBe(2205.92);
 
 ### Nomenclatura
 
-| Item               | Convenção                        | Exemplo                         |
-| ------------------ | -------------------------------- | ------------------------------- |
-| Arquivos de página | PascalCase + `Page.ts`           | `LeadInfoPage.ts`               |
-| Arquivos de spec   | camelCase + `.spec.ts`           | `cotacaoAuto.spec.ts`           |
-| Métodos de ação    | camelCase, verbo + substantivo   | `fillLicensePlate()`            |
-| Tags de teste      | kebab-case com `@`               | `@b2c`, `@happy_path`, `@price` |
-| Branches           | `feature/`, `bugfix/`, `hotfix/` | `feature/assistencia`           |
+| Item               | Convenção                        | Exemplo                                  |
+| ------------------ | -------------------------------- | ---------------------------------------- |
+| Arquivos de página | PascalCase + `Page.ts`           | `LeadInfoPage.ts`                        |
+| Arquivos de spec   | camelCase + `.spec.ts`           | `journeys/cotacao-plano-regular.spec.ts` |
+| Métodos de ação    | camelCase, verbo + substantivo   | `fillLicensePlate()`                     |
+| Tags de teste      | kebab-case com `@`               | `@b2c`, `@happy_path`, `@price`          |
+| Branches           | `feature/`, `bugfix/`, `hotfix/` | `feature/assistencia`                    |
 
 ### Commits
 

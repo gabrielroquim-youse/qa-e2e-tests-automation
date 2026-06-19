@@ -5,11 +5,11 @@
  * selecionar uma classe específica e selecionar "Não quero informar".
  * Utiliza encadeamento fluente via proxymise (sem await intermediário).
  */
-import { expect, test } from '@playwright/test';
-import { VehicleUsages } from '../../enum/VehicleUsages';
-import { MaritalStatuses } from '../../enum/MaritalStatuses';
-import LeadInfoPage from '../../pages/quotation/LeadInfoPage';
-import { UserBonusClass } from '../../enum/UserBonusClass';
+import { expect, test } from '../../../fixtures/setupQuotation';
+import { VehicleUsages } from '../../../enum/VehicleUsages';
+import { MaritalStatuses } from '../../../enum/MaritalStatuses';
+import LeadInfoPage from '../../../pages/quotation/LeadInfoPage';
+import { UserBonusClass } from '../../../enum/UserBonusClass';
 
 test.describe('Classe de Bônus - Seguro Auto', { tag: ['@b2c', '@quotation_auto'] }, () => {
   test('Não deve utilizar classe de bônus', async ({ page }) => {

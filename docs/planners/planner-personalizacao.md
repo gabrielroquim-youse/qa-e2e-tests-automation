@@ -12,7 +12,7 @@ Tela de personalização do Seguro Auto Youse — fluxo iniciado ao clicar em "P
 
 #### 1.1. Ativar cobertura opcional aumenta o prêmio
 
-**File:** `tests/spec/e2e/personalizacao.spec.ts`
+**File:** `tests/spec/e2e/regression/personalizacao.spec.ts`
 
 **Steps:**
 
@@ -32,7 +32,7 @@ Tela de personalização do Seguro Auto Youse — fluxo iniciado ao clicar em "P
 
 #### 1.2. Desativar cobertura incluída reduz o prêmio
 
-**File:** `tests/spec/e2e/personalizacao.spec.ts`
+**File:** `tests/spec/e2e/regression/personalizacao.spec.ts`
 
 **Steps:**
 
@@ -50,7 +50,7 @@ Tela de personalização do Seguro Auto Youse — fluxo iniciado ao clicar em "P
 
 #### 1.3. Reduzir franquia aumenta o prêmio
 
-**File:** `tests/spec/e2e/personalizacao.spec.ts`
+**File:** `tests/spec/e2e/regression/personalizacao.spec.ts`
 
 **Steps:**
 
@@ -68,7 +68,7 @@ Tela de personalização do Seguro Auto Youse — fluxo iniciado ao clicar em "P
 
 #### 1.4. Aumentar valor de indenização aumenta o prêmio
 
-**File:** `tests/spec/e2e/personalizacao.spec.ts`
+**File:** `tests/spec/e2e/regression/personalizacao.spec.ts`
 
 **Steps:**
 
@@ -90,7 +90,7 @@ Tela de personalização do Seguro Auto Youse — fluxo iniciado ao clicar em "P
 
 #### 2.1. Adicionar assistência paga aumenta o prêmio
 
-**File:** `tests/spec/e2e/personalizacao.spec.ts`
+**File:** `tests/spec/e2e/regression/personalizacao.spec.ts`
 
 **Steps:**
 
@@ -113,7 +113,7 @@ Tela de personalização do Seguro Auto Youse — fluxo iniciado ao clicar em "P
 
 ### 3. Navegação — Coberturas → Assistências → Checkout (sem contratar)
 
-**File:** `tests/spec/e2e/personalizacao.spec.ts`  
+**File:** `tests/spec/e2e/regression/personalizacao.spec.ts`  
 **Helper:** `navigateToCheckout()` em `tests/helpers/funnel.ts`
 
 **Steps:**
@@ -130,7 +130,7 @@ Tela de personalização do Seguro Auto Youse — fluxo iniciado ao clicar em "P
 
 ### 4. Cobertura obrigatória não desliga
 
-**File:** `tests/spec/e2e/personalizacao.spec.ts`  
+**File:** `tests/spec/e2e/regression/personalizacao.spec.ts`  
 **Tags:** `@negative`
 
 **Steps:**

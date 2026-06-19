@@ -7,7 +7,7 @@
  * @see docs/guides/accessibility-analysis.md
  */
 /* eslint-disable playwright/expect-expect -- asserts em tests/helpers/a11y.ts */
-import { test } from '@playwright/test';
+import { test } from '../../fixtures/setupQuotation';
 import { expectNoAccessibilityViolations } from '../../helpers/a11y';
 import { navigateToAssistances, navigateToCheckout, navigateToCoverages, navigateToPlans } from '../../helpers/funnel';
 import LeadInfoPage from '../../pages/quotation/LeadInfoPage';
@@ -15,8 +15,6 @@ import LeadInfoPage from '../../pages/quotation/LeadInfoPage';
 const A11Y_TIMEOUT = 240_000;
 
 test.describe('A11y smoke — funil cotação auto', { tag: ['@a11y', '@quotation_auto'] }, () => {
-  test.describe.configure({ mode: 'serial' });
-
   test('lead_info — sem violações serious/critical', async ({ page }) => {
     test.setTimeout(A11Y_TIMEOUT);
     await LeadInfoPage.open(page);

@@ -15,7 +15,8 @@
 # aprovação do líder técnico de automação.
 .github/workflows/              @youse-seguradora/quality-engineers
 playwright.config.ts            @youse-seguradora/quality-engineers
-.eslintrc.cjs                   @youse-seguradora/quality-engineers
+playwright.a11y.config.ts       @youse-seguradora/quality-engineers
+eslint.config.mjs               @youse-seguradora/quality-engineers
 .prettierrc                     @youse-seguradora/quality-engineers
 package.json                    @youse-seguradora/quality-engineers
 tsconfig.json                   @youse-seguradora/quality-engineers

@@ -40,7 +40,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P0',
     status: 'covered',
     testable: true,
-    specs: ['cotacaoAuto.spec.ts'],
+    specs: ['journeys/cotacao-plano-regular.spec.ts', 'ux/lead-info.spec.ts'],
     planner: 'planner.md',
   },
   {
@@ -48,10 +48,11 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     section: 'lead_info',
     label: 'Validação de campos obrigatórios',
     priority: 'P2',
-    status: 'missing',
+    status: 'partial',
     testable: true,
+    specs: ['ux/lead-info.spec.ts'],
     planner: 'planner.md',
-    notes: 'Mensagens de erro inline',
+    notes: 'E-mail inválido; expandir campos vazios/máscaras',
   },
 
   // ── vehicle_details ──
@@ -62,7 +63,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P0',
     status: 'covered',
     testable: true,
-    specs: ['cotacaoAuto.spec.ts'],
+    specs: ['journeys/cotacao-plano-regular.spec.ts'],
   },
   {
     id: 'CAP-04',
@@ -71,7 +72,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P2',
     status: 'partial',
     testable: true,
-    specs: ['precosPlanos.spec.ts'],
+    specs: ['regression/precosPlanos.spec.ts'],
     notes: 'Só compara diferença, não ordinal estrito',
   },
   {
@@ -81,7 +82,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P0',
     status: 'covered',
     testable: true,
-    specs: ['cotacaoAuto.spec.ts'],
+    specs: ['blockers/cotacao-restricoes.spec.ts'],
     planner: 'planner.md',
   },
   {
@@ -89,9 +90,10 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     section: 'vehicle_details',
     label: 'Bloqueio placa restrita (leilão)',
     priority: 'P0',
-    status: 'covered',
+    status: 'partial',
     testable: true,
-    specs: ['cotacaoAuto.spec.ts'],
+    specs: ['blockers/cotacao-restricoes.spec.ts'],
+    notes: 'test.fixme — QA não bloqueia placa de leilão',
   },
 
   // ── vehicle_additional_details ──
@@ -102,7 +104,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P0',
     status: 'covered',
     testable: true,
-    specs: ['cotacaoAuto.spec.ts'],
+    specs: ['journeys/cotacao-plano-regular.spec.ts'],
   },
   {
     id: 'CAP-08',
@@ -111,7 +113,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['precosPlanos.spec.ts'],
+    specs: ['regression/precosPlanos.spec.ts'],
     planner: 'planner-precos.md',
   },
   {
@@ -121,7 +123,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['precosPlanos.spec.ts'],
+    specs: ['regression/precosPlanos.spec.ts'],
   },
   {
     id: 'CAP-10',
@@ -142,7 +144,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P0',
     status: 'covered',
     testable: true,
-    specs: ['cotacaoAuto.spec.ts'],
+    specs: ['journeys/cotacao-plano-regular.spec.ts'],
   },
   {
     id: 'CAP-12',
@@ -151,7 +153,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P0',
     status: 'covered',
     testable: true,
-    specs: ['cotacaoAuto.spec.ts'],
+    specs: ['blockers/cotacao-restricoes.spec.ts'],
   },
   {
     id: 'CAP-13',
@@ -160,7 +162,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['precosPlanos.spec.ts'],
+    specs: ['regression/precosPlanos.spec.ts'],
   },
   {
     id: 'CAP-14',
@@ -181,7 +183,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['validateBonusClass.spec.ts'],
+    specs: ['regression/validateBonusClass.spec.ts'],
   },
   {
     id: 'CAP-16',
@@ -190,7 +192,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['precosPlanos.spec.ts', 'validateBonusClass.spec.ts'],
+    specs: ['regression/precosPlanos.spec.ts', 'regression/validateBonusClass.spec.ts'],
   },
 
   // ── data_enrichment ──
@@ -212,7 +214,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P0',
     status: 'covered',
     testable: true,
-    specs: ['coberturas.spec.ts'],
+    specs: ['regression/coberturas.spec.ts', 'ux/plan-selection.spec.ts'],
   },
   {
     id: 'CAP-19',
@@ -221,7 +223,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P0',
     status: 'covered',
     testable: true,
-    specs: ['coberturas.spec.ts', 'precosPlanos.spec.ts'],
+    specs: ['regression/coberturas.spec.ts', 'regression/precosPlanos.spec.ts'],
   },
   {
     id: 'CAP-20',
@@ -230,7 +232,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['coberturas.spec.ts'],
+    specs: ['regression/coberturas.spec.ts', 'ux/plan-selection.spec.ts'],
   },
   {
     id: 'CAP-21',
@@ -239,7 +241,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P0',
     status: 'covered',
     testable: true,
-    specs: ['personalizacao.spec.ts', 'coberturas.spec.ts'],
+    specs: ['regression/personalizacao.spec.ts', 'regression/coberturas.spec.ts'],
   },
 
   // ── coverages_selection ──
@@ -250,7 +252,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['personalizacao.spec.ts'],
+    specs: ['regression/personalizacao.spec.ts'],
   },
   {
     id: 'CAP-23',
@@ -259,7 +261,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['personalizacao.spec.ts'],
+    specs: ['regression/personalizacao.spec.ts'],
   },
   {
     id: 'CAP-24',
@@ -268,7 +270,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['personalizacao.spec.ts'],
+    specs: ['regression/personalizacao.spec.ts'],
     planner: 'planner-personalizacao.md',
   },
   {
@@ -278,7 +280,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['personalizacao.spec.ts'],
+    specs: ['regression/personalizacao.spec.ts'],
   },
   {
     id: 'CAP-26',
@@ -287,7 +289,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['personalizacao.spec.ts'],
+    specs: ['regression/personalizacao.spec.ts'],
   },
   {
     id: 'CAP-27',
@@ -296,7 +298,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P2',
     status: 'partial',
     testable: true,
-    specs: ['validacaoValores.spec.ts'],
+    specs: ['regression/validacaoValores.spec.ts'],
     planner: 'planner-validacao-valores.md',
     notes: 'Danos Morais ✅; estender',
   },
@@ -309,7 +311,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['assistencias.spec.ts'],
+    specs: ['regression/assistencias.spec.ts'],
   },
   {
     id: 'CAP-29',
@@ -318,7 +320,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['assistencias.spec.ts'],
+    specs: ['regression/assistencias.spec.ts'],
   },
   {
     id: 'CAP-30',
@@ -327,7 +329,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['assistencias.spec.ts'],
+    specs: ['regression/assistencias.spec.ts'],
   },
   {
     id: 'CAP-31',
@@ -336,7 +338,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['assistencias.spec.ts'],
+    specs: ['regression/assistencias.spec.ts'],
     planner: 'planner-assistencias.md',
   },
   {
@@ -346,7 +348,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['assistenciaRpsPromo.spec.ts'],
+    specs: ['regression/assistenciaRpsPromo.spec.ts'],
   },
   {
     id: 'CAP-33',
@@ -364,7 +366,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P2',
     status: 'partial',
     testable: true,
-    specs: ['validacaoValores.spec.ts'],
+    specs: ['regression/validacaoValores.spec.ts'],
     notes: 'IPVA parcial no HEAD',
   },
 
@@ -387,7 +389,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['personalizacao.spec.ts'],
+    specs: ['ux/checkout.spec.ts', 'regression/personalizacao.spec.ts'],
   },
   {
     id: 'CAP-37',
@@ -396,7 +398,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P0',
     status: 'covered',
     testable: true,
-    specs: ['cotacaoAuto.spec.ts', 'personalizacao.spec.ts'],
+    specs: ['journeys/cotacao-plano-regular.spec.ts', 'journeys/cotacao-plano-personalizado.spec.ts'],
   },
   {
     id: 'CAP-38',
@@ -414,8 +416,8 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P2',
     status: 'partial',
     testable: true,
-    specs: ['cotacaoAuto.spec.ts'],
-    notes: 'Happy path; assert dedicado ⬜',
+    specs: ['ux/checkout.spec.ts', 'journeys/cotacao-plano-regular.spec.ts'],
+    notes: 'Accordion assistências; expandir asserts dedicados',
   },
 
   // ── issuance / sucesso ──
@@ -426,10 +428,8 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P0',
     status: 'covered',
     testable: true,
-    specs: ['cotacaoAuto.spec.ts', 'personalizacao.spec.ts'],
+    specs: ['journeys/cotacao-plano-regular.spec.ts', 'journeys/cotacao-plano-personalizado.spec.ts'],
   },
-
-  // ── transversal ──
   {
     id: 'CAP-41',
     section: 'transversal',
@@ -437,7 +437,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P1',
     status: 'covered',
     testable: true,
-    specs: ['precosPlanos.spec.ts'],
+    specs: ['regression/precosPlanos.spec.ts'],
   },
   {
     id: 'CAP-42',
@@ -446,7 +446,7 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     priority: 'P0',
     status: 'covered',
     testable: true,
-    specs: ['precosPlanos.spec.ts', 'coberturas.spec.ts'],
+    specs: ['regression/precosPlanos.spec.ts', 'regression/coberturas.spec.ts'],
   },
   {
     id: 'CAP-43',

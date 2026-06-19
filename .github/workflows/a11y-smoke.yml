@@ -1,0 +1,71 @@
+##
+## A11y Smoke — sandbox WCAG (viewport mobile/tablet)
+##
+## Não bloqueia PRs — execução manual ou agendada (nightly).
+## Requer VPN/rede com acesso ao ambiente QA (BASE_URL).
+##
+name: A11y Smoke — Playwright
+
+on:
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'Perfil de device (mobile-chrome, mobile-ios, tablet ou all)'
+        required: false
+        default: 'mobile-chrome'
+  schedule:
+    - cron: '0 6 * * 1-5'
+
+concurrency:
+  group: a11y-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  a11y-smoke:
+    name: A11y smoke — ${{ github.event.inputs.project || 'mobile-chrome' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Instalar navegadores Playwright
+        run: npx playwright install chromium webkit --with-deps
+
+      - name: Executar smoke a11y
+        run: |
+          PROJECT="${{ github.event.inputs.project || 'mobile-chrome' }}"
+          if [ "$PROJECT" = "all" ]; then
+            npx playwright test -c playwright.a11y.config.ts --grep @a11y --reporter=list
+          else
+            npx playwright test -c playwright.a11y.config.ts --grep @a11y --project="$PROJECT" --reporter=list
+          fi
+        env:
+          CI: 'true'
+          BASE_URL: ${{ secrets.BASE_URL }}
+
+      - name: Upload relatório HTML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a11y-playwright-report
+          path: playwright-report/a11y/
+          retention-days: 14
+
+      - name: Upload artefatos de debug em falha
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a11y-debug-artifacts
+          path: test-results/
+          retention-days: 7

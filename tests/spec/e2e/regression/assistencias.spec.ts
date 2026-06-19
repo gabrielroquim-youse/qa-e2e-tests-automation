@@ -27,8 +27,8 @@
  * Pré-requisito: VPN Youse ativa com acesso ao ambiente QA.
  * Uso: npx playwright test assistencias --project=chromium --reporter=list
  */
-import { test, expect } from '@playwright/test';
-import { navigateToAssistances } from '../../helpers/funnel';
+import { expect, test } from '../../../fixtures/setupQuotation';
+import { navigateToAssistances } from '../../../helpers/funnel';
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
 

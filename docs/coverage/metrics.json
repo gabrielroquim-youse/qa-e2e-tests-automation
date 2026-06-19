@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-18",
+  "generatedAt": "2026-06-19",
   "github": {
     "owner": "youse-seguradora",
     "repo": "sales-frontend",
@@ -13,18 +13,18 @@
   },
   "functional": {
     "testableTotal": 42,
-    "covered": 31,
-    "partial": 4,
-    "missing": 5,
+    "covered": 30,
+    "partial": 6,
+    "missing": 4,
     "blocked": 2,
     "percentWeighted": 79,
-    "percentStrict": 74
+    "percentStrict": 71
   },
   "byPriority": {
     "P0": {
       "total": 13,
-      "covered": 13,
-      "percent": 100
+      "covered": 12,
+      "percent": 92
     },
     "P1": {
       "total": 18,
@@ -43,16 +43,6 @@
     }
   },
   "gaps": [
-    {
-      "id": "CAP-02",
-      "section": "lead_info",
-      "label": "Validação de campos obrigatórios",
-      "priority": "P2",
-      "status": "missing",
-      "testable": true,
-      "planner": "planner.md",
-      "notes": "Mensagens de erro inline"
-    },
     {
       "id": "CAP-17",
       "section": "data_enrichment",
@@ -112,14 +102,35 @@
   ],
   "partials": [
     {
+      "id": "CAP-02",
+      "section": "lead_info",
+      "label": "Validação de campos obrigatórios",
+      "priority": "P2",
+      "status": "partial",
+      "testable": true,
+      "specs": ["ux/lead-info.spec.ts"],
+      "planner": "planner.md",
+      "notes": "E-mail inválido; expandir campos vazios/máscaras"
+    },
+    {
       "id": "CAP-04",
       "section": "vehicle_details",
       "label": "Toggle zero km",
       "priority": "P2",
       "status": "partial",
       "testable": true,
-      "specs": ["precosPlanos.spec.ts"],
+      "specs": ["regression/precosPlanos.spec.ts"],
       "notes": "Só compara diferença, não ordinal estrito"
+    },
+    {
+      "id": "CAP-06",
+      "section": "vehicle_details",
+      "label": "Bloqueio placa restrita (leilão)",
+      "priority": "P0",
+      "status": "partial",
+      "testable": true,
+      "specs": ["blockers/cotacao-restricoes.spec.ts"],
+      "notes": "test.fixme — QA não bloqueia placa de leilão"
     },
     {
       "id": "CAP-27",
@@ -128,7 +139,7 @@
       "priority": "P2",
       "status": "partial",
       "testable": true,
-      "specs": ["validacaoValores.spec.ts"],
+      "specs": ["regression/validacaoValores.spec.ts"],
       "planner": "planner-validacao-valores.md",
       "notes": "Danos Morais ✅; estender"
     },
@@ -139,7 +150,7 @@
       "priority": "P2",
       "status": "partial",
       "testable": true,
-      "specs": ["validacaoValores.spec.ts"],
+      "specs": ["regression/validacaoValores.spec.ts"],
       "notes": "IPVA parcial no HEAD"
     },
     {
@@ -149,8 +160,8 @@
       "priority": "P2",
       "status": "partial",
       "testable": true,
-      "specs": ["cotacaoAuto.spec.ts"],
-      "notes": "Happy path; assert dedicado ⬜"
+      "specs": ["ux/checkout.spec.ts", "journeys/cotacao-plano-regular.spec.ts"],
+      "notes": "Accordion assistências; expandir asserts dedicados"
     }
   ]
 }

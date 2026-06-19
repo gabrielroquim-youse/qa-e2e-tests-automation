@@ -163,7 +163,7 @@ Abaixo: síntese **hoje → deveria ser → por quê**.
 Com perfis `mobile-chrome` / `mobile-ios`, Playwright emula touch (`hasTouch: true`). Dá para **simular tap** em botões, switches e cards — complementa teclado (usuário real em celular usa dedo, não Tab).
 
 ```typescript
-import { tapControl, doubleTapControl } from '../../helpers/a11yTouch';
+import { tapControl } from '../../helpers/a11yTouch';
 
 await tapControl(lead.btnContinue);
 ```

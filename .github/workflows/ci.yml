@@ -2,17 +2,13 @@
 ## GitHub Actions — CI Pipeline — Seguro Auto E2E
 ##
 ## Estrutura da esteira:
-##   1. validate    → typecheck + lint + format check (rápido, roda primeiro)
-##   2. test        → Playwright com sharding (4 shards paralelos)
-##   3. merge-report → consolida relatórios de todos os shards
-##
-## Gatilhos:
-##   - Pull Request para main  → valida + testa antes do merge
-##   - Push em main            → executa a suíte completa
-##   - workflow_dispatch       → execução manual com filtro de tag opcional
+##   1. validate     → typecheck + lint + format check
+##   2. test-smoke   → PR: journeys + ux (@smoke, ~5–10 min)
+##   3. test         → push main / manual: suíte completa (4 shards)
+##   4. merge-report → consolida relatórios dos shards
 ##
 ## Pré-requisitos (GitHub Secrets):
-##   BASE_URL           → URL do ambiente QA (ex: https://qa-cotacao.youse.io/seguro-auto)
+##   BASE_URL           → URL do ambiente QA
 ##   ZEPHYR_API_TOKEN   → Token do Zephyr Scale (Jira)
 ##   ZEPHYR_PROJECT_KEY → Chave do projeto no Zephyr (ex: POSV)
 ##
@@ -35,10 +31,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# ─────────────────────────────────────────────────────────────────────────────
-# JOB 1 — Validação estática (typecheck + lint + prettier)
-# Roda em ~30 s e bloqueia o pipeline antes de desperdiçar tempo com testes
-# ─────────────────────────────────────────────────────────────────────────────
 jobs:
   validate:
     name: Validação Estática (Lint + Types + Format)
@@ -67,13 +59,49 @@ jobs:
       - name: Verificar formatação (Prettier)
         run: npm run format:check
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 2 — Testes Playwright (4 shards paralelos)
-  # Cada shard roda em uma VM independente; os artefatos são consolidados depois.
-  # ─────────────────────────────────────────────────────────────────────────────
+  test-smoke:
+    name: Smoke — journeys + UX (@smoke)
+    needs: validate
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Instalar navegadores Playwright
+        run: npx playwright install chromium --with-deps
+
+      - name: Executar smoke
+        run: npm run test:smoke
+        env:
+          CI: 'true'
+          BASE_URL: ${{ secrets.BASE_URL }}
+          ZEPHYR_API_TOKEN: ${{ secrets.ZEPHYR_API_TOKEN }}
+          ZEPHYR_PROJECT_KEY: ${{ secrets.ZEPHYR_PROJECT_KEY }}
+
+      - name: Upload artefatos de debug em falha
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-artifacts-smoke
+          path: test-results/
+          retention-days: 7
+
   test:
     name: Testes E2E — Shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
     needs: validate
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -106,6 +134,7 @@ jobs:
             GREP_FLAG="--grep \"${{ github.event.inputs.grep }}\""
           fi
           npx playwright test \
+            --project=chromium \
             --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} \
             $GREP_FLAG
         env:
@@ -130,13 +159,10 @@ jobs:
           path: test-results/
           retention-days: 7
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 3 — Consolidação dos relatórios de todos os shards
-  # ─────────────────────────────────────────────────────────────────────────────
   merge-report:
     name: Consolidar Relatório HTML
     needs: test
-    if: always()
+    if: always() && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -169,111 +195,3 @@ jobs:
           name: playwright-report-full
           path: playwright-report/
           retention-days: 30
-
-# on:
-#   push:
-#     branches: [main]
-#   pull_request:
-#     branches: [main]
-#   workflow_dispatch:
-
-# jobs:
-#   test:
-#     name: Executar Testes E2E
-#     timeout-minutes: 60
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout do código
-#         uses: actions/checkout@v4
-
-#       - name: Setup Node.js
-#         uses: actions/setup-node@v4
-#         with:
-#           node-version: '20'
-#           cache: 'npm'
-
-#       - name: Instalar dependências
-#         run: npm ci
-
-#       - name: Instalar navegadores do Playwright
-#         run: npx playwright install --with-deps
-
-#       - name: Executar testes Playwright
-#         run: npm test
-#         env:
-#           CI: true
-#           BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:3000' }}
-
-#       - name: Upload do relatório Playwright
-#         if: always()
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: playwright-report
-#           path: playwright-report/
-#           retention-days: 30
-
-#       - name: Upload de screenshots e vídeos
-#         if: always()
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: test-results
-#           path: test-results/
-#           retention-days: 30
-
-#       - name: Upload dos resultados Allure
-#         if: always()
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: allure-results
-#           path: allure-results/
-#           retention-days: 30
-
-#   allure-report:
-#     name: Gerar Relatório Allure
-#     needs: test
-#     if: always()
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout do código
-#         uses: actions/checkout@v4
-
-#       - name: Download dos resultados Allure
-#         uses: actions/download-artifact@v4
-#         with:
-#           name: allure-results
-#           path: allure-results
-
-#       - name: Instalar Allure
-#         run: |
-#           wget https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
-#           tar -zxvf allure-2.24.0.tgz
-#           sudo mv allure-2.24.0 /opt/allure
-#           sudo ln -s /opt/allure/bin/allure /usr/bin/allure
-
-#       - name: Gerar relatório Allure
-#         run: allure generate --clean allure-results -o allure-report
-
-#       - name: Upload do relatório Allure HTML
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: allure-report-html
-#           path: allure-report/
-#           retention-days: 30
-
-#   notify:
-#     name: Notificação de Resultado
-#     needs: test
-#     if: always()
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Status dos testes
-#         run: |
-#           if [ "${{ needs.test.result }}" == "success" ]; then
-#             echo "✅ Todos os testes passaram com sucesso!"
-#           else
-#             echo "❌ Alguns testes falharam. Verifique os artefatos."
-#             exit 1
-#           fi

@@ -6,20 +6,20 @@
 
 <!-- COVERAGE_METRICS:START -->
 
-> 🤖 **Atualizado automaticamente** em 2026-06-18 · Fonte: [`sales-frontend`](https://github.com/youse-seguradora/sales-frontend) @ `main` · `49` testes E2E · `42` capacidades testáveis inventariadas
+> 🤖 **Atualizado automaticamente** em 2026-06-19 · Fonte: [`sales-frontend`](https://github.com/youse-seguradora/sales-frontend) @ `main` · `55` testes E2E · `42` capacidades testáveis inventariadas
 
 ## Painel de cobertura (leitura rápida)
 
 | Indicador                           |   Valor | Em plain language                                                      |
 | ----------------------------------- | ------: | ---------------------------------------------------------------------- |
 | **Cobertura funcional (principal)** | **79%** | Capacidades do front com teste dedicado, contando parciais pela metade |
-| Cobertura funcional estrita         |     74% | Só conta ✅ com teste dedicado (sem 🟡)                                |
+| Cobertura funcional estrita         |     71% | Só conta ✅ com teste dedicado (sem 🟡)                                |
 | Cobertura estrutural (telas)        |     77% | Telas do funil com Page Object (10/13)                                 |
-| P0 automatizado                     |    100% | 13/13 itens críticos                                                   |
+| P0 automatizado                     |     92% | 12/13 itens críticos                                                   |
 | P1 automatizado                     |    100% | 18/18 itens alto risco                                                 |
-| ✅ Coberto                          |      31 | Teste E2E dedicado                                                     |
-| 🟡 Parcial                          |       4 | Happy path ou regra incompleta                                         |
-| ⬜ Falta automatizar                |       5 | Front permite testar; sem spec                                         |
+| ✅ Coberto                          |      30 | Teste E2E dedicado                                                     |
+| 🟡 Parcial                          |       6 | Happy path ou regra incompleta                                         |
+| ⬜ Falta automatizar                |       4 | Front permite testar; sem spec                                         |
 | 🔒 Bloqueado                        |       2 | Depende massa/API — ver backlog                                        |
 
 ### Fórmula do indicador principal
@@ -34,7 +34,6 @@ Capacidades testáveis = inventário em `scripts/coverage-inventory.ts` (derivad
 
 | ID     | Funcionalidade (front)                       | Section                      | Status | Planner                 | Notas                                  |
 | ------ | -------------------------------------------- | ---------------------------- | ------ | ----------------------- | -------------------------------------- |
-| CAP-02 | Validação de campos obrigatórios             | `lead_info`                  | ⬜     | planner.md              | Mensagens de erro inline               |
 | CAP-17 | Tela de enriquecimento de dados              | `data_enrichment`            | ⬜     | —                       | Section no front; fluxo QA pode pular  |
 | CAP-33 | Assistências imutáveis (plano pré-formatado) | `assistances_selection`      | ⬜     | planner-assistencias.md | —                                      |
 | CAP-35 | Tela aceite de risco                         | `risk_acceptance`            | ⬜     | —                       | Sem POM; aparece em perfis específicos |
@@ -44,12 +43,14 @@ Capacidades testáveis = inventário em `scripts/coverage-inventory.ts` (derivad
 
 ### Cobertura parcial — completar depois (🟡)
 
-| ID     | Funcionalidade                  | Section                 | Spec atual               | Próximo passo                             |
-| ------ | ------------------------------- | ----------------------- | ------------------------ | ----------------------------------------- |
-| CAP-04 | Toggle zero km                  | `vehicle_details`       | precosPlanos.spec.ts     | Só compara diferença, não ordinal estrito |
-| CAP-27 | Delta simétrico coberturas      | `coverages_selection`   | validacaoValores.spec.ts | Danos Morais ✅; estender                 |
-| CAP-34 | Delta simétrico assistências    | `assistances_selection` | validacaoValores.spec.ts | IPVA parcial no HEAD                      |
-| CAP-39 | Resumo assistências no checkout | `checkout`              | cotacaoAuto.spec.ts      | Happy path; assert dedicado ⬜            |
+| ID     | Funcionalidade                   | Section                 | Spec atual                                                  | Próximo passo                                      |
+| ------ | -------------------------------- | ----------------------- | ----------------------------------------------------------- | -------------------------------------------------- |
+| CAP-02 | Validação de campos obrigatórios | `lead_info`             | ux/lead-info.spec.ts                                        | E-mail inválido; expandir campos vazios/máscaras   |
+| CAP-04 | Toggle zero km                   | `vehicle_details`       | regression/precosPlanos.spec.ts                             | Só compara diferença, não ordinal estrito          |
+| CAP-06 | Bloqueio placa restrita (leilão) | `vehicle_details`       | blockers/cotacao-restricoes.spec.ts                         | test.fixme — QA não bloqueia placa de leilão       |
+| CAP-27 | Delta simétrico coberturas       | `coverages_selection`   | regression/validacaoValores.spec.ts                         | Danos Morais ✅; estender                          |
+| CAP-34 | Delta simétrico assistências     | `assistances_selection` | regression/validacaoValores.spec.ts                         | IPVA parcial no HEAD                               |
+| CAP-39 | Resumo assistências no checkout  | `checkout`              | ux/checkout.spec.ts, journeys/cotacao-plano-regular.spec.ts | Accordion assistências; expandir asserts dedicados |
 
 <!-- COVERAGE_METRICS:END -->
 
@@ -115,15 +116,18 @@ Inventário completo com status por tela: **[`sync-report.md`](sync-report.md)**
 
 ## O que já está automatizado (resumo)
 
-| Área                      | Spec principal                                            | Exemplos cobertos                                 |
-| ------------------------- | --------------------------------------------------------- | ------------------------------------------------- |
-| Caminho feliz + negativos | `cotacaoAuto.spec.ts`                                     | Cotação → pagamento → apólice; CPF/placa/blindado |
-| Planos pré-formatados     | `coberturas.spec.ts`                                      | Essencial/Regular/1504, keywords, ordem preço     |
-| Preços por risco          | `precosPlanos.spec.ts`                                    | Bônus, garagem, uso, estado civil, sanidade       |
-| Personalização            | `personalizacao.spec.ts`                                  | Coberturas, franquia, navegação checkout          |
-| Assistências              | `assistencias.spec.ts`                                    | Toggles, combo, dependências                      |
-| Validação valores         | `validacaoValores.spec.ts`, `assistenciaRpsPromo.spec.ts` | Delta, promo RPS                                  |
-| Classe bônus UI           | `validateBonusClass.spec.ts`                              | Modal e seleções                                  |
+| Área                  | Spec principal                                                                  | Exemplos cobertos                             |
+| --------------------- | ------------------------------------------------------------------------------- | --------------------------------------------- |
+| Jornadas E2E          | `journeys/cotacao-plano-regular.spec.ts`                                        | Happy path Regular; smoke até checkout        |
+| Jornada personalizada | `journeys/cotacao-plano-personalizado.spec.ts`                                  | Personalizar → emissão                        |
+| Bloqueios             | `blockers/cotacao-restricoes.spec.ts`                                           | Blindado, CPF blacklist/PEP, leilão (fixme)   |
+| Usabilidade           | `ux/*.spec.ts`                                                                  | Lead, planos, checkout                        |
+| Planos pré-formatados | `regression/coberturas.spec.ts`                                                 | Essencial/Regular/1504, keywords, ordem preço |
+| Preços por risco      | `regression/precosPlanos.spec.ts`                                               | Bônus, garagem, uso, estado civil, sanidade   |
+| Personalização        | `regression/personalizacao.spec.ts`                                             | Coberturas, franquia, navegação checkout      |
+| Assistências          | `regression/assistencias.spec.ts`                                               | Toggles, combo, dependências                  |
+| Validação valores     | `regression/validacaoValores.spec.ts`, `regression/assistenciaRpsPromo.spec.ts` | Delta, promo RPS                              |
+| Classe bônus UI       | `regression/validateBonusClass.spec.ts`                                         | Modal e seleções                              |
 
 **Total de testes E2E:** ver painel acima ou [`sync-report.md`](sync-report.md) §3.
 

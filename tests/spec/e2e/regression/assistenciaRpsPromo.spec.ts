@@ -2,9 +2,9 @@
  * Promo RPS — oráculo híbrido: calendário + selo UI "por nossa conta!".
  * Ver docs/planners/planner-validacao-valores.md §7
  */
-import { test, expect } from '@playwright/test';
-import { navigateToAssistances } from '../../helpers/funnel';
-import { DELTA_TOLERANCE } from '../../helpers/pricingAssertions';
+import { expect, test } from '../../../fixtures/setupQuotation';
+import { navigateToAssistances } from '../../../helpers/funnel';
+import { DELTA_TOLERANCE } from '../../../helpers/pricingAssertions';
 
 const TEST_TIMEOUT = 180_000;
 const RPS_PROMO_START = new Date(2026, 5, 22, 0, 0, 0);

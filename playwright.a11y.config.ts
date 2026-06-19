@@ -8,6 +8,7 @@
  */
 import { defineConfig } from '@playwright/test';
 import 'dotenv/config';
+import TestConfig from './config/test.config';
 import { createA11yProjects } from './tests/config/a11yDevices';
 
 export default defineConfig({
@@ -19,6 +20,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['list']] : [['list'], ['html', { outputFolder: 'playwright-report/a11y', open: 'never' }]],
   use: {
+    baseURL: TestConfig.urls.autoQuotationUrl,
     screenshot: 'only-on-failure',
     actionTimeout: 15_000,
     navigationTimeout: 20_000,

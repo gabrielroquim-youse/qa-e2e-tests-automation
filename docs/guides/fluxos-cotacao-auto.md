@@ -40,15 +40,15 @@ flowchart TD
 
 ## Resumo de cobertura
 
-| Métrica                       |                   Valor |
-| ----------------------------- | ----------------------: |
-| Capacidades testáveis (CAP)   |                      42 |
-| Cobertura funcional ponderada |                 **79%** |
-| Cobertura estrita             |                     74% |
-| Telas com Page Object         |             10/13 (77%) |
-| Specs E2E                     | 8 arquivos · ~49 testes |
-| Fluxos documentados abaixo    |             18 caminhos |
-| Fluxos com E2E dedicado       |     14 ✅ · 2 🟡 · 2 ⬜ |
+| Métrica                       |                                                      Valor |
+| ----------------------------- | ---------------------------------------------------------: |
+| Capacidades testáveis (CAP)   |                                                         42 |
+| Cobertura funcional ponderada |                                                    **79%** |
+| Cobertura estrita             |                                                        74% |
+| Telas com Page Object         |                                                10/13 (77%) |
+| Specs E2E                     | 14 arquivos · ~52 testes (journeys/ux/blockers/regression) |
+| Fluxos documentados abaixo    |                                                18 caminhos |
+| Fluxos com E2E dedicado       |                                        14 ✅ · 2 🟡 · 2 ⬜ |
 
 ---
 
@@ -56,17 +56,17 @@ flowchart TD
 
 **Persona:** usuário mobile/desktop · placa válida · sem bônus · plano Regular · cartão
 
-| #   | Tela                       | Ações principais                                              | POM                          | Spec                    |
-| --- | -------------------------- | ------------------------------------------------------------- | ---------------------------- | ----------------------- |
-| 1   | lead_info                  | Nome, e-mail, telefone → Continuar                            | LeadInfoPage                 | cotacaoAuto             |
-| 2   | vehicle_details            | Placa · zero km off · blindado off → Continuar                | VehicleDetailsPage           | cotacaoAuto             |
-| 3   | vehicle_additional_details | CEP, número · garagem · uso Particular → Continuar            | VehicleAdditionalDetailsPage | cotacaoAuto             |
-| 4   | person_data                | CPF · estado civil → Continuar                                | PersonDataPage               | cotacaoAuto             |
-| 5   | bonuses_class              | Não (sem seguro anterior) → Continuar                         | BonusesClassPage             | cotacaoAuto             |
-| 6   | data_enrichment            | _(pode pular no QA)_                                          | —                            | —                       |
-| 7   | plan_selection             | Quero esse **Regular**                                        | PlanSelectionPage            | cotacaoAuto, coberturas |
-| 8   | checkout                   | Checkbox e-mail · accordion assistências · cartão · Finalizar | CheckoutPage                 | cotacaoAuto             |
-| 9   | issuance                   | Pagamento confirmado / redirect / webhook                     | IssuancePage                 | cotacaoAuto             |
+| #   | Tela                       | Ações principais                                              | POM                          | Spec                              |
+| --- | -------------------------- | ------------------------------------------------------------- | ---------------------------- | --------------------------------- |
+| 1   | lead_info                  | Nome, e-mail, telefone → Continuar                            | LeadInfoPage                 | cotacao-plano-regular             |
+| 2   | vehicle_details            | Placa · zero km off · blindado off → Continuar                | VehicleDetailsPage           | cotacao-plano-regular             |
+| 3   | vehicle_additional_details | CEP, número · garagem · uso Particular → Continuar            | VehicleAdditionalDetailsPage | cotacao-plano-regular             |
+| 4   | person_data                | CPF · estado civil → Continuar                                | PersonDataPage               | cotacao-plano-regular             |
+| 5   | bonuses_class              | Não (sem seguro anterior) → Continuar                         | BonusesClassPage             | cotacao-plano-regular             |
+| 6   | data_enrichment            | _(pode pular no QA)_                                          | —                            | —                                 |
+| 7   | plan_selection             | Quero esse **Regular**                                        | PlanSelectionPage            | cotacao-plano-regular, coberturas |
+| 8   | checkout                   | Checkbox e-mail · accordion assistências · cartão · Finalizar | CheckoutPage                 | cotacao-plano-regular             |
+| 9   | issuance                   | Pagamento confirmado / redirect / webhook                     | IssuancePage                 | cotacao-plano-regular             |
 
 **Status automação:** ✅ **CAP-01, 03, 07, 11, 18, 37, 40**
 
@@ -82,7 +82,7 @@ flowchart TD
 | 6   | plan_selection                  | **Personalizar** (`plan-card-button-custom`) | personalizacao, coberturas   |
 | 7   | coverages_selection             | Toggles · franquia · indenização → Continuar | personalizacao               |
 | 8   | assistances_selection           | Toggles · modais promo/combo → Continuar     | personalizacao, assistencias |
-| 9   | checkout → issuance             | Pagamento + 3 caminhos pós-pagamento         | personalizacao               |
+| 9   | checkout → issuance             | Pagamento + 3 caminhos pós-pagamento         | cotacao-plano-personalizado  |
 
 **Status automação:** ✅ **CAP-21, 22–26, 28–30, 36, 37, 40**
 
@@ -104,21 +104,21 @@ flowchart TD
 
 ### N1 — Veículo blindado
 
-| Etapa           | Ação            | Resultado esperado    | Spec                  |
-| --------------- | --------------- | --------------------- | --------------------- |
-| vehicle_details | Blindado **on** | Bloqueio · não avança | cotacaoAuto ✅ CAP-05 |
+| Etapa           | Ação            | Resultado esperado    | Spec                            |
+| --------------- | --------------- | --------------------- | ------------------------------- |
+| vehicle_details | Blindado **on** | Bloqueio · não avança | cotacao-plano-regular ✅ CAP-05 |
 
 ### N2 — Placa leilão / restrita
 
-| Etapa           | Ação                    | Resultado esperado | Spec                            |
-| --------------- | ----------------------- | ------------------ | ------------------------------- |
-| vehicle_details | Placa YOU-0020 (leilão) | Bloqueio           | cotacaoAuto **fixme** ⚠️ CAP-06 |
+| Etapa           | Ação                    | Resultado esperado | Spec                                      |
+| --------------- | ----------------------- | ------------------ | ----------------------------------------- |
+| vehicle_details | Placa YOU-0020 (leilão) | Bloqueio           | cotacao-plano-regular **fixme** ⚠️ CAP-06 |
 
 ### N3 — CPF blacklist / PEP
 
-| Etapa                  | Ação         | Resultado esperado                          | Spec                  |
-| ---------------------- | ------------ | ------------------------------------------- | --------------------- |
-| person_data → checkout | CPF restrito | Erro no pagamento "Alguma coisa deu errada" | cotacaoAuto ✅ CAP-12 |
+| Etapa                  | Ação         | Resultado esperado                          | Spec                            |
+| ---------------------- | ------------ | ------------------------------------------- | ------------------------------- |
+| person_data → checkout | CPF restrito | Erro no pagamento "Alguma coisa deu errada" | cotacao-plano-regular ✅ CAP-12 |
 
 ### N4 — Campos obrigatórios vazios
 
@@ -192,14 +192,14 @@ Cada linha = **duas cotações** com `resetSession` entre elas (`precosPlanos.sp
 
 ## Fluxos de checkout (sem pagar / pós-pagamento)
 
-| ID  | Cenário                                                  | Spec                        | CAP       |
-| --- | -------------------------------------------------------- | --------------------------- | --------- |
-| K1  | Chegar checkout via helper                               | personalizacao              | CAP-36    |
-| K2  | Accordion assistências visível                           | cotacaoAuto                 | CAP-39 🟡 |
-| K3  | Cross-sell residencial/vida **não** adicionado           | planner only                | CAP-38 ⬜ |
-| K4  | Cross-sell interação adicionar                           | —                           | CAP-38 ⬜ |
-| K5  | Pagamento + emissão                                      | cotacaoAuto, personalizacao | CAP-37    |
-| K6  | 3 caminhos pós-pagamento (sucesso / redirect / issuance) | personalizacao              | CAP-40    |
+| ID  | Cenário                                                  | Spec                                  | CAP       |
+| --- | -------------------------------------------------------- | ------------------------------------- | --------- |
+| K1  | Chegar checkout via helper                               | personalizacao                        | CAP-36    |
+| K2  | Accordion assistências visível                           | cotacao-plano-regular                 | CAP-39 🟡 |
+| K3  | Cross-sell residencial/vida **não** adicionado           | planner only                          | CAP-38 ⬜ |
+| K4  | Cross-sell interação adicionar                           | —                                     | CAP-38 ⬜ |
+| K5  | Pagamento + emissão                                      | cotacao-plano-regular, personalizacao | CAP-37    |
+| K6  | 3 caminhos pós-pagamento (sucesso / redirect / issuance) | personalizacao                        | CAP-40    |
 
 ---
 
@@ -219,18 +219,18 @@ Cada linha = **duas cotações** com `resetSession` entre elas (`precosPlanos.sp
 
 | Section                    | Page Object                  | Specs que tocam                                                     | CAPs         |
 | -------------------------- | ---------------------------- | ------------------------------------------------------------------- | ------------ |
-| lead_info                  | LeadInfoPage                 | cotacaoAuto                                                         | 01 ✅, 02 ⬜ |
-| vehicle_details            | VehicleDetailsPage           | cotacaoAuto, precosPlanos                                           | 03–06        |
-| vehicle_additional_details | VehicleAdditionalDetailsPage | cotacaoAuto, precosPlanos                                           | 07–10        |
-| person_data                | PersonDataPage               | cotacaoAuto, precosPlanos                                           | 11–14        |
-| bonuses_class              | BonusesClassPage             | cotacaoAuto, validateBonusClass, precosPlanos                       | 15–16        |
+| lead_info                  | LeadInfoPage                 | cotacao-plano-regular                                               | 01 ✅, 02 ⬜ |
+| vehicle_details            | VehicleDetailsPage           | cotacao-plano-regular, precosPlanos                                 | 03–06        |
+| vehicle_additional_details | VehicleAdditionalDetailsPage | cotacao-plano-regular, precosPlanos                                 | 07–10        |
+| person_data                | PersonDataPage               | cotacao-plano-regular, precosPlanos                                 | 11–14        |
+| bonuses_class              | BonusesClassPage             | cotacao-plano-regular, validateBonusClass, precosPlanos             | 15–16        |
 | data_enrichment            | —                            | —                                                                   | 17 ⬜        |
-| plan_selection             | PlanSelectionPage            | cotacaoAuto, coberturas, precosPlanos, personalizacao               | 18–21        |
+| plan_selection             | PlanSelectionPage            | cotacao-plano-regular, coberturas, precosPlanos, personalizacao     | 18–21        |
 | coverages_selection        | CoveragesSelectionPage       | personalizacao, validacaoValores                                    | 22–27        |
 | assistances_selection      | AssistancesSelectionPage     | assistencias, assistenciaRpsPromo, personalizacao, validacaoValores | 28–34        |
 | risk_acceptance            | —                            | —                                                                   | 35 ⬜        |
-| checkout                   | CheckoutPage                 | cotacaoAuto, personalizacao                                         | 36–39        |
-| issuance                   | IssuancePage                 | cotacaoAuto, personalizacao                                         | 40           |
+| checkout                   | CheckoutPage                 | cotacao-plano-regular, personalizacao                               | 36–39        |
+| issuance                   | IssuancePage                 | cotacao-plano-regular, personalizacao                               | 40           |
 | transversal                | funnel helpers               | precosPlanos, coberturas                                            | 41–44        |
 
 ---

@@ -67,6 +67,24 @@ function countTestsInSpec(filePath: string): number {
   return (content.match(/\btest\s*\(/g) ?? []).length;
 }
 
+function listSpecFiles(dir: string, prefix = ''): { file: string; path: string }[] {
+  if (!existsSync(dir)) return [];
+  const entries = readdirSync(dir, { withFileTypes: true });
+  const specs: { file: string; path: string }[] = [];
+
+  for (const entry of entries) {
+    const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+    const abs = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      specs.push(...listSpecFiles(abs, rel));
+    } else if (entry.name.endsWith('.spec.ts')) {
+      specs.push({ file: rel.replace(/\\/g, '/'), path: abs });
+    }
+  }
+
+  return specs.sort((a, b) => a.file.localeCompare(b.file));
+}
+
 function buildResult(remoteSlugs: string[]): SyncResult {
   const configuredSlugs = AUTO_FUNNEL_SECTIONS.map((s) => s.slug);
   const pomFiles = existsSync(POM_DIR)
@@ -79,12 +97,10 @@ function buildResult(remoteSlugs: string[]): SyncResult {
     (s) => s.pageObject && existsSync(join(POM_DIR, s.pageObject)) && remoteSlugs.includes(s.slug),
   ).length;
 
-  const specSummary = existsSync(SPEC_DIR)
-    ? readdirSync(SPEC_DIR)
-        .filter((f) => f.endsWith('.spec.ts'))
-        .sort()
-        .map((file) => ({ file, tests: countTestsInSpec(join(SPEC_DIR, file)) }))
-    : [];
+  const specSummary = listSpecFiles(SPEC_DIR).map(({ file, path }) => ({
+    file,
+    tests: countTestsInSpec(path),
+  }));
 
   return {
     remoteSlugs,

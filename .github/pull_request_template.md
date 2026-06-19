@@ -29,7 +29,8 @@
 
 - [ ] Os testes são independentes entre si (sem `mode: 'serial'` desnecessário)
 - [ ] Nenhum valor de preço absoluto foi fixado (usar relações ordinais ou faixas)
-- [ ] Tags `@smoke` / `@regression` / `@quotation_auto` foram adicionadas corretamente
+- [ ] Tags `@smoke` / `@ux` / `@journey` / `@regression` / `@quotation_auto` foram adicionadas corretamente
+- [ ] Spec no diretório correto: `journeys/` · `ux/` · `blockers/` · `regression/`
 - [ ] O teste foi executado localmente com VPN ativa e passou
 
 ### Page Objects / Fixtures

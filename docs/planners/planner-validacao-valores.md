@@ -140,7 +140,7 @@ Execução do spec (cenário "cobrado", pela data atual — **passou**):
 - `navigateToAssistances(page, {}, { dismissPromo: false })` mantém o modal.
 - Promo ativa → assertar selo "por nossa conta!" e `delta == 0` ao adicionar.
 - Fora da promo → `delta > 0` ao adicionar.
-- Spec: `tests/spec/e2e/assistenciaRpsPromo.spec.ts`.
+- Spec: `tests/spec/e2e/regression/assistenciaRpsPromo.spec.ts`.
 - Pendência manual no QA: confirmar (a) o modal no plano personalizado, (b) se o
   item vira toggle removível após adicionado, (c) o texto exato do selo.
 

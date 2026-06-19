@@ -14,6 +14,16 @@
 import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import {
+  appendTimingLog,
+  formatDuration,
+  formatUtc,
+  renderE2eLogMarkdown,
+  renderRecentRunsSection,
+  resolveExecutionId,
+  saveExecutionFolder,
+  type TimingLogEntry,
+} from './lib/timingHistory';
 
 const ROOT = join(__dirname, '..');
 const REPORTS_DIR = join(ROOT, 'reports');
@@ -101,12 +111,6 @@ function readText(path: string): string {
   return readFileSync(path, 'utf8').replace(/^\uFEFF/, '');
 }
 
-function formatDuration(ms: number | null): string {
-  if (ms === null || ms <= 0) return '—';
-  if (ms >= 60_000) return `${(ms / 60_000).toFixed(1)} min`;
-  return `${(ms / 1000).toFixed(1)} s`;
-}
-
 function mapStatus(raw: string | undefined, ok?: boolean): TestStatus {
   if (raw === 'skipped' || (raw === 'expected' && ok === false)) return 'skipped';
   if (raw === 'failed' || raw === 'timedOut' || raw === 'interrupted') return 'failed';
@@ -121,6 +125,18 @@ function parseListDuration(text: string): number | null {
   const value = parseFloat(m[1]);
   const unit = m[2].toLowerCase();
   return unit === 's' ? value * 1000 : value * 60_000;
+}
+
+/** Path relativo a `tests/spec/e2e/` (ex.: `journeys/cotacao-plano-regular.spec.ts`). */
+function extractSpecRelativePath(rawFile: string): string {
+  const normalized = rawFile.replace(/\\/g, '/');
+  if (normalized.includes('/e2e/')) {
+    return normalized.split('/e2e/').pop() ?? 'unknown.spec.ts';
+  }
+  if (normalized.startsWith('e2e/')) {
+    return normalized.slice('e2e/'.length);
+  }
+  return normalized.split('/').pop() ?? 'unknown.spec.ts';
 }
 
 function parseListLog(content: string): { tests: TestTiming[]; wallClockMs: number | null } {
@@ -163,11 +179,8 @@ function walkSuites(suites: PlaywrightSuite[] | undefined, parentTitle: string, 
     const suiteTitle = suite.title && !suite.title.includes('.spec.ts') ? suite.title : parentTitle;
 
     for (const spec of suite.specs ?? []) {
-      const specFile =
-        (spec.file ?? suite.file ?? '')
-          .replace(/^e2e[\\/]/, '')
-          .split(/[\\/]/)
-          .pop() ?? 'unknown.spec.ts';
+      const rawFile = (spec.file ?? suite.file ?? '').replace(/\\/g, '/');
+      const specFile = extractSpecRelativePath(rawFile);
       const pwTests = spec.tests ?? [];
       const result = pwTests[0]?.results?.[0];
       const status = mapStatus(result?.status, spec.ok);
@@ -250,17 +263,20 @@ function statusIcon(status: TestStatus): string {
   return '❌';
 }
 
-function renderMarkdown(report: TimingReport): string {
-  const date = report.generatedAt.slice(0, 10);
+function renderMarkdown(report: TimingReport, runLog: TimingLogEntry[], executionId: string, inHistory = false): string {
+  const generatedAt = formatUtc(report.generatedAt);
   const wall = report.wallClockMs !== null ? formatDuration(report.wallClockMs) : '—';
   const sumTests = report.tests.reduce((s, t) => s + (t.durationMs ?? 0), 0);
   const overhead =
     report.wallClockMs !== null && sumTests > 0 ? `${(((report.wallClockMs - sumTests) / report.wallClockMs) * 100).toFixed(0)}%` : '—';
+  const jsonLink = inHistory ? '[e2e.json](./e2e.json)' : '[e2e-timing.json](e2e-timing.json)';
+  const logLink = inHistory ? '../../e2e-timing-log.md' : 'e2e-timing-log.md';
 
   const lines: string[] = [
     '# Relatório de Tempo — Testes E2E Seguro Auto',
     '',
-    `> Gerado em **${date}** · fonte: \`${report.source}\` · [e2e-timing.json](e2e-timing.json)`,
+    `> Execução **${executionId}** · gerado em **${generatedAt}** · fonte: \`${report.source}\` · ${jsonLink}`,
+    inHistory ? `> Índice: [e2e-timing-log.md](${logLink})` : '',
     '',
     '## Resumo',
     '',
@@ -310,33 +326,100 @@ function renderMarkdown(report: TimingReport): string {
     );
   }
 
+  const historySection = inHistory ? '' : renderRecentRunsSection('Histórico de execuções', runLog, 'e2e-timing-log.md');
+  if (historySection) {
+    lines.push('', historySection);
+  }
+
   lines.push('', '---', '*Gerado por `npm run e2e:timing:generate` — não editar manualmente.*', '');
 
   return lines.join('\n');
 }
 
-function runPlaywrightJson(): void {
+function runPlaywrightJson(): number {
   mkdirSync(REPORTS_DIR, { recursive: true });
   console.log('Executando suite E2E (tests/spec/e2e) — pode levar ~30 min…');
-  const json = execSync('npx playwright test tests/spec/e2e --project=chromium --reporter=json', {
-    cwd: ROOT,
-    encoding: 'utf8',
-    maxBuffer: 64 * 1024 * 1024,
-    stdio: ['pipe', 'pipe', 'inherit'],
-  });
-  writeFileSync(RAW_JSON, json.replace(/^\uFEFF/, ''), 'utf8');
+  const cmd = 'npx playwright test tests/spec/e2e --project=chromium --reporter=list --reporter=json';
+  const env = { ...process.env, PLAYWRIGHT_JSON_OUTPUT_NAME: RAW_JSON };
+  try {
+    execSync(cmd, {
+      cwd: ROOT,
+      encoding: 'utf8',
+      maxBuffer: 64 * 1024 * 1024,
+      stdio: 'inherit',
+      env,
+    });
+  } catch (error) {
+    const execError = error as { status?: number };
+    if (!existsSync(RAW_JSON)) {
+      const fallback = execError as { stdout?: string };
+      const json = fallback.stdout?.replace(/^\uFEFF/, '') ?? '';
+      if (json.trim()) writeFileSync(RAW_JSON, json, 'utf8');
+      else throw error;
+    }
+    console.warn(`Suite E2E terminou com exit ${execError.status ?? 1} — JSON capturado para relatório de tempo.`);
+    return execError.status ?? 1;
+  }
+  if (!existsSync(RAW_JSON)) {
+    throw new Error(`JSON não gerado em ${RAW_JSON}`);
+  }
   console.log(`JSON salvo em ${relativePath(RAW_JSON)}`);
+  return 0;
 }
 
 function relativePath(abs: string): string {
   return abs.replace(/\\/g, '/').replace(`${ROOT.replace(/\\/g, '/')}/`, '');
 }
 
+function printTimingDeltaFromLog(previous: TimingLogEntry, current: TimingReport): void {
+  const prevWall = previous.wallClockMs ?? previous.sumTestsMs;
+  const currWall = current.wallClockMs ?? current.totals.totalMs;
+  if (prevWall > 0) {
+    const deltaPct = (((currWall - prevWall) / prevWall) * 100).toFixed(1);
+    const sign = currWall >= prevWall ? '+' : '';
+    console.log(`\nComparativo vs execução anterior (${formatUtc(previous.generatedAt)}):`);
+    console.log(`  Wall-clock: ${formatDuration(prevWall)} → ${formatDuration(currWall)} (${sign}${deltaPct}%)`);
+  }
+
+  const snapshotName = previous.source?.replace(/^history\//, '');
+  if (!snapshotName) return;
+
+  const snapshotPath = join(ROOT, 'docs', 'reports', 'history', snapshotName, 'e2e.json');
+  if (!existsSync(snapshotPath)) return;
+
+  try {
+    const prevReport = JSON.parse(readFileSync(snapshotPath, 'utf8')) as TimingReport;
+    const prevBySpec = new Map(prevReport.bySpec.map((s) => [s.specFile, s]));
+    const regressions = current.bySpec
+      .map((s) => {
+        const prev = prevBySpec.get(s.specFile);
+        if (!prev || prev.totalMs <= 0) return null;
+        const deltaPct = ((s.totalMs - prev.totalMs) / prev.totalMs) * 100;
+        return deltaPct > 15 ? { spec: s.specFile, prev: prev.totalMs, curr: s.totalMs, deltaPct } : null;
+      })
+      .filter(Boolean) as { spec: string; prev: number; curr: number; deltaPct: number }[];
+
+    if (regressions.length) {
+      console.log('  Specs >15% mais lentos que a execução anterior:');
+      for (const r of regressions.sort((a, b) => b.deltaPct - a.deltaPct)) {
+        console.log(`    ${r.spec}: ${formatDuration(r.prev)} → ${formatDuration(r.curr)} (+${r.deltaPct.toFixed(0)}%)`);
+      }
+    } else {
+      console.log('  Nenhuma regressão >15% por spec vs execução anterior.');
+    }
+  } catch {
+    // snapshot anterior ilegível — ignora comparativo por spec
+  }
+}
+
 function main(): void {
   const { fromLog, run, input } = parseArgs(process.argv.slice(2));
 
   if (run) {
-    runPlaywrightJson();
+    const exitCode = runPlaywrightJson();
+    if (exitCode !== 0) {
+      process.exitCode = exitCode;
+    }
   }
 
   let tests: TestTiming[];
@@ -372,11 +455,58 @@ function main(): void {
   }
 
   const report = buildReport(tests, source, wallClockMs, workers);
-  writeFileSync(MD_PATH, renderMarkdown(report), 'utf8');
+  const executionId = resolveExecutionId({ generatedAt: report.generatedAt });
+
+  const historyDir = join(ROOT, 'docs', 'reports', 'history');
+  const reportMd = renderMarkdown(report, [], executionId, true);
+  const executionFolder = saveExecutionFolder({
+    historyDir,
+    executionId,
+    metadata: {
+      executionId,
+      e2e: {
+        generatedAt: report.generatedAt,
+        source: report.source,
+        totals: report.totals,
+        workers: report.workers,
+      },
+    },
+    files: [
+      { name: 'e2e.json', content: `${JSON.stringify(report, null, 2)}\n` },
+      { name: 'e2e-report.md', content: reportMd },
+    ],
+  });
+
+  const logJsonPath = join(ROOT, 'docs', 'reports', 'e2e-timing-log.json');
+  const logEntry: TimingLogEntry = {
+    executionId,
+    generatedAt: report.generatedAt,
+    source: executionFolder,
+    reportFile: `${executionFolder}/e2e-report.md`,
+    logFile: null,
+    tests: report.totals.tests,
+    passed: report.totals.passed,
+    failed: report.totals.failed,
+    skipped: report.totals.skipped,
+    wallClockMs: report.wallClockMs,
+    sumTestsMs: report.totals.totalMs,
+    workers: report.workers,
+  };
+  const runLog = appendTimingLog(logJsonPath, logEntry);
+
+  writeFileSync(MD_PATH, renderMarkdown(report, runLog, executionId), 'utf8');
   writeFileSync(JSON_PATH, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
+  writeFileSync(join(ROOT, 'docs', 'reports', 'e2e-timing-log.md'), renderE2eLogMarkdown(runLog), 'utf8');
+
+  const previousReport = runLog[1] ?? null;
+  if (previousReport) {
+    printTimingDeltaFromLog(previousReport, report);
+  }
 
   console.log(`Relatório: ${relativePath(MD_PATH)} (${report.totals.tests} testes)`);
   console.log(`Métricas:  ${relativePath(JSON_PATH)}`);
+  console.log(`Log de tempo: docs/reports/e2e-timing-log.md (${runLog.length} execuções)`);
+  console.log(`Execução: docs/reports/${executionFolder}/`);
   console.log(`Wall-clock: ${formatDuration(report.wallClockMs)} · Soma testes: ${formatDuration(report.totals.totalMs)}`);
 }
 

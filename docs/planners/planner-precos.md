@@ -219,7 +219,7 @@ Então preço zero km deve ser MAIOR (base FIPE maior)
 ## 7. Arquivo de implementação
 
 ```
-tests/spec/e2e/precosPlanos.spec.ts
+tests/spec/e2e/regression/precosPlanos.spec.ts
 ```
 
 ---
@@ -276,40 +276,34 @@ Fonte back-end:
 
 ---
 
-## 10. Estrutura de pastas recomendada
-
-Situação atual vs recomendada para escalar o framework:
+## 10. Estrutura de pastas (atual)
 
 ```
-ATUAL                             RECOMENDADO
-─────────────────────────         ─────────────────────────────────────────
-tests/                            tests/
-  spec/                             spec/
-    e2e/                              smoke/          ← happy path; roda a cada PR
-      cotacaoAuto.spec.ts               cotacaoAuto.spec.ts
-      precosPlanos.spec.ts            regression/     ← caminhos negativos; nightly
-      validateBonusClass.spec.ts        cpfRestricao.spec.ts    (extraído de cotacaoAuto)
-    api/                               validacaoVeiculo.spec.ts (extraído de cotacaoAuto)
-      ciliaClaimAuth.spec.ts            bonusClass.spec.ts       (validateBonusClass)
-      testUtils.spec.ts              pricing/         ← preços e coberturas; on release
-    seed.spec.ts                        precosPlanos.spec.ts
-  data/                               coberturas.spec.ts   ← NOVO
-    cpf.ts                          api/
-    plate.ts                          ciliaClaimAuth.spec.ts
-    plans.ts         ← NOVO          testUtils.spec.ts
-  pages/                          data/
-    quotation/                      cpf.ts / plate.ts / plans.ts (NOVO)
-      ...Page.ts                  pages/
-                                    quotation/
-                                      ...Page.ts
+tests/spec/e2e/
+├── README.md
+├── journeys/          ← @journey @happy_path — smoke de ponta a ponta
+│   ├── cotacao-plano-regular.spec.ts
+│   └── cotacao-plano-personalizado.spec.ts
+├── ux/                ← @ux @smoke — validação rápida por etapa
+│   ├── lead-info.spec.ts
+│   ├── plan-selection.spec.ts
+│   └── checkout.spec.ts
+├── blockers/          ← @negative — restrições e bloqueios
+│   └── cotacao-restricoes.spec.ts
+└── regression/        ← @regression @price — preços, coberturas, assistências
+    ├── precosPlanos.spec.ts
+    ├── coberturas.spec.ts
+    ├── assistencias.spec.ts
+    ├── personalizacao.spec.ts
+    ├── validacaoValores.spec.ts
+    ├── validateBonusClass.spec.ts
+    └── assistenciaRpsPromo.spec.ts
 ```
 
-**Benefícios:**
+**CI:** PR roda `npm run test:smoke` (journeys + ux). Push em `main` roda suíte completa com sharding.
 
-- `smoke/` → tag `@smoke` no CI/CD com `grep: '@smoke'` — roda em ~2min
-- `regression/` → tag `@regression` no nightly — ~15min
-- `pricing/` → tag `@price` on release — ~30min (cotações duplas são lentas)
-- Specs de cenários negativos agrupados separados do happy path → reportes mais claros
+- `regression/` → tag `@regression` — preços e coberturas (~15 min)
+- `blockers/` → tag `@negative` — cenários de bloqueio isolados do happy path
 
 ```
 Cenário A                    Cenário B

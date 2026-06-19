@@ -1,9 +1,8 @@
 {
   "generatedAt": null,
-  "source": null,
-  "wallClockMs": null,
-  "workers": null,
+  "executionId": null,
+  "logFile": null,
   "totals": { "tests": 0, "passed": 0, "failed": 0, "skipped": 0, "totalMs": 0 },
-  "bySpec": [],
-  "tests": []
+  "layers": [],
+  "phases": []
 }

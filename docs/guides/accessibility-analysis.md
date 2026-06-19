@@ -232,15 +232,15 @@ CAP-35 **missing** — perfis específicos. Validar checkbox/termos legais com f
 
 ## Matriz: automação vs acessibilidade
 
-| Prática                | Repo hoje        | Recomendado                                                   |
-| ---------------------- | ---------------- | ------------------------------------------------------------- |
-| `@axe-core/playwright` | ✅ Smoke `@a11y` | 5 telas · serious/critical = fail                             |
-| Navegação teclado      | ✅               | `@keyboard` — `npm run test:keyboard`                         |
-| Screen reader manual   | ❌               | Checklist VoiceOver/TalkBack pré-release                      |
-| Viewport mobile CI     | ✅               | Projetos `mobile-chrome` + `tablet` em `playwright.config.ts` |
-| Contraste automático   | ❌               | axe + amostragem manual                                       |
-| Locators a11y-first    | ✅ Parcial       | Eliminar XPath onde possível                                  |
-| ESLint jsx-a11y        | ❌               | N/A (front React — responsabilidade sales-frontend)           |
+| Prática                | Repo hoje        | Recomendado                                                        |
+| ---------------------- | ---------------- | ------------------------------------------------------------------ |
+| `@axe-core/playwright` | ✅ Smoke `@a11y` | 5 telas · serious/critical = fail                                  |
+| Navegação teclado      | ✅               | `@keyboard` — `npm run test:keyboard`                              |
+| Screen reader manual   | ❌               | Checklist VoiceOver/TalkBack pré-release                           |
+| Viewport mobile CI     | ✅               | Projetos `mobile-chrome` + `tablet` em `playwright.a11y.config.ts` |
+| Contraste automático   | ❌               | axe + amostragem manual                                            |
+| Locators a11y-first    | ✅ Parcial       | Eliminar XPath onde possível                                       |
+| ESLint jsx-a11y        | ❌               | N/A (front React — responsabilidade sales-frontend)                |
 
 ---
 

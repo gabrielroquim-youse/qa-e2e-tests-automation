@@ -17,18 +17,12 @@
  * Pré-requisito: VPN Youse ativa com acesso ao ambiente QA.
  * Uso: npx playwright test personalizacao --project=chromium --reporter=list
  */
-import { test, expect } from '@playwright/test';
-import { MaritalStatuses } from '../../enum/MaritalStatuses';
-import { VehicleUsages } from '../../enum/VehicleUsages';
-import { generateQuotationData } from '../../fixtures/setupQuotation';
-import { navigateToCoverages, navigateToCheckout } from '../../helpers/funnel';
-import { AssistancesSelectionPage } from '../../pages/quotation/AssistancesSelectionPage';
-import { IssuancePage } from '../../pages/quotation/IssuancePage';
-import LeadInfoPage from '../../pages/quotation/LeadInfoPage';
+import { expect, test } from '../../../fixtures/setupQuotation';
+import { navigateToCoverages, navigateToCheckout } from '../../../helpers/funnel';
+import { AssistancesSelectionPage } from '../../../pages/quotation/AssistancesSelectionPage';
 
 // ─── Constantes ─────────────────────────────────────────────────────────────
 
-const PLAN_TIMEOUT = 45_000;
 const TEST_TIMEOUT = 180_000;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -160,8 +154,8 @@ test.describe('Personalização — Coberturas Obrigatórias', { tag: ['@regress
   test('Cobertura "Incêndio" (Inclusa) não deve exibir toggle desligável', async ({ page }) => {
     test.setTimeout(TEST_TIMEOUT);
 
-    const coveragesPage = await navigateToCoverages(page);
-    const incendioRow = coveragesPage.page.locator('xpath=//p[normalize-space(.)="Incêndio"]/parent::*');
+    await navigateToCoverages(page);
+    const incendioRow = page.locator('xpath=//p[normalize-space(.)="Incêndio"]/parent::*');
 
     await expect(incendioRow).toBeVisible();
     await expect(incendioRow.getByText('Inclusa')).toBeVisible();
@@ -196,85 +190,5 @@ test.describe('Personalização — Assistências', { tag: ['@personalizacao', '
     console.log(`[Com Carro reserva]  R$ ${precoFinal.toFixed(2)}/ano`);
 
     expect(precoFinal, `Ativar "Carro reserva" deve aumentar o prêmio de R$ ${precoInicial.toFixed(2)}/ano`).toBeGreaterThan(precoInicial);
-  });
-});
-
-// ═══════════════════════════════════════════════════════════════════════════
-// CATEGORIA 3 — E2E Completo (Smoke)
-// Único teste que avança até a emissão real da apólice.
-// Usa configurações padrão (sem personalizações extras) para manter o CPF
-// de teste reutilizável e não inflar custos de processamento no QA.
-// ═══════════════════════════════════════════════════════════════════════════
-
-test.describe('Personalização — E2E Completo (Smoke)', { tag: ['@personalizacao', '@smoke', '@quotation_auto'] }, () => {
-  // ── 6. Fluxo completo: Personalizar → Coberturas → Assistências → Emissão ─
-  test('Deve contratar o plano personalizado com configurações padrão e emitir a apólice', async ({ page }) => {
-    test.setTimeout(480_000);
-
-    const data = generateQuotationData();
-
-    // ── Etapa 1–5: Funil de cotação ──────────────────────────────────
-    const paginaLead = await LeadInfoPage.open(page);
-    await paginaLead.fillLeadData({ name: data.name, email: data.email, phone: data.phone });
-    const detalhesVeiculoPage = await paginaLead.clickContinueBtn();
-
-    await detalhesVeiculoPage.fillLicensePlate(data.licensePlate);
-    await detalhesVeiculoPage.selectBrandNew(false);
-    await detalhesVeiculoPage.selectBulletproof(false);
-    const enderecoUsoPage = await detalhesVeiculoPage.clickContinueBtn();
-
-    await enderecoUsoPage.fillAddress(data.zipCode, data.addressNumber);
-    await enderecoUsoPage.isOvernightGarage(true);
-    await enderecoUsoPage.selectUsage(VehicleUsages.PRIVATE);
-    const dadosPessoaisPage = await enderecoUsoPage.clickContinueBtn();
-
-    await dadosPessoaisPage.fillDocumentNumber(data.documentNumber);
-    await dadosPessoaisPage.selectMaritalStatus(MaritalStatuses.SINGLE);
-    const classeBonusPage = await dadosPessoaisPage.clickContinueBtn();
-
-    await classeBonusPage.useBonusClass(false);
-    const selecaoPlanoPage = await classeBonusPage.clickContinueBtn();
-    await expect(selecaoPlanoPage.title).toBeVisible({ timeout: PLAN_TIMEOUT });
-
-    // ── Etapa 6: Personalizar → Coberturas ───────────────────────────
-    const coberturas = await selecaoPlanoPage.openPersonalization();
-    await coberturas.waitForPrice();
-    console.log(`[Coberturas] Preço inicial: R$ ${(await coberturas.getAnnualPrice()).toFixed(2)}/ano`);
-
-    // ── Etapa 7: Avançar para Assistências ────────────────────────────
-    const assistencias: AssistancesSelectionPage = await coberturas.clickContinueBtn();
-    await assistencias.heading.waitFor({ state: 'visible', timeout: 30_000 });
-    await assistencias.dismissPromoModal();
-    await assistencias.waitForPrice();
-    console.log(`[Assistências] Preço: R$ ${(await assistencias.getAnnualPrice()).toFixed(2)}/ano`);
-
-    // ── Etapa 8: Avançar para Checkout ────────────────────────────────
-    const pagamentoPage = await assistencias.clickContinueBtn();
-
-    // ── Etapa 9: Checkout — confirmar e pagar ─────────────────────────
-    await pagamentoPage.checkEmailConfirmation();
-    await pagamentoPage.fillCreditCardData(data.creditCard.number, data.creditCard.expireDate, data.creditCard.cvv, data.creditCard.holderName);
-    const emissaoPage: IssuancePage = await pagamentoPage.clickFinishBtn();
-
-    // ── Etapa 10: Validação pós-pagamento (3 caminhos possíveis no QA) ─
-    /* eslint-disable playwright/no-conditional-in-test, playwright/no-conditional-expect -- QA pode redirecionar ou aguardar webhook */
-    if (emissaoPage.isOnSuccessPage()) {
-      // Caminho A: tela /sucesso com confirmação da apólice
-      await expect(emissaoPage.title).toBeVisible({ timeout: 15_000 });
-      await expect(emissaoPage.tagCotacaoRealizada).toBeVisible();
-      await expect(emissaoPage.tagPagamentoValidado).toBeVisible();
-      await expect(emissaoPage.apoliceSectionAuto).toBeVisible();
-      await expect(emissaoPage.emailDoSegurado(data.email)).toBeVisible();
-      console.log('[Emissão] ✓ Apólice confirmada na tela /sucesso');
-    } else if (page.url().includes('youse.com.br')) {
-      // Caminho B: redirecionamento para www.youse.com.br — pagamento processado
-      await expect(page).toHaveURL(/youse\.com\.br/);
-      console.log('[Emissão] ✓ Redirecionado para youse.com.br — pagamento aceito');
-    } else {
-      // Caminho C: permanece em /issuance aguardando webhook — estado válido no QA
-      await expect(page).toHaveURL(/\/issuance/);
-      console.log('[Emissão] ✓ Permanece em /issuance — webhook pendente (comportamento esperado no QA)');
-    }
-    /* eslint-enable playwright/no-conditional-in-test, playwright/no-conditional-expect */
   });
 });

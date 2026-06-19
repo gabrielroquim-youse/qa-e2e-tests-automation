@@ -3,9 +3,9 @@
  * Ver docs/planners/planner-validacao-valores.md
  */
 /* eslint-disable playwright/expect-expect -- asserts em pricingAssertions.ts */
-import { test } from '@playwright/test';
-import { assertSymmetricPriceToggle } from '../../helpers/pricingAssertions';
-import { navigateToAssistances, navigateToCoverages } from '../../helpers/funnel';
+import { test } from '../../../fixtures/setupQuotation';
+import { assertSymmetricPriceToggle } from '../../../helpers/pricingAssertions';
+import { navigateToAssistances, navigateToCoverages } from '../../../helpers/funnel';
 
 const TEST_TIMEOUT = 180_000;
 

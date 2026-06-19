@@ -26,12 +26,12 @@
  * Pré-requisito: VPN Youse ativa com acesso ao ambiente QA.
  * Uso: npx playwright test precosPlanos --project=chromium --reporter=list
  */
-import { test, expect } from '@playwright/test';
-import { MaritalStatuses } from '../../enum/MaritalStatuses';
-import { UserBonusClass } from '../../enum/UserBonusClass';
-import { VehicleUsages } from '../../enum/VehicleUsages';
-import { navigateToPlans, resetSession } from '../../helpers/funnel';
-import { PlanName } from '../../pages/quotation/PlanSelectionPage';
+import { expect, test } from '../../../fixtures/setupQuotation';
+import { MaritalStatuses } from '../../../enum/MaritalStatuses';
+import { UserBonusClass } from '../../../enum/UserBonusClass';
+import { VehicleUsages } from '../../../enum/VehicleUsages';
+import { navigateToPlans, resetSession } from '../../../helpers/funnel';
+import { PlanName } from '../../../pages/quotation/PlanSelectionPage';
 
 // ─── Constantes ────────────────────────────────────────────────────────────
 

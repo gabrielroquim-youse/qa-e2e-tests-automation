@@ -30,12 +30,11 @@ export class LeadInfoPage extends QuotationPageLayout<VehicleDetailsPage> {
 
   static async open(page: Page): Promise<LeadInfoPage> {
     const instance = new LeadInfoPage(page);
-    const url = TestConfig.urls.autoQuotationUrl;
     let lastError: unknown;
 
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
-        await page.goto(url, {
+        await page.goto('/', {
           waitUntil: 'domcontentloaded',
           timeout: 60_000,
         });
