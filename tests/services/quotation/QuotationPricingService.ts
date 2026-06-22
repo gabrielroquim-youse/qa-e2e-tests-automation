@@ -1,5 +1,6 @@
 import type { APIRequestContext, APIResponse } from '@playwright/test';
 import TestConfig from '../../../config/test.config';
+import type { QuotationApiPayload } from './buildQuotationPayload';
 
 export type PlanName = 'Essencial' | 'Regular' | 'Auto 1504';
 
@@ -9,10 +10,9 @@ export interface QuotationPlanPrice {
 }
 
 /**
- * Cliente HTTP para o motor de cotação (opin-service / API de pricing).
+ * Cliente HTTP para o motor de cotação (opin-service ou BFF de cotação).
  *
- * Endpoints reais serão plugados quando o contrato estiver documentado.
- * Enquanto isso, `baseUrl` vazio faz os specs ficarem em `test.fixme`.
+ * Passo 1 do playbook: confirmar base URL e paths com backend (ver docs/guides/api-quotation-layer.md).
  */
 export class QuotationPricingService {
   private readonly baseUrl: string;
@@ -25,28 +25,34 @@ export class QuotationPricingService {
     return this.baseUrl.length > 0;
   }
 
+  /** Headers comuns — estender com auth quando necessário. */
+  private headers(): Record<string, string> {
+    return {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+  }
+
   /**
    * Cotação até plan_selection — retorna preços mensais por plano.
-   * TODO: ajustar path e payload ao contrato OpenAPI do opin-service.
+   * TODO: substituir path `/v1/quotations/plans` pelo contrato real.
    */
-  async quotePlans(_request: APIRequestContext): Promise<APIResponse> {
+  async quotePlans(request: APIRequestContext, payload: QuotationApiPayload): Promise<APIResponse> {
     if (!this.isConfigured) {
       throw new Error('OPIN_SERVICE_URL não configurada — defina no .env para rodar testes @pricing');
     }
 
-    return _request.post(`${this.baseUrl}/v1/quotations/plans`, {
-      data: {
-        // payload mínimo — substituir por builder compartilhado com massa cpf/plate
-      },
+    return request.post(`${this.baseUrl}/v1/quotations/plans`, {
+      headers: this.headers(),
+      data: payload,
     });
   }
 
-  /** Parseia resposta em mapa plano → preço mensual. */
+  /** Parseia resposta em lista plano → preço mensual. */
   static parsePlanPrices(body: unknown): QuotationPlanPrice[] {
     if (!body || typeof body !== 'object' || !('plans' in body)) {
       throw new Error('Resposta de cotação inválida: campo "plans" ausente');
     }
-    const plans = (body as { plans: QuotationPlanPrice[] }).plans;
-    return plans;
+    return (body as { plans: QuotationPlanPrice[] }).plans;
   }
 }
