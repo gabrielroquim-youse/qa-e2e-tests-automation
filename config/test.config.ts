@@ -26,6 +26,8 @@ export default {
     testUtilsUrl: process.env.TEST_UTILS_URL || `https://${process.env.ENV || 'qa'}-test-utils-service.youse.io/v1/orders`,
     bffUrl: process.env.BFF_URL || `https://${process.env.ENV || 'qa'}-bff.youse.io`,
     apiUrl: process.env.API_BASE_URL || '',
+    /** Motor de cotação / pricing (opin-service) — ver tests/spec/api/quotation/ */
+    opinServiceUrl: process.env.OPIN_SERVICE_URL || process.env.QUOTATION_API_URL || '',
   },
   timeouts: {
     default: parseInt(process.env.TIMEOUT || '60000'),

@@ -25,6 +25,8 @@
  *
  * Pré-requisito: VPN Youse ativa com acesso ao ambiente QA.
  * Uso: npx playwright test precosPlanos --project=chromium --reporter=list
+ *
+ * Migração API: regras de preço/ordinal → tests/spec/api/quotation/ (ver docs/guides/api-quotation-layer.md)
  */
 import { expect, test } from '../../../fixtures/setupQuotation';
 import { MaritalStatuses } from '../../../enum/MaritalStatuses';

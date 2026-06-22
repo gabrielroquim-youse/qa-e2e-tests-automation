@@ -55,7 +55,7 @@ Este repositório automatiza os principais fluxos da Youse em três camadas:
 | Camada                                                                                                    | O que cobre                                                           | Pasta             |
 | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ----------------- |
 | <img src="https://cdn.simpleicons.org/playwright/2EAD33" height="20" align="top" alt="" /> **E2E**        | Fluxo completo de cotação e contratação de seguro auto no navegador   | `tests/spec/e2e/` |
-| <img src="https://cdn.simpleicons.org/openapiinitiative/6BA539" height="20" align="top" alt="" /> **API** | Contratos dos serviços internos (CiliaClaimAuth, TestUtils)           | `tests/spec/api/` |
+| <img src="https://cdn.simpleicons.org/openapiinitiative/6BA539" height="20" align="top" alt="" /> **API** | Regra de negócio e contratos (pricing, claims, test-utils)            | `tests/spec/api/` |
 | <img src="https://cdn.simpleicons.org/chartdotjs/FF6384" height="20" align="top" alt="" /> **Pricing**    | Variação de preços por variáveis de risco e integridade de coberturas | `tests/spec/e2e/` |
 
 ---
@@ -198,8 +198,10 @@ qa-e2e-tests-automation/
 │   ├── services/                   # Clientes HTTP para APIs internas
 │   │   ├── bff/
 │   │   │   └── CiliaClaimAuth.ts
-│   │   └── test-utils/
-│   │       └── TestUtilsService.ts
+│   │   ├── test-utils/
+│   │   │   └── TestUtilsService.ts
+│   │   └── quotation/
+│   │       └── QuotationPricingService.ts
 │   │
 │   ├── types/                      # Declarações de tipos para pacotes sem @types
 │   │   └── cpf-cnpj-validator.d.ts
@@ -207,8 +209,10 @@ qa-e2e-tests-automation/
 │   └── spec/                       # Arquivos de teste (specs)
 │       ├── seed.spec.ts            # Seed para gravar novos testes com Playwright Agents
 │       ├── api/
-│       │   ├── ciliaClaimAuth.spec.ts    # Autenticação de sinistro via WhatsApp
-│       │   └── testUtils.spec.ts         # Testes do serviço de massa de dados
+│       │   ├── README.md
+│       │   ├── quotation/                  # Preço, planos, coberturas (@api @pricing)
+│       │   ├── ciliaClaimAuth.spec.ts      # Autenticação de sinistro via WhatsApp
+│       │   └── testUtils.spec.ts           # Testes do serviço de massa de dados
 │       └── e2e/
 │           ├── README.md                 # Organização journeys / ux / blockers / regression
 │           ├── journeys/                 # Fluxos E2E completos (@journey)
@@ -405,8 +409,14 @@ npx playwright test validateBonusClass --project=chromium --reporter=list
 ### Apenas testes de API
 
 ```bash
+npm run test:api              # claims + test-utils + quotation
+npm run test:api:quotation    # pricing / cotação (@pricing)
+
+# equivalente explícito
 npx playwright test tests/spec/api --project=chromium --reporter=list
 ```
+
+Guia de migração E2E → API: [`docs/guides/api-quotation-layer.md`](docs/guides/api-quotation-layer.md).
 
 ### Por tag
 
@@ -647,7 +657,9 @@ npm run format:check   # apenas verifica sem alterar (usado no CI)
 
 # Atalhos para execução de testes
 npm run test:smoke      # apenas testes @smoke
-npm run test:regression # apenas testes @regression
+npm run test:regression # apenas testes @regression E2E
+npm run test:api        # testes HTTP (api/)
+npm run test:api:quotation  # pricing / opin-service (@pricing)
 npm run test:a11y       # smoke axe mobile (Pixel 5) + tablet (iPad) — navegador visível · VPN
 npm run test:keyboard   # navegação por teclado (@keyboard) — navegador visível · VPN
 
