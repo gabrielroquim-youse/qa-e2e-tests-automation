@@ -1,5 +1,5 @@
 /**
- * Usabilidades trestes — tela lead_info (primeiro passo do funil).
+ * Usabilidade — tela lead_info (primeiro passo do funil).
  */
 import LeadInfoPage from '../../../pages/quotation/LeadInfoPage';
 import { expect, test } from '../../../fixtures/setupQuotation';
