@@ -674,12 +674,50 @@ npm run coverage:check   # validação CI — falha se mapa front × POM desatua
 
 ### Pre-commit (Husky + lint-staged)
 
-Ao fazer `git commit`, o hook pré-commit executa automaticamente:
+Git hooks em [`.husky/pre-commit`](.husky/pre-commit) rodam **antes de cada `git commit`**. O hook chama `npx lint-staged`, que valida **somente os arquivos no stage** (rápido — não varre o projeto inteiro).
 
-- **ESLint** com `--max-warnings=0` em todos os `.ts` modificados
-- **Prettier** em todos os `.ts`, `.json`, `.yml` e `.md` modificados
+Regras definidas em [`package.json`](package.json) → `"lint-staged"`:
 
-Se qualquer verificação falhar, o commit é bloqueado. Corrija os erros e faça o commit novamente.
+| Arquivos staged      | O que roda                             |
+| -------------------- | -------------------------------------- |
+| `**/*.ts`            | ESLint (`--max-warnings=0`) + Prettier |
+| `**/*.{json,yml,md}` | Prettier                               |
+
+**Fluxo:**
+
+```
+git commit  →  .husky/pre-commit  →  lint-staged  →  ESLint + Prettier nos staged
+                                                          ↓
+                                              passou? commit gravado
+                                              falhou? commit cancelado
+```
+
+**O que você vê no terminal** (exemplo quando passa):
+
+```
+✔ Running tasks for staged files...
+✔ Staging changes from tasks...
+[feature/assistencia abc1234] sua mensagem
+```
+
+Se o Prettier corrigir formatação, ele re-adiciona o arquivo ao stage automaticamente (`Staging changes from tasks`).
+
+**Testar sem commitar:**
+
+```bash
+git add <arquivo>
+npx lint-staged --verbose
+```
+
+**Ativação:** após `npm install`, o script `"prepare": "husky"` registra os hooks. Não precisa rodar nada manualmente.
+
+**Pular o hook** (só em emergência):
+
+```bash
+git commit --no-verify -m "mensagem"
+```
+
+Se o ESLint falhar, leia o erro no terminal, corrija, `git add` de novo e tente o commit outra vez.
 
 ### GitHub Actions (CI)
 
