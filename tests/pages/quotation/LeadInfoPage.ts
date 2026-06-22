@@ -34,7 +34,8 @@ export class LeadInfoPage extends QuotationPageLayout<VehicleDetailsPage> {
 
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
-        await page.goto('/', {
+        // goto('/') ignora o path do baseURL (ex.: /seguro-auto) e cai no site de marketing
+        await page.goto(TestConfig.urls.autoQuotationUrl, {
           waitUntil: 'domcontentloaded',
           timeout: 60_000,
         });

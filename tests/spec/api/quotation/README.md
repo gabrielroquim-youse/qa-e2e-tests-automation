@@ -1,22 +1,24 @@
 # API — Cotação Auto (pricing)
 
-Regras de negócio que **hoje** rodam no browser em `tests/spec/e2e/regression/` e devem migrar para cá.
+**Repo canônico:** `qa-api-tests-automation` → `tests/spec/quotation/`
 
-## Matriz de migração
+Todos os cenários de `precosPlanos.spec.ts` foram migrados para API (BFF apiws).
 
-| Spec E2E (origem)             | Cenário                                 | Spec API (destino)          | Status                         |
-| ----------------------------- | --------------------------------------- | --------------------------- | ------------------------------ |
-| `precosPlanos.spec.ts`        | Ordinal Essencial < Regular < Auto 1504 | `planos-ordinal.spec.ts`    | 🟡 aguardando OPIN_SERVICE_URL |
-| `precosPlanos.spec.ts`        | Garagem noturna × preço                 | `precos-variaveis.spec.ts`  | ⬜ backlog                     |
-| `precosPlanos.spec.ts`        | Bônus classe × desconto                 | `bonus-class.spec.ts`       | ⬜ copiar template do guia     |
-| `assistencias.spec.ts`        | Combo / dependências / prêmio           | `assistencias.spec.ts`      | ⬜ backlog                     |
-| `personalizacao.spec.ts`      | Toggle cobertura × prêmio               | `coberturas.spec.ts`        | ⬜ backlog                     |
-| `validacaoValores.spec.ts`    | Delta simétrico                         | `validacao-valores.spec.ts` | ⬜ backlog                     |
-| `assistenciaRpsPromo.spec.ts` | Promo RPS                               | `rps-promo.spec.ts`         | ⬜ backlog                     |
-| `validateBonusClass.spec.ts`  | Classe bônus                            | `bonus-class.spec.ts`       | ⬜ backlog                     |
+```bash
+cd qa-api-tests-automation
+npm run test:pricing
+```
 
-**Manter no E2E** (UX / integração): visibilidade de cards, labels, navegação, bloqueios (`blockers/`), jornadas (`journeys/`), smoke por tela (`ux/`).
+| Spec API                   | Cenário                         |
+| -------------------------- | ------------------------------- |
+| `planos-ordinal.spec.ts`   | Essencial < Regular < Auto 1504 |
+| `precos-variaveis.spec.ts` | Garagem noturna                 |
+| `bonus-class.spec.ts`      | Classe de bônus                 |
+| `uso-veiculo.spec.ts`      | Uso do veículo                  |
+| `estado-civil.spec.ts`     | Estado civil                    |
+| `zero-km.spec.ts`          | Zero km vs usado                |
+| `motor-sanidade.spec.ts`   | Guard-rails + idempotência      |
 
-## Pré-requisito
+**Manter no E2E:** UX (`ux/`), `validateBonusClass.spec.ts`, coberturas visuais, assistências na UI.
 
-Definir `OPIN_SERVICE_URL` (ou `QUOTATION_API_URL`) no `.env` — ver [`.env.example`](../../../../.env.example).
+@see docs/guides/api-quotation-layer.md

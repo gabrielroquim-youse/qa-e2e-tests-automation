@@ -1,38 +1,57 @@
 # Camada API — Cotação Auto
 
-> **Objetivo:** testar regra de negócio e precificação via HTTP, deixando E2E focado em UX e integração visual.
+> **Objetivo:** validar **regra de negócio e precificação via HTTP** (camada de serviço), deixando E2E focado em **usabilidade, jornada e integração visual**.
+
+## Pirâmide (padrão de mercado)
+
+```
+        ┌─────────────┐
+        │  E2E / UX   │  qa-e2e-tests-automation — “o usuário consegue usar?”
+        ├─────────────┤
+        │ API / HTTP  │  qa-api-tests-automation — “o motor calcula certo?”  ← este guia
+        ├─────────────┤
+        │ Unit (dev)  │  repos opin-service / apiws — lógica isolada (time de backend)
+        └─────────────┘
+```
+
+| Camada   | Repo                      | O que testar                                            | O que **não** testar     |
+| -------- | ------------------------- | ------------------------------------------------------- | ------------------------ |
+| **API**  | `qa-api-tests-automation` | Preço, ordinal de planos, bônus, garagem, contrato JSON | Layout, modal, labels    |
+| **E2E**  | `qa-e2e-tests-automation` | Smoke por tela, jornada, bloqueios, a11y                | Comparar R$ no browser   |
+| **Unit** | backend                   | Funções puras, domínio                                  | Fluxo HTTP ponta a ponta |
 
 ## Divisão de responsabilidades
 
-| Camada   | Pergunta                                   | Onde                                        |
-| -------- | ------------------------------------------ | ------------------------------------------- |
-| **E2E**  | O cliente vê, navega e consegue contratar? | `tests/spec/e2e/journeys`, `ux`, `blockers` |
-| **API**  | O motor calcula preço/regra corretamente?  | `tests/spec/api/quotation`                  |
-| **A11y** | WCAG / teclado / mobile                    | `tests/spec/a11y`                           |
+| Camada   | Pergunta                                   | Onde                                                   |
+| -------- | ------------------------------------------ | ------------------------------------------------------ |
+| **E2E**  | O cliente vê, navega e consegue contratar? | `qa-e2e` → `tests/spec/e2e/journeys`, `ux`, `blockers` |
+| **API**  | O motor calcula preço/regra corretamente?  | `qa-api-tests-automation` → `tests/spec/quotation`     |
+| **A11y** | WCAG / teclado / mobile                    | `qa-e2e` → `tests/spec/a11y`                           |
 
-## Estrutura
+## Estrutura (repo API)
 
 ```
-tests/
-├── data/quotationDefaults.ts           # massa padrão compartilhada
-├── fixtures/setupQuotationApi.ts       # importar nos specs API
+qa-api-tests-automation/tests/
+├── fixtures/setupQuotationApi.ts
+├── helpers/pricingAssertions.ts
 ├── services/quotation/
-│   ├── QuotationPricingService.ts      # cliente HTTP
-│   └── buildQuotationPayload.ts        # JSON do request
-├── schemas/quotation/                  # Zod — contrato de resposta
-└── spec/api/quotation/
-    ├── planos-ordinal.spec.ts          # 1º cenário a migrar
-    └── bonus-class.spec.ts             # próximo: copiar de planos-ordinal.spec.ts
+│   ├── ApiWsAutoQuotationService.ts   # cliente BFF apiws
+│   └── QuotationPricingService.ts     # fachada quotePlans()
+└── spec/quotation/
+    ├── planos-ordinal.spec.ts
+    ├── bonus-class.spec.ts
+    ├── precos-variaveis.spec.ts
+    └── …
 ```
 
 ## Configuração
 
 ```bash
-# .env
-OPIN_SERVICE_URL=https://qa-opin-service.youse.io   # URL real do time de backend
+# .env (repo qa-api-tests-automation)
+QUOTATION_API_URL=https://qa-apiws.youse.io/bra/web-app/v1
 ```
 
-Sem `OPIN_SERVICE_URL`, specs `@pricing` ficam em **skip** (não quebram CI).
+Sem `QUOTATION_API_URL`, specs `@pricing` ficam em **skip** (não quebram CI local).
 
 ---
 
@@ -120,9 +139,11 @@ Legenda: P = pequeno · M = médio · G = grande
 ## Comandos
 
 ```bash
-npm run test:api:quotation    # só pricing
-npm run test:api              # api/ inteira (claims + test-utils + quotation)
-npm run test:smoke            # E2E UX — PR
+# Repo API (canônico para pricing)
+cd qa-api-tests-automation && npm run test:pricing
+
+# Repo E2E — só UX / jornada
+cd qa-e2e-tests-automation && npm run test:smoke
 ```
 
 ## Branch
