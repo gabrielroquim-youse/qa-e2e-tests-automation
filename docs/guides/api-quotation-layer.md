@@ -61,24 +61,25 @@ Sem `QUOTATION_API_URL`, specs `@pricing` ficam em **skip** (não quebram CI loc
 
 ## Playbook — como criar testes API (passo a passo)
 
-### Passo 0 — Descobrir o contrato (1–2 h com backend)
+### Passo 0 — Descobrir o contrato (VPN)
 
-Antes de codar, responda com o time:
+Contrato real: **BFF apiws** — `QUOTATION_API_URL` (ex. `https://qa-apiws.youse.io/bra/web-app/v1`).
 
-| Pergunta                    | Exemplo                                   |
-| --------------------------- | ----------------------------------------- |
-| Base URL do serviço?        | `https://qa-opin-service.youse.io` ou BFF |
-| Path para cotar até planos? | `POST /v1/quotations/plans`               |
-| Auth?                       | Bearer, cookie, nenhum em QA              |
-| Payload mínimo?             | placa, CEP, CPF, garagem…                 |
-| Formato da resposta?        | `{ plans: [{ plan, monthly }] }`          |
+| Pergunta        | Resposta (QA)                                       |
+| --------------- | --------------------------------------------------- |
+| Base URL?       | `QUOTATION_API_URL`                                 |
+| Fluxo planos?   | POST/PUT `/cotacao/auto/{id}` até `plan_selection`  |
+| Personalização? | PUT `coverages_selection` / `assistances_selection` |
+| Auth?           | Headers Origin/Referer (simula front)               |
 
-**Como descobrir sozinho (VPN on):**
+**Captura automática (repo E2E):**
 
-1. Abra o funil no Chrome → DevTools → **Network** → filtre `Fetch/XHR`.
-2. Avance até **Seleção de planos** e anote URL + body das requisições de pricing.
-3. Ou rode smoke E2E com trace: `npx playwright test ux/plan-selection --trace on`.
-4. Copie request/response para o planner ou para `QuotationPricingService.ts`.
+```bash
+npx playwright test tests/spec/tools/pricing-network-capture.spec.ts --project=chromium
+npx playwright test tests/spec/tools/customization-network-capture.spec.ts --project=chromium
+```
+
+Artefatos: `docs/reports/*-network-capture.json` · guias em `qa-api-tests-automation/docs/guides/`.
 
 ### Passo 1 — Copiar o padrão existente
 

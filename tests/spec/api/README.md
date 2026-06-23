@@ -1,18 +1,31 @@
-# API — testes de contrato e regra de negócio
+# API — neste repositório (E2E)
 
-Testes **sem browser** (Playwright `request`) para serviços internos.
+Testes HTTP **sem browser** que **permanecem aqui** — domínios fora da cotação Auto.
 
-| Pasta                      | Domínio                                                | Tags              |
-| -------------------------- | ------------------------------------------------------ | ----------------- |
-| [`quotation/`](quotation/) | Cotação Auto — preço, planos, coberturas, assistências | `@api` `@pricing` |
-| `ciliaClaimAuth.spec.ts`   | Autenticação sinistro WhatsApp                         | `@whatsapp_claim` |
-| `testUtils.spec.ts`        | Massa de dados QA                                      | `@test_utils`     |
+| Arquivo                  | Domínio                        | Tags              |
+| ------------------------ | ------------------------------ | ----------------- |
+| `ciliaClaimAuth.spec.ts` | Autenticação sinistro WhatsApp | `@whatsapp_claim` |
+| `testUtils.spec.ts`      | Massa de dados QA (test-utils) | `@test_utils`     |
 
-## Comandos
+## Cotação Auto (pricing / personalização)
+
+**Não adicionar specs novos aqui.** Repo canônico:
+
+**`qa-api-tests-automation`** → `tests/spec/quotation/`
 
 ```bash
-npm run test:api              # toda a pasta api/
-npm run test:api:quotation    # só cotação / pricing
+cd qa-api-tests-automation
+npm run test:pricing          # @pricing — planos, bônus, garagem…
+npm run test:customization    # @customization — coberturas, assistências, RPS
+npm run test:quotation        # tudo @quotation_auto
 ```
 
-Guia de migração E2E → API: [`docs/guides/api-quotation-layer.md`](../../../docs/guides/api-quotation-layer.md).
+A pasta [`quotation/`](quotation/) só documenta o redirecionamento (stubs).
+
+Guia completo: [`docs/guides/api-quotation-layer.md`](../../../docs/guides/api-quotation-layer.md)
+
+## Comandos (API local)
+
+```bash
+npm run test:api    # cilia + test-utils (+ stubs quotation)
+```

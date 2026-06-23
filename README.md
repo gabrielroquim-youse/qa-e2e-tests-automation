@@ -50,13 +50,15 @@ Suite de testes automatizados da **Youse Seguradora** — fluxos E2E, API e pric
 
 ## Visão Geral
 
-Este repositório automatiza os principais fluxos da Youse em três camadas:
+Este repositório automatiza **experiência do cliente no navegador** (Seguro Auto B2C Youse). Regras de preço e contrato HTTP ficam no repo irmão **`qa-api-tests-automation`**.
 
-| Camada                                                                                                    | O que cobre                                                           | Pasta             |
-| --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ----------------- |
-| <img src="https://cdn.simpleicons.org/playwright/2EAD33" height="20" align="top" alt="" /> **E2E**        | Fluxo completo de cotação e contratação de seguro auto no navegador   | `tests/spec/e2e/` |
-| <img src="https://cdn.simpleicons.org/openapiinitiative/6BA539" height="20" align="top" alt="" /> **API** | Regra de negócio e contratos (pricing, claims, test-utils)            | `tests/spec/api/` |
-| <img src="https://cdn.simpleicons.org/chartdotjs/FF6384" height="20" align="top" alt="" /> **Pricing**    | Variação de preços por variáveis de risco e integridade de coberturas | `tests/spec/e2e/` |
+| Camada                 | Repositório               | O que cobre                                    | Pasta principal                       |
+| ---------------------- | ------------------------- | ---------------------------------------------- | ------------------------------------- |
+| **E2E / UX**           | **este repo**             | Jornada, usabilidade, bloqueios, a11y          | `tests/spec/e2e/`, `tests/spec/a11y/` |
+| **API cotação**        | `qa-api-tests-automation` | Preço, bônus, coberturas, assistências (apiws) | `tests/spec/quotation/`               |
+| **API sinistro/utils** | **este repo**             | Cilia auth, test-utils                         | `tests/spec/api/`                     |
+
+Pirâmide detalhada: [`docs/guides/api-quotation-layer.md`](docs/guides/api-quotation-layer.md)
 
 ---
 
@@ -195,30 +197,30 @@ qa-e2e-tests-automation/
 │   │   └── test-utils/
 │   │       └── TestUtilsServiceSchemas.ts
 │   │
-│   ├── services/                   # Clientes HTTP para APIs internas
+│   ├── services/                   # Clientes HTTP (legado cotação → ver repo API)
 │   │   ├── bff/
 │   │   │   └── CiliaClaimAuth.ts
-│   │   ├── test-utils/
-│   │   │   └── TestUtilsService.ts
-│   │   └── quotation/
-│   │       └── QuotationPricingService.ts
+│   │   └── test-utils/
+│   │       └── TestUtilsService.ts
 │   │
 │   ├── types/                      # Declarações de tipos para pacotes sem @types
 │   │   └── cpf-cnpj-validator.d.ts
 │   │
 │   └── spec/                       # Arquivos de teste (specs)
 │       ├── seed.spec.ts            # Seed para gravar novos testes com Playwright Agents
+│       ├── a11y/                   # WCAG, teclado, mobile/tablet (@a11y)
+│       ├── tools/                  # Captura de contrato apiws (não é pipeline) — ver README
 │       ├── api/
 │       │   ├── README.md
-│       │   ├── quotation/                  # Preço, planos, coberturas (@api @pricing)
-│       │   ├── ciliaClaimAuth.spec.ts      # Autenticação de sinistro via WhatsApp
-│       │   └── testUtils.spec.ts           # Testes do serviço de massa de dados
+│       │   ├── ciliaClaimAuth.spec.ts      # Sinistro WhatsApp
+│       │   ├── testUtils.spec.ts           # Massa de dados QA
+│       │   └── quotation/                  # Redirecionado → qa-api-tests-automation
 │       └── e2e/
-│           ├── README.md                 # Organização journeys / ux / blockers / regression
+│           ├── README.md                 # journeys / ux / blockers / regression
 │           ├── journeys/                 # Fluxos E2E completos (@journey)
 │           ├── ux/                       # Usabilidade por tela (@ux @smoke)
 │           ├── blockers/                 # Cenários negativos (@negative)
-│           └── regression/               # Preço, coberturas, assistências (@regression)
+│           └── regression/               # UX e regras ainda na tela (preço → repo API)
 │
 ├── .github/
 │   ├── CODEOWNERS                  # Ownership de arquivos críticos
@@ -390,33 +392,35 @@ npx playwright test tests/spec/e2e --project=chromium --reporter=list
 # Caminho feliz da cotação
 npx playwright test tests/spec/e2e/journeys --project=chromium --reporter=list
 
-# Testes de preços
-npx playwright test precosPlanos --project=chromium --reporter=list
+# Usabilidade por tela
+npx playwright test tests/spec/e2e/ux --project=chromium --reporter=list
 
-# Coberturas e assistências dos planos pré-formatados
-npx playwright test coberturas --project=chromium --reporter=list
+# Regressão UX (visibilidade, navegação — preço migrado para API)
+npx playwright test tests/spec/e2e/regression --project=chromium --reporter=list
 
-# Assistências — visibilidade e impacto de preço
-npx playwright test assistencias --project=chromium --reporter=list
-
-# Personalização de coberturas/assistências + E2E completo do plano personalizado
-npx playwright test personalizacao --project=chromium --reporter=list
-
-# Classe de Bônus
+# Classe de Bônus (UX modal/toggle)
 npx playwright test validateBonusClass --project=chromium --reporter=list
 ```
 
-### Apenas testes de API
+### Precificação e personalização (repo API)
+
+Regras de **preço, bônus, coberturas e assistências** rodam em **`qa-api-tests-automation`** (VPN):
 
 ```bash
-npm run test:api              # claims + test-utils + quotation
-npm run test:api:quotation    # pricing / cotação (@pricing)
-
-# equivalente explícito
-npx playwright test tests/spec/api --project=chromium --reporter=list
+cd ../qa-api-tests-automation
+npm run test:pricing          # @pricing
+npm run test:customization    # @customization
+npm run test:quotation        # @quotation_auto
 ```
 
-Guia de migração E2E → API: [`docs/guides/api-quotation-layer.md`](docs/guides/api-quotation-layer.md).
+Guia: [`docs/guides/api-quotation-layer.md`](docs/guides/api-quotation-layer.md)
+
+### API neste repo (sinistro / test-utils)
+
+```bash
+npm run test:api              # cilia + test-utils
+npx playwright test tests/spec/api --project=chromium --reporter=list
+```
 
 ### Por tag
 
@@ -452,22 +456,22 @@ npx playwright test --debug
 
 As tags organizam os testes por pipeline e finalidade. Use sempre `--grep` para filtrar:
 
-| Tag               | Quando executar                                | Tempo estimado                       |
-| ----------------- | ---------------------------------------------- | ------------------------------------ |
-| `@smoke`          | A cada PR (`npm run test:smoke`)               | ~5–10 min                            |
-| `@ux`             | Usabilidade por tela (PR)                      | ~5 min                               |
-| `@journey`        | Jornadas E2E completas (nightly)               | ~15–30 min                           |
-| `@a11y`           | On release / PR (com VPN)                      | ~15–25 min (mobile + tablet)         |
-| `@regression`     | Nightly                                        | ~20 min                              |
-| `@price`          | On release                                     | ~30 min (cotações duplas são lentas) |
-| `@sanity`         | On release                                     | ~5 min                               |
-| `@b2c`            | Todos os testes de jornada B2C                 | —                                    |
-| `@quotation_auto` | Todos os testes do funil de cotação            | —                                    |
-| `@happy_path`     | Somente caminho feliz                          | —                                    |
-| `@bonus_class`    | Testes de Classe de Bônus                      | —                                    |
-| `@coberturas`     | Testes de coberturas e assistências dos planos | —                                    |
-| `@personalizacao` | Testes do fluxo de personalização do plano     | —                                    |
-| `@assistencias`   | Testes de impacto de assistências no prêmio    | —                                    |
+| Tag               | Quando executar                          | Tempo estimado               |
+| ----------------- | ---------------------------------------- | ---------------------------- |
+| `@smoke`          | A cada PR (`npm run test:smoke`)         | ~5–10 min                    |
+| `@ux`             | Usabilidade por tela (PR)                | ~5 min                       |
+| `@journey`        | Jornadas E2E completas (nightly)         | ~15–30 min                   |
+| `@a11y`           | On release / PR (com VPN)                | ~15–25 min (mobile + tablet) |
+| `@regression`     | Nightly (UX — visibilidade, navegação)   | ~20 min                      |
+| `@price`          | **Repo API** (`test:pricing`) — não E2E  | —                            |
+| `@sanity`         | On release                               | ~5 min                       |
+| `@b2c`            | Todos os testes de jornada B2C           | —                            |
+| `@quotation_auto` | Todos os testes do funil de cotação      | —                            |
+| `@happy_path`     | Somente caminho feliz                    | —                            |
+| `@bonus_class`    | Testes de Classe de Bônus                | —                            |
+| `@coberturas`     | UX coberturas na tela (preço → repo API) | —                            |
+| `@personalizacao` | UX personalização (preço → repo API)     | —                            |
+| `@assistencias`   | UX assistências (preço → repo API)       | —                            |
 
 ---
 
@@ -658,8 +662,7 @@ npm run format:check   # apenas verifica sem alterar (usado no CI)
 # Atalhos para execução de testes
 npm run test:smoke      # apenas testes @smoke
 npm run test:regression # apenas testes @regression E2E
-npm run test:api        # testes HTTP (api/)
-npm run test:api:quotation  # pricing / opin-service (@pricing)
+npm run test:api        # cilia + test-utils (cotação → qa-api-tests-automation)
 npm run test:a11y       # smoke axe mobile (Pixel 5) + tablet (iPad) — navegador visível · VPN
 npm run test:keyboard   # navegação por teclado (@keyboard) — navegador visível · VPN
 

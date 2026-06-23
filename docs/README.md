@@ -25,6 +25,7 @@ docs/
 | **Acessibilidade** (WCAG, mobile/tablet)   | [`guides/accessibility-analysis.md`](guides/accessibility-analysis.md) |
 | **Gaps a11y** (hoje vs deveria ser · foco) | [`guides/a11y-gap-map.md`](guides/a11y-gap-map.md)                     |
 | **Mapa de fluxos** do funil × automação    | [`guides/fluxos-cotacao-auto.md`](guides/fluxos-cotacao-auto.md)       |
+| **Pirâmide E2E vs API** (cotação)          | [`guides/api-quotation-layer.md`](guides/api-quotation-layer.md)       |
 | Rodar o projeto / CI                       | [`../README.md`](../README.md)                                         |
 
 ## Comandos úteis
