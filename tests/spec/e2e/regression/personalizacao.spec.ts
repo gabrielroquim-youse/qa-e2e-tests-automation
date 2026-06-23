@@ -1,22 +1,13 @@
 /**
  * Testes de Personalização de Coberturas e Assistências — Seguro Auto.
  *
- * Valida que ações do usuário na tela de personalização resultam na
- * direção correta de variação de prêmio:
- *  - Adicionar cobertura → prêmio aumenta
- *  - Remover cobertura → prêmio diminui
- *  - Franquia menor → prêmio maior (menor deductible = maior risco assumido)
- *  - Indenização maior → prêmio maior
- *  - Adicionar assistência → prêmio aumenta
- *
- * Estratégia:
- *  - Cada teste é completamente independente: navega o funil do zero.
- *  - Não são fixados valores absolutos — apenas relações de direção (A > B).
- *  - Prêmio inicial lido após waitForPrice(); novo prêmio após waitForPriceUpdate().
+ * Coberturas/assistências × prêmio migrados para API — qa-api-tests-automation/tests/spec/quotation/coberturas.spec.ts
+ * Manter aqui: navegação, coberturas obrigatórias (UX).
  *
  * Pré-requisito: VPN Youse ativa com acesso ao ambiente QA.
  * Uso: npx playwright test personalizacao --project=chromium --reporter=list
  */
+/* eslint-disable playwright/no-skipped-test -- suites de prêmio migradas para API */
 import { expect, test } from '../../../fixtures/setupQuotation';
 import { navigateToCoverages, navigateToCheckout } from '../../../helpers/funnel';
 import { AssistancesSelectionPage } from '../../../pages/quotation/AssistancesSelectionPage';
@@ -29,7 +20,7 @@ const TEST_TIMEOUT = 180_000;
 // CATEGORIA 1 — Coberturas
 // ═══════════════════════════════════════════════════════════════════════════
 
-test.describe('Personalização — Coberturas', { tag: ['@personalizacao', '@coberturas', '@quotation_auto'] }, () => {
+test.describe.skip('Personalização — Coberturas', { tag: ['@personalizacao', '@coberturas', '@quotation_auto'] }, () => {
   // ── 1. Adicionar cobertura opcional aumenta o prêmio ─────────────────
   test('Ativar a cobertura "Danos Morais" deve aumentar o prêmio anual', { tag: ['@regression'] }, async ({ page }) => {
     test.setTimeout(TEST_TIMEOUT);
@@ -167,7 +158,7 @@ test.describe('Personalização — Coberturas Obrigatórias', { tag: ['@regress
 // CATEGORIA 2 — Assistências
 // ═══════════════════════════════════════════════════════════════════════════
 
-test.describe('Personalização — Assistências', { tag: ['@personalizacao', '@assistencias', '@quotation_auto'] }, () => {
+test.describe.skip('Personalização — Assistências', { tag: ['@personalizacao', '@assistencias', '@quotation_auto'] }, () => {
   // ── 5. Adicionar assistência aumenta o prêmio ────────────────────────
   test('Ativar a assistência "Carro reserva" deve aumentar o prêmio anual', { tag: ['@regression'] }, async ({ page }) => {
     test.setTimeout(TEST_TIMEOUT);

@@ -1,42 +1,18 @@
 /**
- * Validação de Valores — delta simétrico (Estratégia A).
- * Ver docs/planners/planner-validacao-valores.md
+ * Validação de Valores — **migrada para API**.
+ *
+ *   cd qa-api-tests-automation
+ *   npm run test:customization -- --grep validacao-valores
+ *
+ * Spec API: tests/spec/quotation/validacao-valores.spec.ts
+ *
+ * @see docs/guides/api-quotation-layer.md
  */
-/* eslint-disable playwright/expect-expect -- asserts em pricingAssertions.ts */
-import { test } from '../../../fixtures/setupQuotation';
-import { assertSymmetricPriceToggle } from '../../../helpers/pricingAssertions';
-import { navigateToAssistances, navigateToCoverages } from '../../../helpers/funnel';
+/* eslint-disable playwright/no-skipped-test -- suite migrada; stub documenta destino API */
+import { expect, test } from '../../../fixtures/setupQuotation';
 
-const TEST_TIMEOUT = 180_000;
-
-test.describe('Validação de Valores — delta simétrico', { tag: ['@value', '@quotation_auto'] }, () => {
-  test('IPVA ligar/desligar deve ser simétrico no total anual', { tag: ['@assistencias'] }, async ({ page }) => {
-    test.setTimeout(TEST_TIMEOUT);
-    const p = await navigateToAssistances(page);
-    await assertSymmetricPriceToggle(
-      () => p.getAnnualPrice(),
-      (from) => p.waitForPriceUpdate(from),
-      () => p.clickAssistanceToggle('Restituição de IPVA'),
-    );
-  });
-
-  test('Assistência a bike ligar/desligar deve ser simétrico', { tag: ['@assistencias'] }, async ({ page }) => {
-    test.setTimeout(TEST_TIMEOUT);
-    const p = await navigateToAssistances(page);
-    await assertSymmetricPriceToggle(
-      () => p.getAnnualPrice(),
-      (from) => p.waitForPriceUpdate(from),
-      () => p.clickAssistanceToggle('Assistência a bike'),
-    );
-  });
-
-  test('Danos Morais ligar/desligar deve ser simétrico', { tag: ['@coberturas'] }, async ({ page }) => {
-    test.setTimeout(TEST_TIMEOUT);
-    const p = await navigateToCoverages(page);
-    await assertSymmetricPriceToggle(
-      () => p.getAnnualPrice(),
-      (from) => p.waitForPriceUpdate(from),
-      () => p.clickCoverageToggle('Danos Morais'),
-    );
+test.describe.skip('Validação de Valores — delta simétrico', { tag: ['@value', '@quotation_auto'] }, () => {
+  test('Executar npm run test:customization em qa-api-tests-automation', () => {
+    expect(true).toBe(true);
   });
 });

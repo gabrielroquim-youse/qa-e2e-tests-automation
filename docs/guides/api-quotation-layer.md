@@ -35,12 +35,16 @@ qa-api-tests-automation/tests/
 ├── fixtures/setupQuotationApi.ts
 ├── helpers/pricingAssertions.ts
 ├── services/quotation/
-│   ├── ApiWsAutoQuotationService.ts   # cliente BFF apiws
-│   └── QuotationPricingService.ts     # fachada quotePlans()
+│   ├── ApiWsAutoQuotationService.ts      # cliente BFF apiws (até plan_selection)
+│   ├── ApiWsCustomizationService.ts      # coberturas + assistências
+│   ├── QuotationPricingService.ts        # fachada quotePlans()
+│   └── QuotationCustomizationService.ts  # fachada personalização
 └── spec/quotation/
     ├── planos-ordinal.spec.ts
-    ├── bonus-class.spec.ts
-    ├── precos-variaveis.spec.ts
+    ├── coberturas.spec.ts
+    ├── assistencias.spec.ts
+    ├── validacao-valores.spec.ts
+    ├── rps-promo.spec.ts
     └── …
 ```
 
