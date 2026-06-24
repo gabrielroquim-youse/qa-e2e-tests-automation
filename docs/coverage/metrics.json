@@ -12,12 +12,12 @@
     "percent": 92
   },
   "functional": {
-    "testableTotal": 42,
-    "covered": 36,
+    "testableTotal": 44,
+    "covered": 38,
     "partial": 4,
     "missing": 0,
     "blocked": 2,
-    "percentWeighted": 90,
+    "percentWeighted": 91,
     "percentStrict": 86
   },
   "byPriority": {
@@ -32,9 +32,9 @@
       "percent": 100
     },
     "P2": {
-      "total": 9,
-      "covered": 4,
-      "percent": 44
+      "total": 11,
+      "covered": 6,
+      "percent": 55
     },
     "P3": {
       "total": 2,

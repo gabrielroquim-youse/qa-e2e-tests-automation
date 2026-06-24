@@ -41,11 +41,11 @@ flowchart TD
 
 | Métrica                       |                                                     Valor |
 | ----------------------------- | --------------------------------------------------------: |
-| Capacidades testáveis (CAP)   |                                                        42 |
-| Cobertura funcional ponderada |                                                   **90%** |
+| Capacidades testáveis (CAP)   |                                                        44 |
+| Cobertura funcional ponderada |                                                   **91%** |
 | Cobertura estrita             |                                                       86% |
 | Telas com Page Object         |                                               12/13 (92%) |
-| Specs E2E                     | 20 arquivos · **66** testes (`tests/spec/e2e/`, chromium) |
+| Specs E2E                     | 23 arquivos · **73** testes (`tests/spec/e2e/`, chromium) |
 | Specs UX (`e2e/ux/`)          |                                        10 · **30** testes |
 | Fluxos documentados abaixo    |                                               18 caminhos |
 | Gaps testáveis sem spec (⬜)  |                                                         0 |

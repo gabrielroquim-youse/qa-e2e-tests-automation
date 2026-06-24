@@ -6,10 +6,12 @@
  * Também permite inspecionar upsells (Residencial, Vida) e assistências.
  * Após finalizar, aguarda redirect para /issuance ou /sucesso.
  */
-import { Locator, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import proxymise from 'proxymise';
 import { BasePage } from '../BasePage';
 import { IssuancePage } from './IssuancePage';
+
+export type PaymentMethod = 'credit_card' | 'pix';
 
 export class CheckoutPage extends BasePage {
   readonly title: Locator;
@@ -21,6 +23,12 @@ export class CheckoutPage extends BasePage {
   readonly btnFinish: Locator;
   readonly assistenciasAccordion: Locator;
   readonly btnPaymentApproved: Locator;
+  readonly paymentMethodCreditCard: Locator;
+  readonly paymentMethodPix: Locator;
+  readonly otherPaymentMethodsToggle: Locator;
+  readonly pixPaymentSection: Locator;
+  readonly yourInfoToggle: Locator;
+  readonly btnCopyPixCode: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -44,6 +52,131 @@ export class CheckoutPage extends BasePage {
     });
     this.btnFinish = this.page.getByRole('button', { name: /^Finalizar$/ });
     this.assistenciasAccordion = this.page.getByRole('button', { name: /assistências/i });
+    this.otherPaymentMethodsToggle = page.getByText(/veja outras formas de pagamento/i);
+    this.paymentMethodCreditCard = page.getByRole('button', { name: /mensal.*cart[aã]o de cr[eé]dito/i }).first();
+    this.paymentMethodPix = page.locator('button').filter({ hasText: /^pix/i }).first();
+    this.pixPaymentSection = page.getByText(/pague com pix/i);
+    this.yourInfoToggle = page.getByText('Suas informações', { exact: true });
+    this.btnCopyPixCode = page.getByRole('button', { name: /copiar c[oó]digo pix/i });
+  }
+
+  /** Expande opções além do cartão mensal (PIX, à vista, parcelado). */
+  async expandOtherPaymentMethods() {
+    await this.title.waitFor({ state: 'visible', timeout: 60_000 });
+    const pixVisible = await this.paymentMethodPix.isVisible().catch(() => false);
+    if (!pixVisible) {
+      await this.otherPaymentMethodsToggle.first().click();
+      await this.paymentMethodPix.waitFor({ state: 'visible', timeout: 30_000 });
+    }
+    return this;
+  }
+
+  /** PIX fica no accordion "Veja outras formas de pagamento com desconto". */
+  async isPixPaymentAvailable(timeout = 15_000): Promise<boolean> {
+    await this.expandOtherPaymentMethods();
+    try {
+      await this.paymentMethodPix.waitFor({ state: 'visible', timeout });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async selectPaymentMethod(method: PaymentMethod) {
+    await this.title.waitFor({ state: 'visible', timeout: 60_000 });
+    if (method === 'pix') {
+      await this.expandOtherPaymentMethods();
+      await this.paymentMethodPix.click();
+    } else if (await this.paymentMethodCreditCard.isVisible().catch(() => false)) {
+      await this.paymentMethodCreditCard.click();
+    }
+    return this;
+  }
+
+  /** Instruções PIX + QR/código após selecionar o método (geração pode levar alguns segundos). */
+  async expectPixPaymentVisible() {
+    await expect(this.pixPaymentSection).toBeVisible({ timeout: 30_000 });
+    await expect(this.page.getByText(/como fazer o pagamento/i)).toBeVisible();
+    const qrOrCode = this.page
+      .locator('img[alt*="QR" i], canvas')
+      .or(this.btnCopyPixCode)
+      .or(this.page.getByText(/copie o c[oó]digo|qr code|pague via qr code/i))
+      .first();
+    await expect(qrOrCode).toBeVisible({ timeout: 60_000 });
+    return this;
+  }
+
+  /** Accordion "Suas informações" — exibe CPF do segurado/condutor. */
+  async expandYourInfo() {
+    const insuredData = this.page.getByText('Dados do segurado', { exact: true });
+    if (!(await insuredData.isVisible().catch(() => false))) {
+      await this.yourInfoToggle.click();
+      await insuredData.waitFor({ state: 'visible', timeout: 15_000 });
+    }
+    return this;
+  }
+
+  async expectInsuredCpfVisible(formattedCpf: string) {
+    await this.expandYourInfo();
+    await expect(this.page.getByText('Dados do segurado', { exact: true })).toBeVisible();
+    await expect(this.page.getByText(formattedCpf, { exact: true }).first()).toBeVisible();
+    return this;
+  }
+
+  /** Finaliza checkout com PIX selecionado (pagamento fica pendente). */
+  async submitPixCheckout() {
+    await this.page.keyboard.press('Escape').catch(() => {});
+    const finish = this.btnFinish.last();
+    await finish.scrollIntoViewIfNeeded();
+    await finish.click();
+    return this;
+  }
+
+  /** Após finalizar PIX sem pagar: permanece em checkout com código copia-e-cola. */
+  async expectPixPendingCheckout() {
+    await expect(this.page).toHaveURL(/\/checkout/);
+    await expect(this.btnCopyPixCode).toBeVisible({ timeout: 90_000 });
+    await expect(this.page.getByText(/voltar aqui para finalizar a sua compra/i)).toBeVisible();
+    return this;
+  }
+
+  /** Protocolo exibido em "Suas informações" (referência para Adyen Offers). */
+  async getCheckoutProtocol(): Promise<string> {
+    const protocolLine = this.page.getByText(/Protocolo:\s*#/i);
+    await protocolLine.waitFor({ state: 'visible', timeout: 30_000 });
+    const text = (await protocolLine.textContent()) ?? '';
+    const match = text.match(/#(\d+)/);
+    if (!match) {
+      throw new Error(`Protocolo não encontrado no checkout: "${text}"`);
+    }
+    return match[1];
+  }
+
+  /** Clica em COPIAR CÓDIGO PIX e retorna o BR Code da área de transferência. */
+  async copyPixBrcode(): Promise<string> {
+    await this.btnCopyPixCode.waitFor({ state: 'visible', timeout: 90_000 });
+    await this.page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+    await this.btnCopyPixCode.click();
+    let brcode = '';
+    await expect
+      .poll(
+        async () => {
+          brcode = (await this.page.evaluate(() => navigator.clipboard.readText())).trim();
+          return brcode;
+        },
+        { timeout: 15_000 },
+      )
+      .toMatch(/^000201/);
+    return brcode;
+  }
+
+  /** Segundo Finalizar — após confirmação do pagamento PIX no sandbox. */
+  async finalizeAfterPixPayment(): Promise<IssuancePage> {
+    await this.page.keyboard.press('Escape').catch(() => {});
+    const finish = this.btnFinish.last();
+    await finish.scrollIntoViewIfNeeded();
+    await finish.click();
+    return this.waitForPostPaymentRedirect();
   }
 
   async checkEmailConfirmation() {
@@ -121,8 +254,10 @@ export class CheckoutPage extends BasePage {
 
   async clickFinishBtn(): Promise<IssuancePage> {
     await this.btnFinish.click();
+    return this.waitForPostPaymentRedirect();
+  }
 
-    // QA tem cinco comportamentos possíveis após o pagamento:
+  private async waitForPostPaymentRedirect(): Promise<IssuancePage> {
     // A) Direto para /sucesso com confirmação da apólice
     // B) Passa por /issuance com "Pagamento aprovado" → /sucesso (ou www.youse.com.br após OK)
     // C) Redireciona para www.youse.com.br (site principal) sem passar por /sucesso

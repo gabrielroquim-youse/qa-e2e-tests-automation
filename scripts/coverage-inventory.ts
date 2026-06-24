@@ -430,6 +430,26 @@ export const FRONTEND_CAPABILITIES: FrontendCapability[] = [
     specs: ['ux/checkout.spec.ts', 'journeys/cotacao-plano-regular.spec.ts'],
     notes: 'Accordion assistências com assert de guincho/carro reserva',
   },
+  {
+    id: 'CAP-45',
+    section: 'checkout',
+    label: 'Pagamento PIX (UI + pendente)',
+    priority: 'P2',
+    status: 'covered',
+    testable: true,
+    specs: ['payment/checkout-pix.spec.ts'],
+    planner: 'planner-pagamento.md',
+  },
+  {
+    id: 'CAP-46',
+    section: 'checkout',
+    label: 'Cartões Adyen Elo / Hipercard',
+    priority: 'P2',
+    status: 'covered',
+    testable: true,
+    specs: ['payment/checkout-cards.spec.ts'],
+    planner: 'planner-pagamento.md',
+  },
 
   // ── issuance / sucesso ──
   {

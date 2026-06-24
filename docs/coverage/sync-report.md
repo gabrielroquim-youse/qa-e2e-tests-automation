@@ -6,12 +6,12 @@
 
 | Métrica                             |   Valor |
 | ----------------------------------- | ------: |
-| **Cobertura funcional (ponderada)** | **90%** |
+| **Cobertura funcional (ponderada)** | **91%** |
 | Cobertura funcional estrita         |     86% |
 | Cobertura estrutural (POMs)         |     92% |
 | Sections no GitHub                  |      12 |
-| Testes E2E Auto                     |      66 |
-| Capacidades testáveis               |      42 |
+| Testes E2E Auto                     |      73 |
+| Capacidades testáveis               |      44 |
 | Falta automatizar (⬜)              |       0 |
 | Bloqueado (🔒)                      |       2 |
 
@@ -29,7 +29,7 @@
 | `coverages_selection`        | sales-personalization-coverages   | CoveragesSelectionPage.ts       | ✅        | 5/6 caps ✅     |
 | `assistances_selection`      | sales-personalization-assistances | AssistancesSelectionPage.ts     | ✅        | 6/7 caps ✅     |
 | `risk_acceptance`            | sales-risk-acceptance             | RiskAcceptancePage.ts           | ✅        | 1/1 caps ✅     |
-| `checkout`                   | sales-checkout                    | CheckoutPage.ts                 | ✅        | 4/4 caps ✅     |
+| `checkout`                   | sales-checkout                    | CheckoutPage.ts                 | ✅        | 6/6 caps ✅     |
 | `issuance`                   | sales-issuance                    | IssuancePage.ts                 | ✅        | 1/1 caps ✅     |
 
 ## 2. Inventário completo — o que o front permite testar
@@ -75,17 +75,22 @@
 | CAP-37 | Pagamento cartão + emissão                    | `checkout`                   | P0  | ✅     | journeys/cotacao-plano-regular.spec.ts, journeys/cotacao-plano-personalizado.spec.ts                                              |
 | CAP-38 | Cross-sell residencial / vida                 | `checkout`                   | P3  | ✅     | ux/checkout.spec.ts                                                                                                               |
 | CAP-39 | Resumo assistências no checkout               | `checkout`                   | P2  | ✅     | ux/checkout.spec.ts, journeys/cotacao-plano-regular.spec.ts                                                                       |
+| CAP-45 | Pagamento PIX (UI + pendente)                 | `checkout`                   | P2  | ✅     | payment/checkout-pix.spec.ts                                                                                                      |
+| CAP-46 | Cartões Adyen Elo / Hipercard                 | `checkout`                   | P2  | ✅     | payment/checkout-cards.spec.ts                                                                                                    |
 | CAP-40 | Tela sucesso / apólice emitida                | `issuance`                   | P0  | ✅     | journeys/cotacao-plano-regular.spec.ts, journeys/cotacao-plano-personalizado.spec.ts                                              |
 | CAP-41 | Idempotência de preço (mesmos dados)          | `transversal`                | P1  | ✅     | regression/precosPlanos.spec.ts                                                                                                   |
 | CAP-42 | Sanidade guard-rails de preço                 | `transversal`                | P0  | ✅     | regression/precosPlanos.spec.ts, regression/coberturas.spec.ts                                                                    |
 
-## 3. Specs E2E (66 testes)
+## 3. Specs E2E (73 testes)
 
 | Spec                                           | Testes |
 | ---------------------------------------------- | ------ |
 | `blockers/cotacao-restricoes.spec.ts`          | 4      |
 | `journeys/cotacao-plano-personalizado.spec.ts` | 1      |
 | `journeys/cotacao-plano-regular.spec.ts`       | 2      |
+| `payment/checkout-cards.spec.ts`               | 2      |
+| `payment/checkout-pix-emission.spec.ts`        | 1      |
+| `payment/checkout-pix.spec.ts`                 | 4      |
 | `regression/assistenciaRpsPromo.spec.ts`       | 1      |
 | `regression/assistencias.spec.ts`              | 7      |
 | `regression/coberturas.spec.ts`                | 7      |

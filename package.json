@@ -31,6 +31,11 @@
     "allure:generate": "allure generate --clean ./allure-results -o ./allure-report",
     "allure:open": "allure open ./allure-report",
     "allure:serve": "allure serve ./allure-results",
+    "test:payment": "playwright test tests/spec/e2e/payment --project=chromium --reporter=list --workers=1",
+    "test:pix:emission": "cross-env PIX_SANDBOX_EMISSION=1 playwright test tests/spec/e2e/payment/checkout-pix-emission.spec.ts --project=chromium --headed --reporter=list",
+    "tool:pix-capture": "playwright test tests/spec/tools/pix-brcode-capture.spec.ts --project=chromium --reporter=list",
+    "tool:pix-confirm": "ts-node scripts/pix-sandbox-confirm.ts",
+    "tool:pix-pay": "ts-node scripts/pix-sandbox-pay.ts",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -65,6 +70,7 @@
     "lint-staged": "^17.0.7",
     "playwright-zephyr": "^1.2.0",
     "prettier": "^3.6.2",
+    "starkbank": "^2.40.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },

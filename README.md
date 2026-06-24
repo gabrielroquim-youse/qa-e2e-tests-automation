@@ -42,7 +42,7 @@ Suite de testes automatizados da **Youse Seguradora** — fluxos E2E, API e pric
 - [Relatórios](#relatórios)
 - [Arquitetura e Padrões](#arquitetura-e-padrões)
 - [Boas práticas (guia completo)](./docs/guides/boas-praticas.md)
-- [Agentes de IA (Playwright Agents)](#agentes-de-ia-playwright-agents)
+- [Agentes de IA](#agentes-de-ia)
 - [Qualidade e CI/CD](#qualidade-e-cicd)
 - [Troubleshooting](#troubleshooting)
 - [Contribuindo](#contribuindo)
@@ -53,7 +53,7 @@ Suite de testes automatizados da **Youse Seguradora** — fluxos E2E, API e pric
 
 Este repositório automatiza **experiência do cliente no navegador** (Seguro Auto B2C Youse): jornadas, usabilidade por tela, validação de formulário, bloqueios visíveis e a11y. Regras de preço e contrato HTTP ficam no repo irmão **`qa-api-tests-automation`**.
 
-**Cobertura funcional atual:** ver [`docs/coverage/README.md`](docs/coverage/README.md) (**90%** · 66 testes E2E · 30 UX).
+**Cobertura funcional atual:** ver [`docs/coverage/README.md`](docs/coverage/README.md) (**91%** · 73 testes E2E · 30 UX).
 
 ### Dashboards (métricas e execuções)
 
@@ -630,9 +630,23 @@ docs: adiciona seção de troubleshooting no README
 
 ---
 
-## Agentes de IA (Playwright Agents)
+## Agentes de IA
 
-O projeto usa os **Playwright Test Agents** integrados ao GitHub Copilot para acelerar a criação de testes.
+### Orquestrador QA (Cursor Skill — versionado)
+
+Skill do projeto em [`.cursor/skills/qa-orchestrator/SKILL.md`](.cursor/skills/qa-orchestrator/SKILL.md) · planner em [`docs/planners/planner-qa-agent.md`](docs/planners/planner-qa-agent.md).
+
+| Papel               | O que faz                                                                                                            |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **qa-orchestrator** | Lê cobertura/planners, roda `validate` / `test:smoke` / `test:ux` / `test:a11y`, sincroniza dashboards, reporta gaps |
+
+Exemplo no chat do Cursor:
+
+```
+Use o skill qa-orchestrator para validar minhas mudanças em tests/spec/e2e/ux
+```
+
+### Playwright Agents (Copilot — local)
 
 | Agente        | O que faz                                                      |
 | ------------- | -------------------------------------------------------------- |
@@ -692,6 +706,7 @@ npm run format:check   # apenas verifica sem alterar (usado no CI)
 npm run test:smoke      # apenas testes @smoke
 npm run test:ux         # usabilidade por tela (30 testes, ~11 min)
 npm run test:regression # apenas testes @regression E2E
+npm run test:payment    # pagamento checkout (PIX + cartões Elo/Hipercard)
 npm run test:api        # cilia + test-utils (cotação → qa-api-tests-automation)
 npm run test:a11y       # smoke axe mobile (Pixel 5) + tablet (iPad) — navegador visível · VPN
 npm run test:keyboard   # navegação por teclado (@keyboard) — navegador visível · VPN

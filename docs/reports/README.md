@@ -9,7 +9,7 @@ Arquivos produzidos automaticamente pelos scripts — **não editar manualmente*
 | Tempo E2E (última run) | [`e2e-timing-report.md`](e2e-timing-report.md)               | UX 30/30 · 11.5 min (2026-06-24) |
 | Histórico E2E          | [`e2e-timing-log.md`](e2e-timing-log.md)                     | 1 execução registrada            |
 | Suíte completa         | [`full-suite-timing-report.md`](full-suite-timing-report.md) | aguardando `test:full:timing`    |
-| Cobertura funcional    | [`../coverage/README.md`](../coverage/README.md)             | 90% · 66 testes                  |
+| Cobertura funcional    | [`../coverage/README.md`](../coverage/README.md)             | 91% · 73 testes                  |
 
 | Arquivo                                                      | Gerado por                    | Conteúdo                                                |
 | ------------------------------------------------------------ | ----------------------------- | ------------------------------------------------------- |
@@ -56,7 +56,7 @@ npm run test:ux:timing
 # Suite completa + relatório + log de tempo
 npm run test:full:timing
 
-# Só E2E (66 testes) + relatório + log
+# Só E2E (73 testes) + relatório + log
 npm run test:e2e:timing
 
 # Regenerar a partir de log list já salvo

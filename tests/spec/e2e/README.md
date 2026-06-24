@@ -16,14 +16,15 @@ Foco: **o cliente consegue ver, entender e usar o funil no navegador?**
 
 ## Pastas
 
-| Pasta                        | Intenção                                                        | Tags                     | Pipeline        |
-| ---------------------------- | --------------------------------------------------------------- | ------------------------ | --------------- |
-| [`journeys/`](journeys/)     | Fluxos completos (Regular, personalizado)                       | `@journey` `@happy_path` | Smoke · Nightly |
-| [`ux/`](ux/)                 | **Usabilidade por tela** (CAP-02, checkout, CAP-17/33/35/38/39) | `@ux` `@smoke`           | PR (`test:ux`)  |
-| [`blockers/`](blockers/)     | Bloqueios de negócio (blindado, CPF, leilão)                    | `@negative`              | Nightly         |
-| [`regression/`](regression/) | UX restante (cards, catálogo, modais)                           | `@regression`            | Nightly         |
+| Pasta                        | Intenção                                                        | Tags                     | Pipeline         |
+| ---------------------------- | --------------------------------------------------------------- | ------------------------ | ---------------- |
+| [`journeys/`](journeys/)     | Fluxos completos (Regular, personalizado)                       | `@journey` `@happy_path` | Smoke · Nightly  |
+| [`ux/`](ux/)                 | **Usabilidade por tela** (CAP-02, checkout, CAP-17/33/35/38/39) | `@ux` `@smoke`           | PR (`test:ux`)   |
+| [`blockers/`](blockers/)     | Bloqueios de negócio (blindado, CPF, leilão)                    | `@negative`              | Nightly          |
+| [`regression/`](regression/) | UX restante (cards, catálogo, modais)                           | `@regression`            | Nightly          |
+| [`payment/`](payment/)       | Adyen cartão · PIX                                              | `@payment` `@regression` | Manual / Nightly |
 
-Detalhe dos specs UX: [`ux/README.md`](ux/README.md)
+Detalhe dos specs UX: [`ux/README.md`](ux/README.md) · Pagamento: [`payment/README.md`](payment/README.md)
 
 Specs com `.skip` em `regression/` documentam cenários migrados para API (`precosPlanos`, `validacaoValores`, `personalizacao`, etc.).
 
@@ -35,6 +36,7 @@ npm run test:ux          # usabilidade por tela (~11 min; prefira --workers=1)
 npm run test:ux:timing   # UX + atualiza dashboard docs/reports/e2e-timing-*
 npm run test:journey     # jornadas completas
 npm run test:regression  # regressão UX (coberturas, bônus modal…)
+npm run test:payment     # pagamento Adyen + PIX (~15–25 min, VPN)
 ```
 
 Precificação → **`qa-api-tests-automation`**: `npm run test:pricing` · `npm run test:customization`

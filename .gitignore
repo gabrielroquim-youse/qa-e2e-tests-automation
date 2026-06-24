@@ -33,6 +33,9 @@ allure-report/
 # Logs na raiz (Tee-Object, redirects manuais, playwright install)
 /*.log
 
+# Captura PIX local (BR Code + protocolo de sessão)
+docs/reports/pix-brcode-capture.json
+
 # ── Agentes Playwright (gerados pelo Copilot — não versionar) ───────────────
 .github/agents/
 .github/chatmodes/

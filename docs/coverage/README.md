@@ -6,18 +6,18 @@
 
 <!-- COVERAGE_METRICS:START -->
 
-> 🤖 **Atualizado automaticamente** em 2026-06-24 · Fonte: [`sales-frontend`](https://github.com/youse-seguradora/sales-frontend) @ `main` · `66` testes E2E · `42` capacidades testáveis inventariadas
+> 🤖 **Atualizado automaticamente** em 2026-06-24 · Fonte: [`sales-frontend`](https://github.com/youse-seguradora/sales-frontend) @ `main` · `73` testes E2E · `44` capacidades testáveis inventariadas
 
 ## Painel de cobertura (leitura rápida)
 
 | Indicador                           |   Valor | Em plain language                                                      |
 | ----------------------------------- | ------: | ---------------------------------------------------------------------- |
-| **Cobertura funcional (principal)** | **90%** | Capacidades do front com teste dedicado, contando parciais pela metade |
+| **Cobertura funcional (principal)** | **91%** | Capacidades do front com teste dedicado, contando parciais pela metade |
 | Cobertura funcional estrita         |     86% | Só conta ✅ com teste dedicado (sem 🟡)                                |
 | Cobertura estrutural (telas)        |     92% | Telas do funil com Page Object (12/13)                                 |
 | P0 automatizado                     |     92% | 12/13 itens críticos                                                   |
 | P1 automatizado                     |    100% | 18/18 itens alto risco                                                 |
-| ✅ Coberto                          |      36 | Teste E2E dedicado                                                     |
+| ✅ Coberto                          |      38 | Teste E2E dedicado                                                     |
 | 🟡 Parcial                          |       4 | Happy path ou regra incompleta                                         |
 | ⬜ Falta automatizar                |       0 | Front permite testar; sem spec                                         |
 | 🔒 Bloqueado                        |       2 | Depende massa/API — ver backlog                                        |

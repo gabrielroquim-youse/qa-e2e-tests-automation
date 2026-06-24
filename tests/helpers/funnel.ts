@@ -216,8 +216,12 @@ export async function navigateToBonusesClass(
  * Navega até a tela de personalização de coberturas (abre "Personalizar").
  * Retorna a página de coberturas com o preço já calculado.
  */
-export async function navigateToCoverages(page: Page, scenario: QuotationScenario = {}): Promise<CoveragesSelectionPage> {
-  const selecaoPlanoPage = await navigateToPlans(page, scenario);
+export async function navigateToCoverages(
+  page: Page,
+  scenario: QuotationScenario = {},
+  dataOverride: QuotationDataOverride = {},
+): Promise<CoveragesSelectionPage> {
+  const selecaoPlanoPage = await navigateToPlans(page, scenario, dataOverride);
   const coveragesPage = await selecaoPlanoPage.openPersonalization();
   await coveragesPage.waitForPrice();
   return coveragesPage;
@@ -241,9 +245,10 @@ export async function navigateToAssistances(
   page: Page,
   scenario: QuotationScenario = {},
   options: AssistancesNavOptions = {},
+  dataOverride: QuotationDataOverride = {},
 ): Promise<AssistancesSelectionPage> {
   const { dismissPromo = true } = options;
-  const coveragesPage = await navigateToCoverages(page, scenario);
+  const coveragesPage = await navigateToCoverages(page, scenario, dataOverride);
 
   const assistancesPage: AssistancesSelectionPage = await coveragesPage.clickContinueBtn();
   await assistancesPage.heading.waitFor({ state: 'visible', timeout: 30_000 });
@@ -282,8 +287,13 @@ export async function advancePastRiskAcceptance(page: Page): Promise<CheckoutPag
  * Navega até o checkout (personalizado) sem preencher pagamento.
  * Útil para smoke de fluxo coberturas → assistências → checkout.
  */
-export async function navigateToCheckout(page: Page, scenario: QuotationScenario = {}, options: AssistancesNavOptions = {}): Promise<CheckoutPage> {
-  const assistancesPage = await navigateToAssistances(page, scenario, options);
+export async function navigateToCheckout(
+  page: Page,
+  scenario: QuotationScenario = {},
+  options: AssistancesNavOptions = {},
+  dataOverride: QuotationDataOverride = {},
+): Promise<CheckoutPage> {
+  const assistancesPage = await navigateToAssistances(page, scenario, options, dataOverride);
   await assistancesPage.btnContinue.click();
   return advancePastRiskAcceptance(page);
 }
