@@ -80,8 +80,21 @@ export default [
       // ── Boas práticas ──────────────────────────────────────────────
       // toBeVisible() em vez de isVisible() (web-first assertion)
       'playwright/prefer-web-first-assertions': 'error',
-      // Todo teste precisa de pelo menos um expect
-      'playwright/expect-expect': 'error',
+      // Todo teste precisa de pelo menos um expect (inclui helpers CAP-02)
+      'playwright/expect-expect': [
+        'error',
+        {
+          assertFunctionNames: [
+            'expect',
+            'expectContinueDisabled',
+            'expectFieldInvalid',
+            'expectStayOnStep',
+            'expectStayOnUrl',
+            'expectValidationMessage',
+            'expectContinueBlockedOnClick',
+          ],
+        },
+      ],
       // expect() só dentro de testes
       'playwright/no-standalone-expect': 'error',
       // expect() deve receber argumento

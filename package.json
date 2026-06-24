@@ -6,7 +6,7 @@
     "test": "playwright test",
     "test:smoke": "playwright test tests/spec/e2e/journeys tests/spec/e2e/ux --grep @smoke --project=chromium",
     "test:journey": "playwright test tests/spec/e2e/journeys --grep @journey --project=chromium",
-    "test:ux": "playwright test tests/spec/e2e/ux --grep @ux --project=chromium",
+    "test:ux": "playwright test tests/spec/e2e/ux --grep @ux --project=chromium --workers=1 --reporter=list",
     "test:regression": "playwright test tests/spec/e2e/regression --grep @regression --project=chromium",
     "test:api": "playwright test tests/spec/api --project=chromium",
     "test:api:quotation": "playwright test tests/spec/api/quotation --grep @pricing --project=chromium",

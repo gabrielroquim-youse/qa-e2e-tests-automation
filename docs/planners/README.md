@@ -2,13 +2,14 @@
 
 Especificações Given/When/Then usadas pela equipe de QA e pelos **Playwright Agents** (`npx playwright init-agents`) para gerar ou estender specs.
 
-| Arquivo                                                      | Conteúdo                                        |
-| ------------------------------------------------------------ | ----------------------------------------------- |
-| [planner.md](planner.md)                                     | Happy path e cenários negativos gerais          |
-| [planner-precos.md](planner-precos.md)                       | Variação de preço por variáveis de risco        |
-| [planner-personalizacao.md](planner-personalizacao.md)       | Coberturas, franquia, navegação personalizado   |
-| [planner-assistencias.md](planner-assistencias.md)           | Catálogo de assistências, combo e dependências  |
-| [planner-validacao-valores.md](planner-validacao-valores.md) | Estratégias de assert de preço (delta, oráculo) |
+| Arquivo                                                      | Conteúdo                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [planner.md](planner.md)                                     | Happy path e cenários negativos gerais                       |
+| [planner-precos.md](planner-precos.md)                       | Variação de preço por variáveis de risco                     |
+| [planner-personalizacao.md](planner-personalizacao.md)       | Coberturas, franquia, navegação personalizado                |
+| [planner-assistencias.md](planner-assistencias.md)           | Catálogo de assistências, combo e dependências               |
+| [planner-validacao-valores.md](planner-validacao-valores.md) | Estratégias de assert de preço (delta, oráculo)              |
+| [planner-validacao-campos.md](planner-validacao-campos.md)   | Validação de formulário — etapas 1–5 + checkout CH1 (CAP-02) |
 
 ## Uso com agentes
 

@@ -16,11 +16,11 @@ export const AUTO_FUNNEL_SECTIONS: SectionMapping[] = [
   { slug: 'vehicle_additional_details', microFrontend: 'sales-vehicle-additional-details', pageObject: 'VehicleAdditionalDetailsPage.ts' },
   { slug: 'person_data', microFrontend: 'sales-person-data', pageObject: 'PersonDataPage.ts' },
   { slug: 'bonuses_class', microFrontend: 'sales-bonus-class', pageObject: 'BonusesClassPage.ts' },
-  { slug: 'data_enrichment', microFrontend: 'sales-data-enrichment', pageObject: null, optional: true },
+  { slug: 'data_enrichment', microFrontend: 'sales-data-enrichment', pageObject: 'DataEnrichmentPage.ts', optional: true },
   { slug: 'plan_selection', microFrontend: 'sales-plan-selection', pageObject: 'PlanSelectionPage.ts' },
   { slug: 'coverages_selection', microFrontend: 'sales-personalization-coverages', pageObject: 'CoveragesSelectionPage.ts' },
   { slug: 'assistances_selection', microFrontend: 'sales-personalization-assistances', pageObject: 'AssistancesSelectionPage.ts' },
-  { slug: 'risk_acceptance', microFrontend: 'sales-risk-acceptance', pageObject: null, optional: true },
+  { slug: 'risk_acceptance', microFrontend: 'sales-risk-acceptance', pageObject: 'RiskAcceptancePage.ts', optional: true },
   { slug: 'checkout', microFrontend: 'sales-checkout', pageObject: 'CheckoutPage.ts' },
   { slug: 'issuance', microFrontend: 'sales-issuance', pageObject: 'IssuancePage.ts' },
 ];

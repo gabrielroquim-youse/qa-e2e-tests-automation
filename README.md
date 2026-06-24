@@ -41,6 +41,7 @@ Suite de testes automatizados da **Youse Seguradora** — fluxos E2E, API e pric
 - [Estratégia de Tags](#estratégia-de-tags)
 - [Relatórios](#relatórios)
 - [Arquitetura e Padrões](#arquitetura-e-padrões)
+- [Boas práticas (guia completo)](./docs/guides/boas-praticas.md)
 - [Agentes de IA (Playwright Agents)](#agentes-de-ia-playwright-agents)
 - [Qualidade e CI/CD](#qualidade-e-cicd)
 - [Troubleshooting](#troubleshooting)
@@ -50,7 +51,9 @@ Suite de testes automatizados da **Youse Seguradora** — fluxos E2E, API e pric
 
 ## Visão Geral
 
-Este repositório automatiza **experiência do cliente no navegador** (Seguro Auto B2C Youse). Regras de preço e contrato HTTP ficam no repo irmão **`qa-api-tests-automation`**.
+Este repositório automatiza **experiência do cliente no navegador** (Seguro Auto B2C Youse): jornadas, usabilidade por tela, validação de formulário, bloqueios visíveis e a11y. Regras de preço e contrato HTTP ficam no repo irmão **`qa-api-tests-automation`**.
+
+**Cobertura funcional atual:** ver [`docs/coverage/README.md`](docs/coverage/README.md) (~90%).
 
 | Camada                 | Repositório               | O que cobre                                    | Pasta principal                       |
 | ---------------------- | ------------------------- | ---------------------------------------------- | ------------------------------------- |
@@ -176,6 +179,10 @@ qa-e2e-tests-automation/
 │   │   ├── setupPolicy.ts          # Pré-condições para testes de apólice
 │   │   └── setupQuotation.ts       # Gera QuotationData (faker) e injeta todos os Page Objects
 │   │
+│   ├── helpers/                    # Navegação e asserções compartilhadas
+│   │   ├── funnel.ts               # navigateToPlans, navigateToCheckout, resetSession…
+│   │   └── formValidation.ts       # CAP-02: expectContinueDisabled, expectFieldInvalid…
+│   │
 │   ├── pages/                      # Page Objects — toda interação com a UI fica aqui
 │   │   ├── BasePage.ts             # Classe base com métodos comuns (fill, click, waitFor, etc.)
 │   │   └── quotation/              # Um arquivo por tela do funil de cotação
@@ -184,11 +191,13 @@ qa-e2e-tests-automation/
 │   │       ├── VehicleDetailsPage.ts            # Etapa 2 — Placa, zero km, blindado
 │   │       ├── VehicleAdditionalDetailsPage.ts  # Etapa 3 — CEP, número, garagem, uso
 │   │       ├── PersonDataPage.ts                # Etapa 4 — CPF e estado civil
+│   │       ├── DataEnrichmentPage.ts            # Enriquecimento pós-CPF (quando exibido)
 │   │       ├── BonusesClassPage.ts              # Etapa 5 — Histórico de seguro e Classe de Bônus
 │   │       ├── PlanSelectionPage.ts             # Etapa 6 — Seleção do plano (com captura de preço)
 │   │       ├── CoveragesSelectionPage.ts        # Etapa 7a — Personalização de coberturas (franquia, indenização)
 │   │       ├── AssistancesSelectionPage.ts      # Etapa 7b — Seleção de assistências (13 opções)
-│   │       ├── CheckoutPage.ts                  # Etapa 8 — Pagamento via cartão de crédito
+│   │       ├── RiskAcceptancePage.ts            # Aceite de risco (sem garagem → antes do checkout)
+│   │       ├── CheckoutPage.ts                  # Etapa 8 — Pagamento, upsells, accordion
 │   │       └── IssuancePage.ts                  # Etapa 9 — Confirmação da apólice
 │   │
 │   ├── schemas/                    # Schemas Zod para validação de contratos de API
@@ -217,10 +226,11 @@ qa-e2e-tests-automation/
 │       │   └── quotation/                  # Redirecionado → qa-api-tests-automation
 │       └── e2e/
 │           ├── README.md                 # journeys / ux / blockers / regression
+│           ├── ux/README.md              # usabilidade por tela (CAP-02) — 10 specs, 30 testes
 │           ├── journeys/                 # Fluxos E2E completos (@journey)
 │           ├── ux/                       # Usabilidade por tela (@ux @smoke)
 │           ├── blockers/                 # Cenários negativos (@negative)
-│           └── regression/               # UX e regras ainda na tela (preço → repo API)
+│           └── regression/               # UX restante (preço → repo API)
 │
 ├── .github/
 │   ├── CODEOWNERS                  # Ownership de arquivos críticos
@@ -392,8 +402,13 @@ npx playwright test tests/spec/e2e --project=chromium --reporter=list
 # Caminho feliz da cotação
 npx playwright test tests/spec/e2e/journeys --project=chromium --reporter=list
 
-# Usabilidade por tela
-npx playwright test tests/spec/e2e/ux --project=chromium --reporter=list
+# Usabilidade por tela (recomendado --workers=1)
+npm run test:ux
+# ou:
+npx playwright test tests/spec/e2e/ux --project=chromium --workers=1 --reporter=list
+
+# Validação de formulário (CAP-02 — etapas 1 a 5)
+npx playwright test tests/spec/e2e/ux/lead-info.spec.ts tests/spec/e2e/ux/vehicle-details.spec.ts tests/spec/e2e/ux/vehicle-additional.spec.ts tests/spec/e2e/ux/person-data.spec.ts tests/spec/e2e/ux/bonuses-class.spec.ts --project=chromium --reporter=list
 
 # Regressão UX (visibilidade, navegação — preço migrado para API)
 npx playwright test tests/spec/e2e/regression --project=chromium --reporter=list
@@ -456,22 +471,22 @@ npx playwright test --debug
 
 As tags organizam os testes por pipeline e finalidade. Use sempre `--grep` para filtrar:
 
-| Tag               | Quando executar                          | Tempo estimado               |
-| ----------------- | ---------------------------------------- | ---------------------------- |
-| `@smoke`          | A cada PR (`npm run test:smoke`)         | ~5–10 min                    |
-| `@ux`             | Usabilidade por tela (PR)                | ~5 min                       |
-| `@journey`        | Jornadas E2E completas (nightly)         | ~15–30 min                   |
-| `@a11y`           | On release / PR (com VPN)                | ~15–25 min (mobile + tablet) |
-| `@regression`     | Nightly (UX — visibilidade, navegação)   | ~20 min                      |
-| `@price`          | **Repo API** (`test:pricing`) — não E2E  | —                            |
-| `@sanity`         | On release                               | ~5 min                       |
-| `@b2c`            | Todos os testes de jornada B2C           | —                            |
-| `@quotation_auto` | Todos os testes do funil de cotação      | —                            |
-| `@happy_path`     | Somente caminho feliz                    | —                            |
-| `@bonus_class`    | Testes de Classe de Bônus                | —                            |
-| `@coberturas`     | UX coberturas na tela (preço → repo API) | —                            |
-| `@personalizacao` | UX personalização (preço → repo API)     | —                            |
-| `@assistencias`   | UX assistências (preço → repo API)       | —                            |
+| Tag               | Quando executar                                          | Tempo estimado               |
+| ----------------- | -------------------------------------------------------- | ---------------------------- |
+| `@smoke`          | A cada PR (`npm run test:smoke`)                         | ~5–10 min                    |
+| `@ux`             | Usabilidade por tela — formulário, planos, checkout (PR) | ~20–35 min (`--workers=1`)   |
+| `@journey`        | Jornadas E2E completas (nightly)                         | ~15–30 min                   |
+| `@a11y`           | On release / PR (com VPN)                                | ~15–25 min (mobile + tablet) |
+| `@regression`     | Nightly (UX — visibilidade, navegação)                   | ~20 min                      |
+| `@price`          | **Repo API** (`test:pricing`) — não E2E                  | —                            |
+| `@sanity`         | On release                                               | ~5 min                       |
+| `@b2c`            | Todos os testes de jornada B2C                           | —                            |
+| `@quotation_auto` | Todos os testes do funil de cotação                      | —                            |
+| `@happy_path`     | Somente caminho feliz                                    | —                            |
+| `@bonus_class`    | Testes de Classe de Bônus                                | —                            |
+| `@coberturas`     | UX coberturas na tela (preço → repo API)                 | —                            |
+| `@personalizacao` | UX personalização (preço → repo API)                     | —                            |
+| `@assistencias`   | UX assistências (preço → repo API)                       | —                            |
 
 ---
 
@@ -538,6 +553,8 @@ const page = new PlanSelectionPage(page); // acoplamento desnecessário
 ```
 
 ### Encadeamento fluente com `proxymise`
+
+Detalhes e anti-padrões: [`docs/guides/boas-praticas.md`](docs/guides/boas-praticas.md).
 
 O `proxymise` permite chamar métodos em cadeia sem `await` em cada linha:
 
@@ -680,12 +697,12 @@ npm run coverage:check   # validação CI — falha se mapa front × POM desatua
 
 Índice central em [`docs/README.md`](docs/README.md):
 
-| Pasta                              | Conteúdo                                                         |
-| ---------------------------------- | ---------------------------------------------------------------- |
-| [`docs/planners/`](docs/planners/) | Planos de cenário (`planner-*.md`) — input dos Playwright Agents |
-| [`docs/coverage/`](docs/coverage/) | Cobertura funcional front × automação                            |
-| [`docs/guides/`](docs/guides/)     | Guias de manutenção (troubleshooting, a11y, fluxos)              |
-| [`docs/reports/`](docs/reports/)   | Relatórios auto-gerados (tempo E2E)                              |
+| Pasta                              | Conteúdo                                                                             |
+| ---------------------------------- | ------------------------------------------------------------------------------------ |
+| [`docs/planners/`](docs/planners/) | Planos de cenário (`planner-*.md`) — input dos Playwright Agents                     |
+| [`docs/coverage/`](docs/coverage/) | Cobertura funcional front × automação                                                |
+| [`docs/guides/`](docs/guides/)     | Guias (troubleshooting, fluxos, [boas práticas](docs/guides/boas-praticas.md), a11y) |
+| [`docs/reports/`](docs/reports/)   | Relatórios auto-gerados (tempo E2E)                                                  |
 
 ### Pre-commit (Husky + lint-staged)
 

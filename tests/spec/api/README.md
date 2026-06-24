@@ -1,6 +1,9 @@
-# API — neste repositório (E2E)
+# API — neste repositório
 
-Testes HTTP **sem browser** que **permanecem aqui** — domínios fora da cotação Auto.
+Testes HTTP **sem browser** que **permanecem aqui** — domínios fora da cotação Auto (sinistro, massa QA).
+
+> **Experiência do usuário (formulário, jornada, checkout)** → `tests/spec/e2e/ux/` neste repo.  
+> **Regras de preço e personalização** → `qa-api-tests-automation`.
 
 | Arquivo                  | Domínio                        | Tags              |
 | ------------------------ | ------------------------------ | ----------------- |

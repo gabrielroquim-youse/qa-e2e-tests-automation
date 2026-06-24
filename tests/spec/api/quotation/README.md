@@ -23,11 +23,13 @@ npm run test:customization    # coberturas, assistências, delta simétrico, RPS
 
 Matriz completa: README em `qa-api-tests-automation/tests/spec/quotation/README.md`
 
-## O que permanece no E2E
+## O que permanece no E2E (experiência do usuário)
 
-- `tests/spec/e2e/ux/` — smoke por tela
+- `tests/spec/e2e/ux/` — **20 testes** por tela (CAP-02 validação de formulário, checkout, planos)
 - `tests/spec/e2e/journeys/` — fluxos completos
 - `tests/spec/e2e/regression/` — UX (visibilidade, navegação, modais)
 - `tests/spec/a11y/` — WCAG, teclado, mobile
+
+Detalhe UX: [`tests/spec/e2e/ux/README.md`](../../e2e/ux/README.md)
 
 @see [`docs/guides/api-quotation-layer.md`](../../../../docs/guides/api-quotation-layer.md)

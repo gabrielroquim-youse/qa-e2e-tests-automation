@@ -6,9 +6,11 @@ import { navigateToPlans } from '../../../helpers/funnel';
 import { expect, test } from '../../../fixtures/setupQuotation';
 
 test.describe('UX — Seleção de planos', { tag: ['@ux', '@quotation_auto'] }, () => {
-  test('Deve exibir título, três planos com preço e opção de personalizar', { tag: ['@smoke'] }, async ({ page }) => {
-    test.setTimeout(240_000);
+  test.beforeEach(async ({}, testInfo) => {
+    testInfo.setTimeout(240_000);
+  });
 
+  test('Deve exibir título, três planos com preço e opção de personalizar', { tag: ['@smoke'] }, async ({ page }) => {
     const plansPage = await navigateToPlans(page);
 
     await expect(plansPage.title).toBeVisible();

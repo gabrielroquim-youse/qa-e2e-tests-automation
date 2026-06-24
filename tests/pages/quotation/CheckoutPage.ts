@@ -63,11 +63,50 @@ export class CheckoutPage extends BasePage {
    * Os botões de upsell são genéricos ("Adicionar"), identificados pelo card pai.
    */
   upsellButton(productName: string): Locator {
-    return this.page
-      .locator('generic, div, section')
-      .filter({ hasText: new RegExp(productName, 'i') })
-      .getByRole('button', { name: 'Adicionar' })
+    return this.upsellCard(productName)
+      .getByRole('button', { name: /adicionar|adicionado|remover/i })
       .first();
+  }
+
+  /** Card do produto cross-sell antes de adicionar (ícone + título + botão Adicionar). */
+  upsellCard(productName: string): Locator {
+    const iconAlt = productName.includes('Residencial') ? 'icon-home' : 'icon-life';
+    return this.page
+      .locator('div')
+      .filter({ has: this.page.getByRole('img', { name: iconAlt }) })
+      .filter({ has: this.page.getByText(productName, { exact: true }) })
+      .filter({ has: this.page.getByRole('button', { name: /^Adicionar$/i }) })
+      .first();
+  }
+
+  /** Linha do cross-sell no resumo lateral após adicionar. */
+  upsellSummaryLine(productName: string): Locator {
+    return this.page
+      .locator('div')
+      .filter({ has: this.page.getByText(productName, { exact: true }) })
+      .filter({ has: this.page.getByText(/\/\s*m[eê]s/i) })
+      .first();
+  }
+
+  /** Modal de confirmação ao adicionar cross-sell residencial. */
+  upsellModal(): Locator {
+    return this.page.getByText(/oferta exclusiva de seguro residencial/i);
+  }
+
+  /** Confirma o modal de cross-sell residencial (tipo do imóvel + Adicionar Oferta). */
+  async confirmUpsellModal(propertyType: 'Casa' | 'Apartamento' = 'Casa'): Promise<void> {
+    await this.upsellModal().waitFor({ state: 'visible', timeout: 15_000 });
+    await this.page.getByRole('button', { name: propertyType, exact: true }).click();
+    await this.page.getByRole('button', { name: /adicionar oferta/i }).click();
+  }
+
+  async addUpsell(productName: string, propertyType: 'Casa' | 'Apartamento' = 'Casa'): Promise<void> {
+    const btn = this.upsellButton(productName);
+    await btn.scrollIntoViewIfNeeded();
+    await btn.click();
+    if (productName.includes('Residencial')) {
+      await this.confirmUpsellModal(propertyType);
+    }
   }
 
   async fillCreditCardData(cardNumber: string, expireDate: string, cvv: string, holderName: string) {

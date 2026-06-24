@@ -36,12 +36,13 @@
 ### Page Objects / Fixtures
 
 - [ ] Novos métodos foram adicionados ao Page Object correspondente (não na spec)
-- [ ] Helpers reutilizáveis foram extraídos para `fixtures/` ou `data/`
+- [ ] Helpers reutilizáveis foram extraídos para `tests/helpers/` ou `fixtures/`
 - [ ] Nenhuma lógica de negócio foi duplicada (DRY)
 
 ### Documentação
 
 - [ ] O planner em `docs/planners/planner-*.md` correspondente foi atualizado com os novos cenários
+- [ ] `npm run coverage:sync` foi executado se a cobertura CAP mudou
 - [ ] O `README.md` foi atualizado se a estrutura do projeto mudou
 
 ---
@@ -50,7 +51,9 @@
 
 ```bash
 # Filtrar pelo grupo de testes desta PR (substitua pela tag relevante)
-npx playwright test --grep @smoke --project=chromium --reporter=list
+npm run test:smoke
+# ou UX completo:
+npm run test:ux
 ```
 
 ---

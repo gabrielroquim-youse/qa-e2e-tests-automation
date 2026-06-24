@@ -19,9 +19,43 @@ import { CheckoutPage } from '../pages/quotation/CheckoutPage';
 import { CoveragesSelectionPage } from '../pages/quotation/CoveragesSelectionPage';
 import LeadInfoPage from '../pages/quotation/LeadInfoPage';
 import { PlanSelectionPage } from '../pages/quotation/PlanSelectionPage';
+import { VehicleAdditionalDetailsPage } from '../pages/quotation/VehicleAdditionalDetailsPage';
+import { VehicleDetailsPage } from '../pages/quotation/VehicleDetailsPage';
+import { PersonDataPage } from '../pages/quotation/PersonDataPage';
+import { BonusesClassPage } from '../pages/quotation/BonusesClassPage';
+import { DataEnrichmentPage } from '../pages/quotation/DataEnrichmentPage';
+import { RiskAcceptancePage } from '../pages/quotation/RiskAcceptancePage';
 
 /** Timeout para o motor de precificação montar a tela de planos. */
 export const PLAN_TIMEOUT = 45_000;
+
+/**
+ * Avança de person_data para bonuses_class, tratando data_enrichment quando aparecer.
+ */
+export async function advanceFromPersonData(page: Page): Promise<BonusesClassPage> {
+  const personPage = new PersonDataPage(page);
+  await personPage.btnContinue.click();
+
+  await page.waitForURL(/data_enrichment|bonuses_class/, { timeout: 60_000, waitUntil: 'commit' });
+
+  if (page.url().includes('data_enrichment')) {
+    await page
+      .getByText(/carregando/i)
+      .waitFor({ state: 'hidden', timeout: 90_000 })
+      .catch(() => {});
+    const enrichment = new DataEnrichmentPage(page);
+    if (await enrichment.isFormVisible()) {
+      await enrichment.fillDefaultsAndContinue();
+    } else {
+      await page.waitForURL(/bonuses_class/, { timeout: 90_000, waitUntil: 'commit' });
+    }
+  }
+
+  await page.waitForURL(/bonuses_class/, { timeout: 60_000, waitUntil: 'commit' });
+  const bonusesPage = new BonusesClassPage(page);
+  await bonusesPage.title.waitFor({ state: 'visible', timeout: 60_000 });
+  return bonusesPage;
+}
 
 /** Variáveis de risco que alteram o prêmio calculado pelo motor. */
 export interface QuotationScenario {
@@ -99,6 +133,7 @@ async function navigateToPlansOnce(
   const paginaLead = await LeadInfoPage.open(page);
   await paginaLead.fillLeadData({ name: data.name, email: data.email, phone: data.phone });
   const detalhesVeiculoPage = await paginaLead.clickContinueBtn();
+  await detalhesVeiculoPage.licensePlate.waitFor({ state: 'visible', timeout: 60_000 });
 
   await detalhesVeiculoPage.fillLicensePlate(data.licensePlate);
   await detalhesVeiculoPage.selectBrandNew(brandNew);
@@ -113,7 +148,7 @@ async function navigateToPlansOnce(
 
   await dadosPessoaisPage.fillDocumentNumber(data.documentNumber);
   await dadosPessoaisPage.selectMaritalStatus(maritalStatus);
-  const classeBonusPage = await dadosPessoaisPage.clickContinueBtn();
+  const classeBonusPage = await advanceFromPersonData(page);
 
   await classeBonusPage.useBonusClass(useBonusClass, bonusClass);
   const selecaoPlanoPage = await classeBonusPage.clickContinueBtn();
@@ -121,6 +156,60 @@ async function navigateToPlansOnce(
   await expect(selecaoPlanoPage.title).toBeVisible({ timeout: PLAN_TIMEOUT });
 
   return selecaoPlanoPage;
+}
+
+/** Lead preenchido → tela de dados do veículo. */
+export async function navigateToVehicleDetails(page: Page, dataOverride: QuotationDataOverride = {}): Promise<VehicleDetailsPage> {
+  try {
+    return await navigateToVehicleDetailsOnce(page, dataOverride);
+  } catch {
+    await resetSession(page);
+    return navigateToVehicleDetailsOnce(page, dataOverride);
+  }
+}
+
+async function navigateToVehicleDetailsOnce(page: Page, dataOverride: QuotationDataOverride = {}): Promise<VehicleDetailsPage> {
+  const data = { ...generateQuotationData(), ...dataOverride };
+  const paginaLead = await LeadInfoPage.open(page);
+  await paginaLead.fillLeadData({ name: data.name, email: data.email, phone: data.phone });
+  const vehiclePage = await paginaLead.clickContinueBtn();
+  await vehiclePage.licensePlate.waitFor({ state: 'visible', timeout: 60_000 });
+  return vehiclePage;
+}
+
+/** Até endereço e uso do veículo (etapa 3). */
+export async function navigateToVehicleAdditional(page: Page, dataOverride: QuotationDataOverride = {}): Promise<VehicleAdditionalDetailsPage> {
+  const data = { ...generateQuotationData(), ...dataOverride };
+  const detalhesVeiculoPage = await navigateToVehicleDetails(page, dataOverride);
+  await detalhesVeiculoPage.fillLicensePlate(data.licensePlate);
+  await detalhesVeiculoPage.selectBrandNew(false);
+  await detalhesVeiculoPage.selectBulletproof(false);
+  return detalhesVeiculoPage.clickContinueBtn();
+}
+
+/** Até dados pessoais / CPF (etapa 4). */
+export async function navigateToPersonData(page: Page, dataOverride: QuotationDataOverride = {}): Promise<PersonDataPage> {
+  const data = { ...generateQuotationData(), ...dataOverride };
+  const enderecoUsoPage = await navigateToVehicleAdditional(page, dataOverride);
+  await enderecoUsoPage.fillAddress(data.zipCode, data.addressNumber);
+  await enderecoUsoPage.isOvernightGarage(true);
+  await enderecoUsoPage.selectUsage();
+  const dadosPessoaisPage = await enderecoUsoPage.clickContinueBtn();
+  await dadosPessoaisPage.documentNumber.waitFor({ state: 'visible', timeout: 60_000 });
+  return dadosPessoaisPage;
+}
+
+/** Até histórico de seguro / classe bônus (etapa 5). */
+export async function navigateToBonusesClass(
+  page: Page,
+  dataOverride: QuotationDataOverride = {},
+  maritalStatus: MaritalStatuses = MaritalStatuses.SINGLE,
+): Promise<BonusesClassPage> {
+  const data = { ...generateQuotationData(), ...dataOverride };
+  const dadosPessoaisPage = await navigateToPersonData(page, dataOverride);
+  await dadosPessoaisPage.fillDocumentNumber(data.documentNumber);
+  await dadosPessoaisPage.selectMaritalStatus(maritalStatus);
+  return advanceFromPersonData(page);
 }
 
 /**
@@ -165,12 +254,36 @@ export async function navigateToAssistances(
 }
 
 /**
+ * Avança de assistências para checkout, tratando risk_acceptance quando aparecer.
+ */
+export async function advancePastRiskAcceptance(page: Page): Promise<CheckoutPage> {
+  await page.waitForURL(/risk_acceptance|checkout/, { timeout: 120_000, waitUntil: 'commit' });
+
+  if (page.url().includes('risk_acceptance')) {
+    await page
+      .getByText(/carregando/i)
+      .waitFor({ state: 'hidden', timeout: 90_000 })
+      .catch(() => {});
+    const riskPage = new RiskAcceptancePage(page);
+    if (await riskPage.isFormVisible()) {
+      await riskPage.acceptAndContinue();
+    } else {
+      await page.waitForURL(/checkout/, { timeout: 90_000, waitUntil: 'commit' });
+    }
+  }
+
+  await page.waitForURL(/checkout/, { timeout: 60_000, waitUntil: 'commit' });
+  const checkoutPage = new CheckoutPage(page);
+  await checkoutPage.title.waitFor({ state: 'visible', timeout: 60_000 });
+  return checkoutPage;
+}
+
+/**
  * Navega até o checkout (personalizado) sem preencher pagamento.
  * Útil para smoke de fluxo coberturas → assistências → checkout.
  */
 export async function navigateToCheckout(page: Page, scenario: QuotationScenario = {}, options: AssistancesNavOptions = {}): Promise<CheckoutPage> {
   const assistancesPage = await navigateToAssistances(page, scenario, options);
-  const checkoutPage = await assistancesPage.clickContinueBtn();
-  await checkoutPage.title.waitFor({ state: 'visible', timeout: 60_000 });
-  return checkoutPage;
+  await assistancesPage.btnContinue.click();
+  return advancePastRiskAcceptance(page);
 }

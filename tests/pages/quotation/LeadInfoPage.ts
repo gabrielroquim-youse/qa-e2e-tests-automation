@@ -60,8 +60,6 @@ export class LeadInfoPage extends QuotationPageLayout<VehicleDetailsPage> {
       [this.email, email],
       [this.tel, phone],
     ] as const) {
-      await field.click();
-      await field.fill('');
       await field.fill(value);
     }
 

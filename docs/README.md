@@ -15,18 +15,21 @@ docs/
 
 ## Onde ir primeiro
 
-| Objetivo                                   | Documento                                                              |
-| ------------------------------------------ | ---------------------------------------------------------------------- |
-| Ver **% de cobertura** e gaps              | [`coverage/README.md`](coverage/README.md)                             |
-| Matriz técnica GitHub × specs              | [`coverage/sync-report.md`](coverage/sync-report.md)                   |
-| **Plano de um cenário** (Given/When/Then)  | [`planners/`](planners/)                                               |
-| **Tempo de execução** por teste            | [`reports/e2e-timing-report.md`](reports/e2e-timing-report.md)         |
-| **Erros comuns** (seletores, sessão, deps) | [`guides/troubleshooting.md`](guides/troubleshooting.md)               |
-| **Acessibilidade** (WCAG, mobile/tablet)   | [`guides/accessibility-analysis.md`](guides/accessibility-analysis.md) |
-| **Gaps a11y** (hoje vs deveria ser · foco) | [`guides/a11y-gap-map.md`](guides/a11y-gap-map.md)                     |
-| **Mapa de fluxos** do funil × automação    | [`guides/fluxos-cotacao-auto.md`](guides/fluxos-cotacao-auto.md)       |
-| **Pirâmide E2E vs API** (cotação)          | [`guides/api-quotation-layer.md`](guides/api-quotation-layer.md)       |
-| Rodar o projeto / CI                       | [`../README.md`](../README.md)                                         |
+| Objetivo                                     | Documento                                                                      |
+| -------------------------------------------- | ------------------------------------------------------------------------------ |
+| Ver **% de cobertura** e gaps                | [`coverage/README.md`](coverage/README.md)                                     |
+| Matriz técnica GitHub × specs                | [`coverage/sync-report.md`](coverage/sync-report.md)                           |
+| **Plano de um cenário** (Given/When/Then)    | [`planners/`](planners/)                                                       |
+| **Validação de campos (CAP-02)**             | [`planners/planner-validacao-campos.md`](planners/planner-validacao-campos.md) |
+| **UX por tela** (specs E2E)                  | [`../tests/spec/e2e/ux/README.md`](../tests/spec/e2e/ux/README.md)             |
+| **Tempo de execução** por teste              | [`reports/e2e-timing-report.md`](reports/e2e-timing-report.md)                 |
+| **Erros comuns** (seletores, sessão, deps)   | [`guides/troubleshooting.md`](guides/troubleshooting.md)                       |
+| **Acessibilidade** (WCAG, mobile/tablet)     | [`guides/accessibility-analysis.md`](guides/accessibility-analysis.md)         |
+| **Gaps a11y** (hoje vs deveria ser · foco)   | [`guides/a11y-gap-map.md`](guides/a11y-gap-map.md)                             |
+| **Mapa de fluxos** do funil × automação      | [`guides/fluxos-cotacao-auto.md`](guides/fluxos-cotacao-auto.md)               |
+| **Pirâmide E2E vs API** (cotação)            | [`guides/api-quotation-layer.md`](guides/api-quotation-layer.md)               |
+| **Boas práticas** (padrões e débito técnico) | [`guides/boas-praticas.md`](guides/boas-praticas.md)                           |
+| Rodar o projeto / CI                         | [`../README.md`](../README.md)                                                 |
 
 ## Comandos úteis
 
