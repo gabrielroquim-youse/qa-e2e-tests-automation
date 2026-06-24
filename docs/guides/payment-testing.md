@@ -32,6 +32,10 @@ npm run tool:pix-confirm
 
 # 3) Emissão híbrida (pause para confirmar pagamento manualmente)
 npm run test:pix:emission
+
+# Gravação demo (vídeo 1280×800, slowMo, Stark auto-pay)
+npm run test:pix:record
+npm run test:pix:record:export   # grava + copia para docs/reports/videos/
 ```
 
 ### Opção D — Stark automatizado (`tool:pix-pay`)

@@ -1,19 +1,27 @@
 /**
- * PAY-P4b — emissão após confirmação PIX no sandbox (fluxo híbrido).
+ * PAY-P4b gravado — funil PIX completo com vídeo (Stark auto-pay ou pause manual).
  *
- * Uso (VPN + navegador visível): npm run test:pix:emission
+ * Uso: npm run test:pix:record
  */
-/* eslint-disable playwright/no-skipped-test, playwright/no-conditional-in-test, playwright/no-page-pause -- fluxo híbrido sandbox */
+/* eslint-disable playwright/no-skipped-test, playwright/no-conditional-in-test, playwright/no-page-pause -- gravação sandbox */
 import { navigateToCheckout } from '../../../helpers/funnel';
 import { confirmPixInSandboxAndFinalize } from '../../../helpers/pixPaymentFlow';
 import { savePixBrcodeCapture } from '../../../helpers/pixSandbox';
 import { hasStarkCredentials } from '../../../helpers/starkPixPay';
 import { expect, test } from '../../../fixtures/setupQuotation';
 
-test.describe('Payment — PIX emissão sandbox', { tag: ['@journey', '@quotation_auto', '@payment'] }, () => {
-  test.skip(() => !process.env.PIX_SANDBOX_EMISSION, 'Defina PIX_SANDBOX_EMISSION=1 para rodar PAY-P4b');
+const slowMo = process.env.PW_SLOW_MO ? Number(process.env.PW_SLOW_MO) : 60;
 
-  test('PAY-P4b: deve emitir após confirmação PIX no sandbox', async ({ page }) => {
+test.use({
+  video: 'on',
+  viewport: { width: 1280, height: 800 },
+  launchOptions: { slowMo },
+});
+
+test.describe('Payment — PIX gravação', { tag: ['@journey', '@quotation_auto', '@payment', '@record'] }, () => {
+  test.skip(() => !process.env.PIX_RECORD, 'Defina PIX_RECORD=1 (npm run test:pix:record)');
+
+  test('PAY-P4b record: PIX pago, aceito e emissão gravada', async ({ page }) => {
     test.setTimeout(900_000);
 
     const checkout = await navigateToCheckout(page);
@@ -32,20 +40,23 @@ test.describe('Payment — PIX emissão sandbox', { tag: ['@journey', '@quotatio
     });
 
     console.log('\n══════════════════════════════════════════════════════════');
-    console.log('PIX pendente — confirme o pagamento no sandbox:');
+    console.log('PIX gravando — confirmação de pagamento:');
     console.log(`  Protocolo: #${capture.protocol}`);
     console.log(`  Provider:  ${capture.provider}`);
-    console.log('  Comandos:  npm run tool:pix-confirm');
     console.log('══════════════════════════════════════════════════════════\n');
 
-    if (process.env.PIX_SANDBOX_AUTO_PAY === '1' && hasStarkCredentials()) {
+    const autoPay = process.env.PIX_SANDBOX_AUTO_PAY === '1' && hasStarkCredentials();
+
+    if (autoPay) {
       await confirmPixInSandboxAndFinalize(checkout, page, brcode);
     } else if (process.env.PIX_SANDBOX_MANUAL_PAUSE !== '0') {
+      console.log('Sem STARK_* — pause no Inspector para confirmar PIX manualmente.\n');
       await page.pause();
       await checkout.finalizeAfterPixPayment();
     } else {
       await checkout.finalizeAfterPixPayment();
     }
+
     await expect(page).toHaveURL(/\/(issuance|sucesso)|youse\.com\.br/, { timeout: 120_000 });
   });
 });

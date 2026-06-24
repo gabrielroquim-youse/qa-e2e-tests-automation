@@ -20,6 +20,8 @@ npm run tool:pix-capture      # 1) gera BR Code
 npm run tool:pix-confirm      # 2) instruções manuais
 npm run tool:pix-pay          # 2b) paga via Stark (STARK_* no .env)
 npm run test:pix:emission     # 3) emissão híbrida (headed + pause)
+npm run test:pix:record       # gravação PIX ponta a ponta (vídeo + Stark auto-pay)
+npm run test:pix:record:export # grava + exporta para docs/reports/videos/
 ```
 
 ## Documentação

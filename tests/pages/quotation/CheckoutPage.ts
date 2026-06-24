@@ -179,6 +179,23 @@ export class CheckoutPage extends BasePage {
     return this.waitForPostPaymentRedirect();
   }
 
+  /** Clica Finalizar e retorna true se saiu do checkout (webhook PIX confirmado). */
+  async tryFinalizeAfterPixPayment(redirectTimeoutMs = 25_000): Promise<boolean> {
+    if (!this.page.url().includes('/checkout')) {
+      return true;
+    }
+    await this.page.keyboard.press('Escape').catch(() => {});
+    const finish = this.btnFinish.last();
+    await finish.scrollIntoViewIfNeeded();
+    await finish.click();
+    try {
+      await this.page.waitForURL(/\/(issuance|sucesso)|youse\.com\.br/, { timeout: redirectTimeoutMs });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   async checkEmailConfirmation() {
     await this.title.waitFor({ state: 'visible', timeout: 60_000 });
     await this.emailConfirmation.evaluate((el) => (el as HTMLElement).click());

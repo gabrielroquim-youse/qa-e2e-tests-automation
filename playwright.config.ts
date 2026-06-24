@@ -37,7 +37,7 @@ export default defineConfig({
     baseURL: TestConfig.urls.autoQuotationUrl,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
-    video: process.env.CI ? 'retain-on-failure' : 'off',
+    video: process.env.PW_VIDEO === 'on' ? 'on' : process.env.CI ? 'retain-on-failure' : 'off',
     actionTimeout: 15_000,
     navigationTimeout: 20_000,
   },

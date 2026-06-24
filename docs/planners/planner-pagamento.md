@@ -76,16 +76,20 @@ Fase 4 — E2E emissão      → npm run test:pix:emission (page.pause + segundo
 
 ## Variáveis de ambiente
 
-| Variável                | Uso                                      |
-| ----------------------- | ---------------------------------------- |
-| `TEST_CARD_NUMBER`      | Override cartão (já em `test.config.ts`) |
-| `TEST_CARD_EXPIRE`      | `0330`                                   |
-| `TEST_CARD_CVV`         | `737`                                    |
-| `TEST_PAYMENT_SCENARIO` | `approved` \| `elo_br` \| `hipercard_br` |
-| `STARK_PROJECT_ID`      | Projeto Stark sandbox (`tool:pix-pay`)   |
-| `STARK_PRIVATE_KEY`     | Chave PEM do projeto Stark               |
-| `STARK_TAX_ID`          | CPF/CNPJ pagador Stark sandbox           |
-| `PIX_SANDBOX_EMISSION`  | `1` — habilita PAY-P4b                   |
+| Variável                | Uso                                                 |
+| ----------------------- | --------------------------------------------------- |
+| `TEST_CARD_NUMBER`      | Override cartão (já em `test.config.ts`)            |
+| `TEST_CARD_EXPIRE`      | `0330`                                              |
+| `TEST_CARD_CVV`         | `737`                                               |
+| `TEST_PAYMENT_SCENARIO` | `approved` \| `elo_br` \| `hipercard_br`            |
+| `STARK_PROJECT_ID`      | Projeto Stark sandbox (`tool:pix-pay`)              |
+| `STARK_PRIVATE_KEY`     | Chave PEM do projeto Stark                          |
+| `STARK_TAX_ID`          | CPF/CNPJ pagador Stark sandbox                      |
+| `PIX_SANDBOX_EMISSION`  | `1` — habilita PAY-P4b                              |
+| `PIX_SANDBOX_AUTO_PAY`  | `1` — paga via Stark no spec (com `STARK_*`)        |
+| `PIX_RECORD`            | `1` — habilita spec de gravação (`test:pix:record`) |
+| `PW_VIDEO`              | `on` — grava vídeo Playwright                       |
+| `PW_SLOW_MO`            | ms entre ações (ex.: `60` no record)                |
 
 ---
 
