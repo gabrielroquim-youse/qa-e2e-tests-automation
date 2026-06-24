@@ -1,6 +1,7 @@
 # Relatório de Tempo — Testes E2E Seguro Auto
 
-> Execução **2026-06-24_14-41-57** · gerado em **2026-06-24 14:41:57 UTC** · fonte: `reports/ux-timing-2026-06-24.log` · [e2e-timing.json](e2e-timing.json)
+> Execução **2026-06-24_14-41-57** · gerado em **2026-06-24 14:41:57 UTC** · fonte: `reports/ux-timing-2026-06-24.log` · [e2e.json](./e2e.json)
+> Índice: [e2e-timing-log.md](../../e2e-timing-log.md)
 
 ## Resumo
 
@@ -84,14 +85,6 @@
 | `ux\vehicle-details.spec.ts`    |    13 | UX — Dados do veículo                   | Não deve avançar sem informar a placa @ux @quotation_auto @b2c @negative @smoke                                 |   ✅   |   5.7 s | @ux @quotation_auto @b2c @negative @smoke                |
 | `ux\vehicle-details.spec.ts`    |    19 | UX — Dados do veículo                   | Deve avançar para endereço após placa válida @ux @quotation_auto @b2c @negative @smoke                          |   ✅   |   7.8 s | @ux @quotation_auto @b2c @negative @smoke                |
 | `ux\vehicle-details.spec.ts`    |    30 | UX — Dados do veículo                   | Não deve avançar com placa em formato inválido @ux @quotation_auto @b2c @negative @regression                   |   ✅   |   9.8 s | @ux @quotation_auto @b2c @negative @regression           |
-
-## Histórico de execuções
-
-Histórico completo: [e2e-timing-log.md](e2e-timing-log.md)
-
-| Execução                                                             | Passou | Falhou | Pulou | Wall-clock | Δ vs anterior |
-| -------------------------------------------------------------------- | -----: | -----: | ----: | ---------: | ------------: |
-| [2026-06-24 14:41:57 UTC](history/2026-06-24_14-41-57/e2e-report.md) |     30 |      0 |     0 |   11.5 min |             — |
 
 ---
 

@@ -1,6 +1,15 @@
-# Relatórios gerados
+# Relatórios gerados (dashboards de execução)
 
 Arquivos produzidos automaticamente pelos scripts — **não editar manualmente**.
+
+## Painel rápido
+
+| Dashboard              | URL                                                          | Última atualização               |
+| ---------------------- | ------------------------------------------------------------ | -------------------------------- |
+| Tempo E2E (última run) | [`e2e-timing-report.md`](e2e-timing-report.md)               | UX 30/30 · 11.5 min (2026-06-24) |
+| Histórico E2E          | [`e2e-timing-log.md`](e2e-timing-log.md)                     | 1 execução registrada            |
+| Suíte completa         | [`full-suite-timing-report.md`](full-suite-timing-report.md) | aguardando `test:full:timing`    |
+| Cobertura funcional    | [`../coverage/README.md`](../coverage/README.md)             | 90% · 66 testes                  |
 
 | Arquivo                                                      | Gerado por                    | Conteúdo                                                |
 | ------------------------------------------------------------ | ----------------------------- | ------------------------------------------------------- |
@@ -41,17 +50,17 @@ Logs brutos de execução (`reports/full-run-*.log`) ficam em `/reports/` (gitig
 ## Como atualizar
 
 ```bash
+# UX (30 testes) + dashboard de tempo — recomendado após mudanças em e2e/ux/
+npm run test:ux:timing
+
 # Suite completa + relatório + log de tempo
 npm run test:full:timing
 
-# Só E2E + relatório + log
+# Só E2E (66 testes) + relatório + log
 npm run test:e2e:timing
 
-# Regenerar consolidado (após JSONs em reports/)
-npm run full-suite:timing:generate -- --log reports/full-run-....log
-
-# Só regenerar E2E (após playwright --reporter=json > reports/e2e-timing-raw.json)
-npm run e2e:timing:generate
+# Regenerar a partir de log list já salvo
+npm run e2e:timing:generate -- --from-log reports/ux-timing-2026-06-24.log
 ```
 
 Relatórios de **cobertura funcional** ficam em [`../coverage/`](../coverage/).

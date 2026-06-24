@@ -21,7 +21,7 @@ Suite de testes automatizados da **Youse Seguradora** — fluxos E2E, API e pric
 
 <br/>
 
-[Documentação](./docs/README.md) · [Cobertura](./docs/coverage/README.md) · [Troubleshooting](./docs/guides/troubleshooting.md) · [Tempo E2E](./docs/reports/e2e-timing-report.md) · [Como executar](#como-executar)
+[Documentação](./docs/README.md) · [Cobertura](./docs/coverage/README.md) · [Dashboard tempo E2E](./docs/reports/e2e-timing-report.md) · [Dashboard suíte completa](./docs/reports/full-suite-timing-report.md) · [Troubleshooting](./docs/guides/troubleshooting.md) · [Como executar](#como-executar)
 
 </div>
 
@@ -53,7 +53,19 @@ Suite de testes automatizados da **Youse Seguradora** — fluxos E2E, API e pric
 
 Este repositório automatiza **experiência do cliente no navegador** (Seguro Auto B2C Youse): jornadas, usabilidade por tela, validação de formulário, bloqueios visíveis e a11y. Regras de preço e contrato HTTP ficam no repo irmão **`qa-api-tests-automation`**.
 
-**Cobertura funcional atual:** ver [`docs/coverage/README.md`](docs/coverage/README.md) (~90%).
+**Cobertura funcional atual:** ver [`docs/coverage/README.md`](docs/coverage/README.md) (**90%** · 66 testes E2E · 30 UX).
+
+### Dashboards (métricas e execuções)
+
+| Dashboard                                                                              | O que mostra                      | Atualizar com                                         |
+| -------------------------------------------------------------------------------------- | --------------------------------- | ----------------------------------------------------- |
+| [`docs/coverage/README.md`](docs/coverage/README.md)                                   | % cobertura CAP, gaps, POMs       | `npm run coverage:sync`                               |
+| [`docs/reports/e2e-timing-report.md`](docs/reports/e2e-timing-report.md)               | Tempo por teste/spec (última run) | `npm run test:e2e:timing` ou `npm run test:ux:timing` |
+| [`docs/reports/e2e-timing-log.md`](docs/reports/e2e-timing-log.md)                     | Histórico de execuções E2E        | idem (acumula até 100 runs)                           |
+| [`docs/reports/full-suite-timing-report.md`](docs/reports/full-suite-timing-report.md) | E2E + API + A11y consolidado      | `npm run test:full:timing`                            |
+| [`docs/reports/history/`](docs/reports/history/)                                       | Snapshot JSON/MD por execução     | gerado automaticamente                                |
+
+JSON para BI: [`docs/coverage/metrics.json`](docs/coverage/metrics.json) · [`docs/reports/e2e-timing.json`](docs/reports/e2e-timing.json)
 
 | Camada                 | Repositório               | O que cobre                                    | Pasta principal                       |
 | ---------------------- | ------------------------- | ---------------------------------------------- | ------------------------------------- |
@@ -471,22 +483,22 @@ npx playwright test --debug
 
 As tags organizam os testes por pipeline e finalidade. Use sempre `--grep` para filtrar:
 
-| Tag               | Quando executar                                          | Tempo estimado               |
-| ----------------- | -------------------------------------------------------- | ---------------------------- |
-| `@smoke`          | A cada PR (`npm run test:smoke`)                         | ~5–10 min                    |
-| `@ux`             | Usabilidade por tela — formulário, planos, checkout (PR) | ~20–35 min (`--workers=1`)   |
-| `@journey`        | Jornadas E2E completas (nightly)                         | ~15–30 min                   |
-| `@a11y`           | On release / PR (com VPN)                                | ~15–25 min (mobile + tablet) |
-| `@regression`     | Nightly (UX — visibilidade, navegação)                   | ~20 min                      |
-| `@price`          | **Repo API** (`test:pricing`) — não E2E                  | —                            |
-| `@sanity`         | On release                                               | ~5 min                       |
-| `@b2c`            | Todos os testes de jornada B2C                           | —                            |
-| `@quotation_auto` | Todos os testes do funil de cotação                      | —                            |
-| `@happy_path`     | Somente caminho feliz                                    | —                            |
-| `@bonus_class`    | Testes de Classe de Bônus                                | —                            |
-| `@coberturas`     | UX coberturas na tela (preço → repo API)                 | —                            |
-| `@personalizacao` | UX personalização (preço → repo API)                     | —                            |
-| `@assistencias`   | UX assistências (preço → repo API)                       | —                            |
+| Tag               | Quando executar                                          | Tempo estimado                                |
+| ----------------- | -------------------------------------------------------- | --------------------------------------------- |
+| `@smoke`          | A cada PR (`npm run test:smoke`)                         | ~5–10 min                                     |
+| `@ux`             | Usabilidade por tela — formulário, planos, checkout (PR) | ~11–12 min (`npm run test:ux`, `--workers=1`) |
+| `@journey`        | Jornadas E2E completas (nightly)                         | ~15–30 min                                    |
+| `@a11y`           | On release / PR (com VPN)                                | ~15–25 min (mobile + tablet)                  |
+| `@regression`     | Nightly (UX — visibilidade, navegação)                   | ~20 min                                       |
+| `@price`          | **Repo API** (`test:pricing`) — não E2E                  | —                                             |
+| `@sanity`         | On release                                               | ~5 min                                        |
+| `@b2c`            | Todos os testes de jornada B2C                           | —                                             |
+| `@quotation_auto` | Todos os testes do funil de cotação                      | —                                             |
+| `@happy_path`     | Somente caminho feliz                                    | —                                             |
+| `@bonus_class`    | Testes de Classe de Bônus                                | —                                             |
+| `@coberturas`     | UX coberturas na tela (preço → repo API)                 | —                                             |
+| `@personalizacao` | UX personalização (preço → repo API)                     | —                                             |
+| `@assistencias`   | UX assistências (preço → repo API)                       | —                                             |
 
 ---
 
@@ -678,15 +690,18 @@ npm run format:check   # apenas verifica sem alterar (usado no CI)
 
 # Atalhos para execução de testes
 npm run test:smoke      # apenas testes @smoke
+npm run test:ux         # usabilidade por tela (30 testes, ~11 min)
 npm run test:regression # apenas testes @regression E2E
 npm run test:api        # cilia + test-utils (cotação → qa-api-tests-automation)
 npm run test:a11y       # smoke axe mobile (Pixel 5) + tablet (iPad) — navegador visível · VPN
 npm run test:keyboard   # navegação por teclado (@keyboard) — navegador visível · VPN
 
-# Relatório de tempo E2E (gera docs/reports/e2e-timing-report.md)
-npm run test:e2e:timing                          # roda tests/spec/e2e + gera relatório (~30 min)
+# Relatório de tempo E2E (dashboard em docs/reports/)
+npm run test:ux:timing                           # UX + atualiza e2e-timing-report (~12 min)
+npm run test:e2e:timing                          # toda pasta e2e + relatório (~30 min)
+npm run test:full:timing                         # E2E + API + A11y + full-suite-timing-report
 npm run e2e:timing:generate                      # lê reports/e2e-timing-raw.json
-npm run e2e:timing:generate -- --from-log arquivo.log  # a partir do stdout do reporter list
+npm run e2e:timing:generate -- --from-log arquivo.log  # stdout do reporter list
 
 # Cobertura funcional (gera docs/coverage/sync-report.md + metrics.json)
 npm run coverage:sync
@@ -702,7 +717,7 @@ npm run coverage:check   # validação CI — falha se mapa front × POM desatua
 | [`docs/planners/`](docs/planners/) | Planos de cenário (`planner-*.md`) — input dos Playwright Agents                     |
 | [`docs/coverage/`](docs/coverage/) | Cobertura funcional front × automação                                                |
 | [`docs/guides/`](docs/guides/)     | Guias (troubleshooting, fluxos, [boas práticas](docs/guides/boas-praticas.md), a11y) |
-| [`docs/reports/`](docs/reports/)   | Relatórios auto-gerados (tempo E2E)                                                  |
+| [`docs/reports/`](docs/reports/)   | **Dashboards de tempo** (E2E, suíte completa, histórico)                             |
 
 ### Pre-commit (Husky + lint-staged)
 

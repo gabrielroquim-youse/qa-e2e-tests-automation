@@ -21,7 +21,7 @@ Não validam regras de preço (isso é **`qa-api-tests-automation`**).
 | [`data-enrichment.spec.ts`](data-enrichment.spec.ts)       | `data_enrichment`               | CAP-17 rota no funil após CPF                                                |
 | [`risk-acceptance.spec.ts`](risk-acceptance.spec.ts)       | `risk_acceptance`               | CAP-35 rota sem garagem → checkout                                           |
 
-**Total:** 30 testes · `npm run test:ux`
+**Total:** 30 testes · `npm run test:ux` · dashboard: [`docs/reports/e2e-timing-report.md`](../../../../docs/reports/e2e-timing-report.md)
 
 ## Padrão de assert (validação)
 

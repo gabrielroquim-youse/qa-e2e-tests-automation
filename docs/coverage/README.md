@@ -2,7 +2,7 @@
 
 > **Para quê serve:** comparar o que o **frontend Youse expõe** (GitHub) com o que **já automatizamos** neste repositório — e deixar claro **o que falta**.
 >
-> **Última revisão manual:** 2026-06-17 · **Produto:** Seguro Auto B2C · **Ambiente:** QA
+> **Última revisão manual:** 2026-06-24 · **Produto:** Seguro Auto B2C · **Ambiente:** QA
 
 <!-- COVERAGE_METRICS:START -->
 

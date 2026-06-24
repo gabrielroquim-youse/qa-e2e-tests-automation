@@ -31,7 +31,8 @@ Specs com `.skip` em `regression/` documentam cenários migrados para API (`prec
 
 ```bash
 npm run test:smoke       # journeys + ux @smoke (~5–15 min, VPN)
-npm run test:ux          # usabilidade por tela (~20–35 min; prefira --workers=1)
+npm run test:ux          # usabilidade por tela (~11 min; prefira --workers=1)
+npm run test:ux:timing   # UX + atualiza dashboard docs/reports/e2e-timing-*
 npm run test:journey     # jornadas completas
 npm run test:regression  # regressão UX (coberturas, bônus modal…)
 ```
