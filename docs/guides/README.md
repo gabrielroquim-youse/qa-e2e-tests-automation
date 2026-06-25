@@ -12,4 +12,5 @@ Documentação de manutenção, análise e boas práticas do repositório.
 | [boas-praticas.md](boas-praticas.md)                                               | **Padrões do repo** · o que seguir · anti-padrões · débito técnico        |
 | [api-quotation-layer.md](api-quotation-layer.md)                                   | Pirâmide E2E vs API · cotação Auto · comandos nos dois repos              |
 | [payment-testing.md](payment-testing.md)                                           | Adyen test cards · PIX sandbox · specs em `tests/spec/e2e/payment/`       |
+| [prompt-engineering-qa.md](prompt-engineering-qa.md)                               | **Prompts para IA** · técnicas Confluence aplicadas a este repo           |
 | [../planners/planner-validacao-campos.md](../planners/planner-validacao-campos.md) | CAP-02 — validação de formulário (UX E2E)                                 |

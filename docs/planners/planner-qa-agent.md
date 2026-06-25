@@ -132,7 +132,7 @@ Ou:
 | Fase      | Entrega                                                                  |
 | --------- | ------------------------------------------------------------------------ |
 | **F1** ✅ | Skill `.cursor/skills/qa-orchestrator/` + este planner                   |
-| **F2**    | `npm run qa:status` — script que imprime painel coverage + último timing |
+| **F2** ✅ | `npm run qa:status` — script que imprime painel coverage + último timing |
 | **F3**    | `a11y:sync` + painel % a11y                                              |
 | **F4**    | CI: comentário em PR com resumo do agente (GitHub Action)                |
 

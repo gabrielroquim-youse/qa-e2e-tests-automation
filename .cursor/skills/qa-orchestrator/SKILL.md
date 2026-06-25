@@ -51,6 +51,7 @@ Copy and track:
 | Coverage % and CAP gaps  | `docs/coverage/README.md`                   |
 | Execution time dashboard | `docs/reports/e2e-timing-report.md`         |
 | Conventions              | `docs/guides/boas-praticas.md`              |
+| Prompt engineering (QA)  | `docs/guides/prompt-engineering-qa.md`      |
 | Form validation CAP-02   | `docs/planners/planner-validacao-campos.md` |
 | Payment Adyen/PIX        | `docs/planners/planner-pagamento.md`        |
 | A11y gaps                | `docs/guides/a11y-gap-map.md`               |

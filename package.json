@@ -34,11 +34,14 @@
     "test:payment": "playwright test tests/spec/e2e/payment --project=chromium --reporter=list --workers=1",
     "test:pix:emission": "cross-env PIX_SANDBOX_EMISSION=1 playwright test tests/spec/e2e/payment/checkout-pix-emission.spec.ts --project=chromium --headed --reporter=list",
     "test:pix:record": "cross-env PIX_RECORD=1 PIX_SANDBOX_EMISSION=1 PIX_SANDBOX_AUTO_PAY=1 PIX_SANDBOX_MANUAL_PAUSE=0 PW_VIDEO=on PW_SLOW_MO=60 playwright test tests/spec/e2e/payment/checkout-pix-record.spec.ts --project=chromium --headed --reporter=list --workers=1",
+    "test:pix:record:ui": "cross-env PW_VIDEO=on PW_SLOW_MO=40 playwright test tests/spec/e2e/payment/checkout-pix.spec.ts -g PAY-P4 --project=chromium --headed --reporter=list --workers=1",
     "test:pix:record:export": "npm run test:pix:record && npm run tool:pix-video:export",
+    "test:pix:record:ui:export": "npm run test:pix:record:ui && npm run tool:pix-video:export",
     "tool:pix-capture": "playwright test tests/spec/tools/pix-brcode-capture.spec.ts --project=chromium --reporter=list",
     "tool:pix-confirm": "ts-node scripts/pix-sandbox-confirm.ts",
     "tool:pix-pay": "ts-node scripts/pix-sandbox-pay.ts",
     "tool:pix-video:export": "ts-node scripts/export-pix-video.ts",
+    "qa:status": "ts-node scripts/qa-status.ts",
     "prepare": "husky"
   },
   "lint-staged": {
