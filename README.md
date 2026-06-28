@@ -21,7 +21,7 @@ Suite de testes automatizados da **Youse Seguradora** — fluxos E2E, API e pric
 
 <br/>
 
-[Documentação](./docs/README.md) · [Cobertura](./docs/coverage/README.md) · [Troubleshooting](./docs/guides/troubleshooting.md) · [Tempo E2E](./docs/reports/e2e-timing-report.md) · [Como executar](#como-executar)
+[Documentação](./docs/README.md) · [Cobertura](./docs/coverage/README.md) · [Dashboard tempo E2E](./docs/reports/e2e-timing-report.md) · [Dashboard suíte completa](./docs/reports/full-suite-timing-report.md) · [Troubleshooting](./docs/guides/troubleshooting.md) · [Como executar](#como-executar)
 
 </div>
 
@@ -41,7 +41,8 @@ Suite de testes automatizados da **Youse Seguradora** — fluxos E2E, API e pric
 - [Estratégia de Tags](#estratégia-de-tags)
 - [Relatórios](#relatórios)
 - [Arquitetura e Padrões](#arquitetura-e-padrões)
-- [Agentes de IA (Playwright Agents)](#agentes-de-ia-playwright-agents)
+- [Boas práticas (guia completo)](./docs/guides/boas-praticas.md)
+- [Agentes de IA](#agentes-de-ia)
 - [Qualidade e CI/CD](#qualidade-e-cicd)
 - [Troubleshooting](#troubleshooting)
 - [Contribuindo](#contribuindo)
@@ -50,13 +51,29 @@ Suite de testes automatizados da **Youse Seguradora** — fluxos E2E, API e pric
 
 ## Visão Geral
 
-Este repositório automatiza os principais fluxos da Youse em três camadas:
+Este repositório automatiza **experiência do cliente no navegador** (Seguro Auto B2C Youse): jornadas, usabilidade por tela, validação de formulário, bloqueios visíveis e a11y. Regras de preço e contrato HTTP ficam no repo irmão **`qa-api-tests-automation`**.
 
-| Camada                                                                                                    | O que cobre                                                           | Pasta             |
-| --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ----------------- |
-| <img src="https://cdn.simpleicons.org/playwright/2EAD33" height="20" align="top" alt="" /> **E2E**        | Fluxo completo de cotação e contratação de seguro auto no navegador   | `tests/spec/e2e/` |
-| <img src="https://cdn.simpleicons.org/openapiinitiative/6BA539" height="20" align="top" alt="" /> **API** | Contratos dos serviços internos (CiliaClaimAuth, TestUtils)           | `tests/spec/api/` |
-| <img src="https://cdn.simpleicons.org/chartdotjs/FF6384" height="20" align="top" alt="" /> **Pricing**    | Variação de preços por variáveis de risco e integridade de coberturas | `tests/spec/e2e/` |
+**Cobertura funcional atual:** ver [`docs/coverage/README.md`](docs/coverage/README.md) (**91%** · 73 testes E2E · 30 UX).
+
+### Dashboards (métricas e execuções)
+
+| Dashboard                                                                              | O que mostra                      | Atualizar com                                         |
+| -------------------------------------------------------------------------------------- | --------------------------------- | ----------------------------------------------------- |
+| [`docs/coverage/README.md`](docs/coverage/README.md)                                   | % cobertura CAP, gaps, POMs       | `npm run coverage:sync`                               |
+| [`docs/reports/e2e-timing-report.md`](docs/reports/e2e-timing-report.md)               | Tempo por teste/spec (última run) | `npm run test:e2e:timing` ou `npm run test:ux:timing` |
+| [`docs/reports/e2e-timing-log.md`](docs/reports/e2e-timing-log.md)                     | Histórico de execuções E2E        | idem (acumula até 100 runs)                           |
+| [`docs/reports/full-suite-timing-report.md`](docs/reports/full-suite-timing-report.md) | E2E + API + A11y consolidado      | `npm run test:full:timing`                            |
+| [`docs/reports/history/`](docs/reports/history/)                                       | Snapshot JSON/MD por execução     | gerado automaticamente                                |
+
+JSON para BI: [`docs/coverage/metrics.json`](docs/coverage/metrics.json) · [`docs/reports/e2e-timing.json`](docs/reports/e2e-timing.json)
+
+| Camada                 | Repositório               | O que cobre                                    | Pasta principal                       |
+| ---------------------- | ------------------------- | ---------------------------------------------- | ------------------------------------- |
+| **E2E / UX**           | **este repo**             | Jornada, usabilidade, bloqueios, a11y          | `tests/spec/e2e/`, `tests/spec/a11y/` |
+| **API cotação**        | `qa-api-tests-automation` | Preço, bônus, coberturas, assistências (apiws) | `tests/spec/quotation/`               |
+| **API sinistro/utils** | **este repo**             | Cilia auth, test-utils                         | `tests/spec/api/`                     |
+
+Pirâmide detalhada: [`docs/guides/api-quotation-layer.md`](docs/guides/api-quotation-layer.md)
 
 ---
 
@@ -174,6 +191,10 @@ qa-e2e-tests-automation/
 │   │   ├── setupPolicy.ts          # Pré-condições para testes de apólice
 │   │   └── setupQuotation.ts       # Gera QuotationData (faker) e injeta todos os Page Objects
 │   │
+│   ├── helpers/                    # Navegação e asserções compartilhadas
+│   │   ├── funnel.ts               # navigateToPlans, navigateToCheckout, resetSession…
+│   │   └── formValidation.ts       # CAP-02: expectContinueDisabled, expectFieldInvalid…
+│   │
 │   ├── pages/                      # Page Objects — toda interação com a UI fica aqui
 │   │   ├── BasePage.ts             # Classe base com métodos comuns (fill, click, waitFor, etc.)
 │   │   └── quotation/              # Um arquivo por tela do funil de cotação
@@ -182,11 +203,13 @@ qa-e2e-tests-automation/
 │   │       ├── VehicleDetailsPage.ts            # Etapa 2 — Placa, zero km, blindado
 │   │       ├── VehicleAdditionalDetailsPage.ts  # Etapa 3 — CEP, número, garagem, uso
 │   │       ├── PersonDataPage.ts                # Etapa 4 — CPF e estado civil
+│   │       ├── DataEnrichmentPage.ts            # Enriquecimento pós-CPF (quando exibido)
 │   │       ├── BonusesClassPage.ts              # Etapa 5 — Histórico de seguro e Classe de Bônus
 │   │       ├── PlanSelectionPage.ts             # Etapa 6 — Seleção do plano (com captura de preço)
 │   │       ├── CoveragesSelectionPage.ts        # Etapa 7a — Personalização de coberturas (franquia, indenização)
 │   │       ├── AssistancesSelectionPage.ts      # Etapa 7b — Seleção de assistências (13 opções)
-│   │       ├── CheckoutPage.ts                  # Etapa 8 — Pagamento via cartão de crédito
+│   │       ├── RiskAcceptancePage.ts            # Aceite de risco (sem garagem → antes do checkout)
+│   │       ├── CheckoutPage.ts                  # Etapa 8 — Pagamento, upsells, accordion
 │   │       └── IssuancePage.ts                  # Etapa 9 — Confirmação da apólice
 │   │
 │   ├── schemas/                    # Schemas Zod para validação de contratos de API
@@ -195,7 +218,7 @@ qa-e2e-tests-automation/
 │   │   └── test-utils/
 │   │       └── TestUtilsServiceSchemas.ts
 │   │
-│   ├── services/                   # Clientes HTTP para APIs internas
+│   ├── services/                   # Clientes HTTP (legado cotação → ver repo API)
 │   │   ├── bff/
 │   │   │   └── CiliaClaimAuth.ts
 │   │   └── test-utils/
@@ -206,15 +229,20 @@ qa-e2e-tests-automation/
 │   │
 │   └── spec/                       # Arquivos de teste (specs)
 │       ├── seed.spec.ts            # Seed para gravar novos testes com Playwright Agents
+│       ├── a11y/                   # WCAG, teclado, mobile/tablet (@a11y)
+│       ├── tools/                  # Captura de contrato apiws (não é pipeline) — ver README
 │       ├── api/
-│       │   ├── ciliaClaimAuth.spec.ts    # Autenticação de sinistro via WhatsApp
-│       │   └── testUtils.spec.ts         # Testes do serviço de massa de dados
+│       │   ├── README.md
+│       │   ├── ciliaClaimAuth.spec.ts      # Sinistro WhatsApp
+│       │   ├── testUtils.spec.ts           # Massa de dados QA
+│       │   └── quotation/                  # Redirecionado → qa-api-tests-automation
 │       └── e2e/
-│           ├── README.md                 # Organização journeys / ux / blockers / regression
+│           ├── README.md                 # journeys / ux / blockers / regression
+│           ├── ux/README.md              # usabilidade por tela (CAP-02) — 10 specs, 30 testes
 │           ├── journeys/                 # Fluxos E2E completos (@journey)
 │           ├── ux/                       # Usabilidade por tela (@ux @smoke)
 │           ├── blockers/                 # Cenários negativos (@negative)
-│           └── regression/               # Preço, coberturas, assistências (@regression)
+│           └── regression/               # UX restante (preço → repo API)
 │
 ├── .github/
 │   ├── CODEOWNERS                  # Ownership de arquivos críticos
@@ -386,25 +414,38 @@ npx playwright test tests/spec/e2e --project=chromium --reporter=list
 # Caminho feliz da cotação
 npx playwright test tests/spec/e2e/journeys --project=chromium --reporter=list
 
-# Testes de preços
-npx playwright test precosPlanos --project=chromium --reporter=list
+# Usabilidade por tela (recomendado --workers=1)
+npm run test:ux
+# ou:
+npx playwright test tests/spec/e2e/ux --project=chromium --workers=1 --reporter=list
 
-# Coberturas e assistências dos planos pré-formatados
-npx playwright test coberturas --project=chromium --reporter=list
+# Validação de formulário (CAP-02 — etapas 1 a 5)
+npx playwright test tests/spec/e2e/ux/lead-info.spec.ts tests/spec/e2e/ux/vehicle-details.spec.ts tests/spec/e2e/ux/vehicle-additional.spec.ts tests/spec/e2e/ux/person-data.spec.ts tests/spec/e2e/ux/bonuses-class.spec.ts --project=chromium --reporter=list
 
-# Assistências — visibilidade e impacto de preço
-npx playwright test assistencias --project=chromium --reporter=list
+# Regressão UX (visibilidade, navegação — preço migrado para API)
+npx playwright test tests/spec/e2e/regression --project=chromium --reporter=list
 
-# Personalização de coberturas/assistências + E2E completo do plano personalizado
-npx playwright test personalizacao --project=chromium --reporter=list
-
-# Classe de Bônus
+# Classe de Bônus (UX modal/toggle)
 npx playwright test validateBonusClass --project=chromium --reporter=list
 ```
 
-### Apenas testes de API
+### Precificação e personalização (repo API)
+
+Regras de **preço, bônus, coberturas e assistências** rodam em **`qa-api-tests-automation`** (VPN):
 
 ```bash
+cd ../qa-api-tests-automation
+npm run test:pricing          # @pricing
+npm run test:customization    # @customization
+npm run test:quotation        # @quotation_auto
+```
+
+Guia: [`docs/guides/api-quotation-layer.md`](docs/guides/api-quotation-layer.md)
+
+### API neste repo (sinistro / test-utils)
+
+```bash
+npm run test:api              # cilia + test-utils
 npx playwright test tests/spec/api --project=chromium --reporter=list
 ```
 
@@ -442,22 +483,22 @@ npx playwright test --debug
 
 As tags organizam os testes por pipeline e finalidade. Use sempre `--grep` para filtrar:
 
-| Tag               | Quando executar                                | Tempo estimado                       |
-| ----------------- | ---------------------------------------------- | ------------------------------------ |
-| `@smoke`          | A cada PR (`npm run test:smoke`)               | ~5–10 min                            |
-| `@ux`             | Usabilidade por tela (PR)                      | ~5 min                               |
-| `@journey`        | Jornadas E2E completas (nightly)               | ~15–30 min                           |
-| `@a11y`           | On release / PR (com VPN)                      | ~15–25 min (mobile + tablet)         |
-| `@regression`     | Nightly                                        | ~20 min                              |
-| `@price`          | On release                                     | ~30 min (cotações duplas são lentas) |
-| `@sanity`         | On release                                     | ~5 min                               |
-| `@b2c`            | Todos os testes de jornada B2C                 | —                                    |
-| `@quotation_auto` | Todos os testes do funil de cotação            | —                                    |
-| `@happy_path`     | Somente caminho feliz                          | —                                    |
-| `@bonus_class`    | Testes de Classe de Bônus                      | —                                    |
-| `@coberturas`     | Testes de coberturas e assistências dos planos | —                                    |
-| `@personalizacao` | Testes do fluxo de personalização do plano     | —                                    |
-| `@assistencias`   | Testes de impacto de assistências no prêmio    | —                                    |
+| Tag               | Quando executar                                          | Tempo estimado                                |
+| ----------------- | -------------------------------------------------------- | --------------------------------------------- |
+| `@smoke`          | A cada PR (`npm run test:smoke`)                         | ~5–10 min                                     |
+| `@ux`             | Usabilidade por tela — formulário, planos, checkout (PR) | ~11–12 min (`npm run test:ux`, `--workers=1`) |
+| `@journey`        | Jornadas E2E completas (nightly)                         | ~15–30 min                                    |
+| `@a11y`           | On release / PR (com VPN)                                | ~15–25 min (mobile + tablet)                  |
+| `@regression`     | Nightly (UX — visibilidade, navegação)                   | ~20 min                                       |
+| `@price`          | **Repo API** (`test:pricing`) — não E2E                  | —                                             |
+| `@sanity`         | On release                                               | ~5 min                                        |
+| `@b2c`            | Todos os testes de jornada B2C                           | —                                             |
+| `@quotation_auto` | Todos os testes do funil de cotação                      | —                                             |
+| `@happy_path`     | Somente caminho feliz                                    | —                                             |
+| `@bonus_class`    | Testes de Classe de Bônus                                | —                                             |
+| `@coberturas`     | UX coberturas na tela (preço → repo API)                 | —                                             |
+| `@personalizacao` | UX personalização (preço → repo API)                     | —                                             |
+| `@assistencias`   | UX assistências (preço → repo API)                       | —                                             |
 
 ---
 
@@ -525,6 +566,8 @@ const page = new PlanSelectionPage(page); // acoplamento desnecessário
 
 ### Encadeamento fluente com `proxymise`
 
+Detalhes e anti-padrões: [`docs/guides/boas-praticas.md`](docs/guides/boas-praticas.md).
+
 O `proxymise` permite chamar métodos em cadeia sem `await` em cada linha:
 
 ```ts
@@ -587,9 +630,23 @@ docs: adiciona seção de troubleshooting no README
 
 ---
 
-## Agentes de IA (Playwright Agents)
+## Agentes de IA
 
-O projeto usa os **Playwright Test Agents** integrados ao GitHub Copilot para acelerar a criação de testes.
+### Orquestrador QA (Cursor Skill — versionado)
+
+Skill do projeto em [`.cursor/skills/qa-orchestrator/SKILL.md`](.cursor/skills/qa-orchestrator/SKILL.md) · planner em [`docs/planners/planner-qa-agent.md`](docs/planners/planner-qa-agent.md).
+
+| Papel               | O que faz                                                                                                            |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **qa-orchestrator** | Lê cobertura/planners, roda `validate` / `test:smoke` / `test:ux` / `test:a11y`, sincroniza dashboards, reporta gaps |
+
+Exemplo no chat do Cursor:
+
+```
+Use o skill qa-orchestrator para validar minhas mudanças em tests/spec/e2e/ux
+```
+
+### Playwright Agents (Copilot — local)
 
 | Agente        | O que faz                                                      |
 | ------------- | -------------------------------------------------------------- |
@@ -647,14 +704,19 @@ npm run format:check   # apenas verifica sem alterar (usado no CI)
 
 # Atalhos para execução de testes
 npm run test:smoke      # apenas testes @smoke
-npm run test:regression # apenas testes @regression
+npm run test:ux         # usabilidade por tela (30 testes, ~11 min)
+npm run test:regression # apenas testes @regression E2E
+npm run test:payment    # pagamento checkout (PIX + cartões Elo/Hipercard)
+npm run test:api        # cilia + test-utils (cotação → qa-api-tests-automation)
 npm run test:a11y       # smoke axe mobile (Pixel 5) + tablet (iPad) — navegador visível · VPN
 npm run test:keyboard   # navegação por teclado (@keyboard) — navegador visível · VPN
 
-# Relatório de tempo E2E (gera docs/reports/e2e-timing-report.md)
-npm run test:e2e:timing                          # roda tests/spec/e2e + gera relatório (~30 min)
+# Relatório de tempo E2E (dashboard em docs/reports/)
+npm run test:ux:timing                           # UX + atualiza e2e-timing-report (~12 min)
+npm run test:e2e:timing                          # toda pasta e2e + relatório (~30 min)
+npm run test:full:timing                         # E2E + API + A11y + full-suite-timing-report
 npm run e2e:timing:generate                      # lê reports/e2e-timing-raw.json
-npm run e2e:timing:generate -- --from-log arquivo.log  # a partir do stdout do reporter list
+npm run e2e:timing:generate -- --from-log arquivo.log  # stdout do reporter list
 
 # Cobertura funcional (gera docs/coverage/sync-report.md + metrics.json)
 npm run coverage:sync
@@ -665,59 +727,41 @@ npm run coverage:check   # validação CI — falha se mapa front × POM desatua
 
 Índice central em [`docs/README.md`](docs/README.md):
 
-| Pasta                              | Conteúdo                                                         |
-| ---------------------------------- | ---------------------------------------------------------------- |
-| [`docs/planners/`](docs/planners/) | Planos de cenário (`planner-*.md`) — input dos Playwright Agents |
-| [`docs/coverage/`](docs/coverage/) | Cobertura funcional front × automação                            |
-| [`docs/guides/`](docs/guides/)     | Guias de manutenção (troubleshooting, a11y, fluxos)              |
-| [`docs/reports/`](docs/reports/)   | Relatórios auto-gerados (tempo E2E)                              |
+| Pasta                              | Conteúdo                                                                             |
+| ---------------------------------- | ------------------------------------------------------------------------------------ |
+| [`docs/planners/`](docs/planners/) | Planos de cenário (`planner-*.md`) — input dos Playwright Agents                     |
+| [`docs/coverage/`](docs/coverage/) | Cobertura funcional front × automação                                                |
+| [`docs/guides/`](docs/guides/)     | Guias (troubleshooting, fluxos, [boas práticas](docs/guides/boas-praticas.md), a11y) |
+| [`docs/reports/`](docs/reports/)   | **Dashboards de tempo** (E2E, suíte completa, histórico)                             |
 
-### Pre-commit (Husky + lint-staged)
+### Git Hooks (Husky)
 
-Git hooks em [`.husky/pre-commit`](.husky/pre-commit) rodam **antes de cada `git commit`**. O hook chama `npx lint-staged`, que valida **somente os arquivos no stage** (rápido — não varre o projeto inteiro).
+Três camadas de validação automática, do mais rápido ao mais completo:
 
-Regras definidas em [`package.json`](package.json) → `"lint-staged"`:
+| Hook         | Quando dispara         | O que valida                                                                                                                                                                                                              |
+| ------------ | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pre-commit` | a cada `git commit`    | `lint-staged` (ESLint + Prettier nos staged) · `typecheck` se houver `.ts` staged · **QA pre-commit checks** (LGPD, antipadrões Playwright, secrets, tags obrigatórias, debug code, tamanho de arquivo, TODOs sem ticket) |
+| `commit-msg` | após escrever mensagem | Conventional Commits PT-BR (`feat/fix/refactor/chore/docs/test/...`) · título ≤ 72 chars · heurística anti-mistura de idiomas                                                                                             |
+| `pre-push`   | a cada `git push`      | `typecheck` completo · `lint` completo · `format:check` completo                                                                                                                                                          |
 
-| Arquivos staged      | O que roda                             |
-| -------------------- | -------------------------------------- |
-| `**/*.ts`            | ESLint (`--max-warnings=0`) + Prettier |
-| `**/*.{json,yml,md}` | Prettier                               |
+Guia completo dos checks e como adicionar novos: **[`docs/guides/pre-commit-checks.md`](docs/guides/pre-commit-checks.md)**.
 
-**Fluxo:**
-
-```
-git commit  →  .husky/pre-commit  →  lint-staged  →  ESLint + Prettier nos staged
-                                                          ↓
-                                              passou? commit gravado
-                                              falhou? commit cancelado
-```
-
-**O que você vê no terminal** (exemplo quando passa):
-
-```
-✔ Running tasks for staged files...
-✔ Staging changes from tasks...
-[feature/assistencia abc1234] sua mensagem
-```
-
-Se o Prettier corrigir formatação, ele re-adiciona o arquivo ao stage automaticamente (`Staging changes from tasks`).
-
-**Testar sem commitar:**
+**Rodar manualmente (sem commitar):**
 
 ```bash
-git add <arquivo>
-npx lint-staged --verbose
+npm run qa:precommit    # bateria de checks Youse sobre staged
+npm run qa:check        # validate + qa:precommit (espelha o que CI exigirá)
+npm run qa:commitmsg -- caminho/COMMIT_EDITMSG
 ```
 
 **Ativação:** após `npm install`, o script `"prepare": "husky"` registra os hooks. Não precisa rodar nada manualmente.
 
-**Pular o hook** (só em emergência):
+**Pular hooks em emergência** (sempre com justificativa explícita no PR):
 
 ```bash
-git commit --no-verify -m "mensagem"
+git commit --no-verify -m "..."
+git push --no-verify
 ```
-
-Se o ESLint falhar, leia o erro no terminal, corrija, `git add` de novo e tente o commit outra vez.
 
 ### GitHub Actions (CI)
 

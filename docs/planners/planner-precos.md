@@ -284,8 +284,12 @@ tests/spec/e2e/
 ├── journeys/          ← @journey @happy_path — smoke de ponta a ponta
 │   ├── cotacao-plano-regular.spec.ts
 │   └── cotacao-plano-personalizado.spec.ts
-├── ux/                ← @ux @smoke — validação rápida por etapa
+├── ux/                ← @ux @smoke — validação por etapa (CAP-02)
 │   ├── lead-info.spec.ts
+│   ├── vehicle-details.spec.ts
+│   ├── vehicle-additional.spec.ts
+│   ├── person-data.spec.ts
+│   ├── bonuses-class.spec.ts
 │   ├── plan-selection.spec.ts
 │   └── checkout.spec.ts
 ├── blockers/          ← @negative — restrições e bloqueios

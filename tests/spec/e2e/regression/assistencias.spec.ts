@@ -16,17 +16,14 @@
  *   - `dismissComboModalIfVisible()` é chamado após ativar "Assistência a
  *     automóvel" para fechar o modal "Combo de assistências" se aparecer.
  *
- * Assistências independentes testadas (fora do combo bra/auto/assistance/4):
- *   - Restituição de IPVA
- *   - Assistência a bike
- *   - Serviço de histórico veicular
- *   - Serviço de leva e traz
- * (O teste de "Carro reserva" já está em personalizacao.spec.ts.)
+ * Prêmio (regression) migrado para API — qa-api-tests-automation/tests/spec/quotation/assistencias.spec.ts
+ * Manter aqui: visibilidade e dependências de UI.
  *
  * Fonte: docs/planners/planner-assistencias.md
  * Pré-requisito: VPN Youse ativa com acesso ao ambiente QA.
  * Uso: npx playwright test assistencias --project=chromium --reporter=list
  */
+/* eslint-disable playwright/no-skipped-test -- suites de prêmio migradas para API */
 import { expect, test } from '../../../fixtures/setupQuotation';
 import { navigateToAssistances } from '../../../helpers/funnel';
 
@@ -71,7 +68,7 @@ test.describe('Assistências — Visibilidade', { tag: ['@smoke', '@assistencias
 // ativadas sem dependências ou modais adicionais.
 // ═══════════════════════════════════════════════════════════════════════════
 
-test.describe('Assistências — Efeito no Prêmio — Independentes', { tag: ['@regression', '@assistencias', '@quotation_auto'] }, () => {
+test.describe.skip('Assistências — Efeito no Prêmio — Independentes', { tag: ['@regression', '@assistencias', '@quotation_auto'] }, () => {
   // ── 1. Restituição de IPVA ────────────────────────────────────────────
   test('Ativar "Restituição de IPVA" deve aumentar o prêmio anual', async ({ page }) => {
     test.setTimeout(TEST_TIMEOUT);
@@ -155,7 +152,7 @@ test.describe('Assistências — Efeito no Prêmio — Independentes', { tag: ['
 // O incremento de prêmio deve ser superior ao de uma assistência simples.
 // ═══════════════════════════════════════════════════════════════════════════
 
-test.describe('Assistências — Combo Assistência a Automóvel', { tag: ['@regression', '@assistencias', '@quotation_auto'] }, () => {
+test.describe.skip('Assistências — Combo Assistência a Automóvel', { tag: ['@regression', '@assistencias', '@quotation_auto'] }, () => {
   // ── 5. Ativar "Assistência a automóvel" ativa o combo e aumenta o prêmio ─
   test('Ativar "Assistência a automóvel" deve aumentar o prêmio anual (efeito combo)', async ({ page }) => {
     test.setTimeout(TEST_TIMEOUT);

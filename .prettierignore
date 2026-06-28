@@ -1,0 +1,11 @@
+# Artefatos gerados
+allure-results/
+playwright-report/
+test-results/
+reports/
+blob-report/
+all-blob-reports/
+node_modules/
+
+# Workflows com JS inline — Prettier não consegue parsear YAML com template literals complexos
+.github/workflows/pr-checklist.yml

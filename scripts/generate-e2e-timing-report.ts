@@ -10,6 +10,7 @@
  *   reports/e2e-timing-raw.json     — reporter JSON do Playwright (padrão)
  *   --from-log <arquivo>            — stdout do reporter `list`
  *   --run                           — executa a suite e2e e captura JSON
+ *   --run-ux                        — executa test:ux e captura log list
  */
 import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -89,9 +90,10 @@ interface PlaywrightSpec {
   }[];
 }
 
-function parseArgs(argv: string[]): { fromLog?: string; run: boolean; input: string } {
+function parseArgs(argv: string[]): { fromLog?: string; run: boolean; runUx: boolean; input: string } {
   let fromLog: string | undefined;
   let run = false;
+  let runUx = false;
   let input = RAW_JSON;
 
   for (let i = 0; i < argv.length; i++) {
@@ -99,12 +101,14 @@ function parseArgs(argv: string[]): { fromLog?: string; run: boolean; input: str
       fromLog = argv[++i];
     } else if (argv[i] === '--run') {
       run = true;
+    } else if (argv[i] === '--run-ux') {
+      runUx = true;
     } else if (argv[i] === '--input' && argv[i + 1]) {
       input = argv[++i];
     }
   }
 
-  return { fromLog, run, input };
+  return { fromLog, run, runUx, input };
 }
 
 function readText(path: string): string {
@@ -367,6 +371,31 @@ function runPlaywrightJson(): number {
   return 0;
 }
 
+const UX_TIMING_LOG = join(REPORTS_DIR, 'ux-timing-latest.log');
+
+function runPlaywrightUxList(): { exitCode: number; logPath: string } {
+  mkdirSync(REPORTS_DIR, { recursive: true });
+  console.log('Executando suite UX (tests/spec/e2e/ux) — ~12 min…');
+  const cmd = 'npx playwright test tests/spec/e2e/ux --grep @ux --project=chromium --workers=1 --reporter=list';
+  try {
+    const out = execSync(cmd, {
+      cwd: ROOT,
+      encoding: 'utf8',
+      maxBuffer: 64 * 1024 * 1024,
+      stdio: ['inherit', 'pipe', 'pipe'],
+    });
+    writeFileSync(UX_TIMING_LOG, out, 'utf8');
+    return { exitCode: 0, logPath: UX_TIMING_LOG };
+  } catch (error) {
+    const execError = error as { status?: number; stdout?: string; stderr?: string };
+    const out = `${execError.stdout ?? ''}${execError.stderr ?? ''}`;
+    if (out.trim()) writeFileSync(UX_TIMING_LOG, out, 'utf8');
+    else throw error;
+    console.warn(`Suite UX terminou com exit ${execError.status ?? 1} — log capturado para relatório.`);
+    return { exitCode: execError.status ?? 1, logPath: UX_TIMING_LOG };
+  }
+}
+
 function relativePath(abs: string): string {
   return abs.replace(/\\/g, '/').replace(`${ROOT.replace(/\\/g, '/')}/`, '');
 }
@@ -413,9 +442,17 @@ function printTimingDeltaFromLog(previous: TimingLogEntry, current: TimingReport
 }
 
 function main(): void {
-  const { fromLog, run, input } = parseArgs(process.argv.slice(2));
+  const { fromLog, run, runUx, input } = parseArgs(process.argv.slice(2));
 
-  if (run) {
+  let resolvedFromLog = fromLog;
+
+  if (runUx) {
+    const { exitCode, logPath } = runPlaywrightUxList();
+    resolvedFromLog = relativePath(logPath);
+    if (exitCode !== 0) {
+      process.exitCode = exitCode;
+    }
+  } else if (run) {
     const exitCode = runPlaywrightJson();
     if (exitCode !== 0) {
       process.exitCode = exitCode;
@@ -427,8 +464,8 @@ function main(): void {
   let workers: number | null = null;
   let source: string;
 
-  if (fromLog) {
-    const logPath = join(process.cwd(), fromLog);
+  if (resolvedFromLog) {
+    const logPath = join(process.cwd(), resolvedFromLog);
     if (!existsSync(logPath)) {
       throw new Error(`Log não encontrado: ${logPath}`);
     }

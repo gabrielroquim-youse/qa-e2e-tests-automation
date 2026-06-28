@@ -7,6 +7,7 @@
 import { Locator, Page } from '@playwright/test';
 import proxymise from 'proxymise';
 import TestConfig from '../../../config/test.config';
+import { resetSession } from '../../helpers/session';
 import { QuotationPageLayout } from './QuotationPageLayout';
 import { VehicleDetailsPage } from './VehicleDetailsPage';
 
@@ -29,12 +30,14 @@ export class LeadInfoPage extends QuotationPageLayout<VehicleDetailsPage> {
   }
 
   static async open(page: Page): Promise<LeadInfoPage> {
+    await resetSession(page);
     const instance = new LeadInfoPage(page);
     let lastError: unknown;
 
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
-        await page.goto('/', {
+        // goto('/') ignora o path do baseURL (ex.: /seguro-auto) e cai no site de marketing
+        await page.goto(TestConfig.urls.autoQuotationUrl, {
           waitUntil: 'domcontentloaded',
           timeout: 60_000,
         });
@@ -59,8 +62,6 @@ export class LeadInfoPage extends QuotationPageLayout<VehicleDetailsPage> {
       [this.email, email],
       [this.tel, phone],
     ] as const) {
-      await field.click();
-      await field.fill('');
       await field.fill(value);
     }
 

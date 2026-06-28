@@ -2,24 +2,24 @@
 
 > **Para quê serve:** comparar o que o **frontend Youse expõe** (GitHub) com o que **já automatizamos** neste repositório — e deixar claro **o que falta**.
 >
-> **Última revisão manual:** 2026-06-17 · **Produto:** Seguro Auto B2C · **Ambiente:** QA
+> **Última revisão manual:** 2026-06-24 · **Produto:** Seguro Auto B2C · **Ambiente:** QA
 
 <!-- COVERAGE_METRICS:START -->
 
-> 🤖 **Atualizado automaticamente** em 2026-06-19 · Fonte: [`sales-frontend`](https://github.com/youse-seguradora/sales-frontend) @ `main` · `55` testes E2E · `42` capacidades testáveis inventariadas
+> 🤖 **Atualizado automaticamente** em 2026-06-24 · Fonte: [`sales-frontend`](https://github.com/youse-seguradora/sales-frontend) @ `main` · `73` testes E2E · `44` capacidades testáveis inventariadas
 
 ## Painel de cobertura (leitura rápida)
 
 | Indicador                           |   Valor | Em plain language                                                      |
 | ----------------------------------- | ------: | ---------------------------------------------------------------------- |
-| **Cobertura funcional (principal)** | **79%** | Capacidades do front com teste dedicado, contando parciais pela metade |
-| Cobertura funcional estrita         |     71% | Só conta ✅ com teste dedicado (sem 🟡)                                |
-| Cobertura estrutural (telas)        |     77% | Telas do funil com Page Object (10/13)                                 |
+| **Cobertura funcional (principal)** | **91%** | Capacidades do front com teste dedicado, contando parciais pela metade |
+| Cobertura funcional estrita         |     86% | Só conta ✅ com teste dedicado (sem 🟡)                                |
+| Cobertura estrutural (telas)        |     92% | Telas do funil com Page Object (12/13)                                 |
 | P0 automatizado                     |     92% | 12/13 itens críticos                                                   |
 | P1 automatizado                     |    100% | 18/18 itens alto risco                                                 |
-| ✅ Coberto                          |      30 | Teste E2E dedicado                                                     |
-| 🟡 Parcial                          |       6 | Happy path ou regra incompleta                                         |
-| ⬜ Falta automatizar                |       4 | Front permite testar; sem spec                                         |
+| ✅ Coberto                          |      38 | Teste E2E dedicado                                                     |
+| 🟡 Parcial                          |       4 | Happy path ou regra incompleta                                         |
+| ⬜ Falta automatizar                |       0 | Front permite testar; sem spec                                         |
 | 🔒 Bloqueado                        |       2 | Depende massa/API — ver backlog                                        |
 
 ### Fórmula do indicador principal
@@ -32,25 +32,19 @@ Capacidades testáveis = inventário em `scripts/coverage-inventory.ts` (derivad
 
 ### O que falta automatizar (⬜ + 🔒)
 
-| ID     | Funcionalidade (front)                       | Section                      | Status | Planner                 | Notas                                  |
-| ------ | -------------------------------------------- | ---------------------------- | ------ | ----------------------- | -------------------------------------- |
-| CAP-17 | Tela de enriquecimento de dados              | `data_enrichment`            | ⬜     | —                       | Section no front; fluxo QA pode pular  |
-| CAP-33 | Assistências imutáveis (plano pré-formatado) | `assistances_selection`      | ⬜     | planner-assistencias.md | —                                      |
-| CAP-35 | Tela aceite de risco                         | `risk_acceptance`            | ⬜     | —                       | Sem POM; aparece em perfis específicos |
-| CAP-38 | Cross-sell residencial / vida                | `checkout`                   | ⬜     | planner.md              | —                                      |
-| CAP-10 | CEP alto risco × preço                       | `vehicle_additional_details` | 🔒     | planner-precos.md       | Massa CEP aceita no QA                 |
-| CAP-14 | Idade motorista × preço                      | `person_data`                | 🔒     | planner-precos.md       | CPF/DOB fixos                          |
+| ID     | Funcionalidade (front)  | Section                      | Status | Planner           | Notas                  |
+| ------ | ----------------------- | ---------------------------- | ------ | ----------------- | ---------------------- |
+| CAP-10 | CEP alto risco × preço  | `vehicle_additional_details` | 🔒     | planner-precos.md | Massa CEP aceita no QA |
+| CAP-14 | Idade motorista × preço | `person_data`                | 🔒     | planner-precos.md | CPF/DOB fixos          |
 
 ### Cobertura parcial — completar depois (🟡)
 
-| ID     | Funcionalidade                   | Section                 | Spec atual                                                  | Próximo passo                                      |
-| ------ | -------------------------------- | ----------------------- | ----------------------------------------------------------- | -------------------------------------------------- |
-| CAP-02 | Validação de campos obrigatórios | `lead_info`             | ux/lead-info.spec.ts                                        | E-mail inválido; expandir campos vazios/máscaras   |
-| CAP-04 | Toggle zero km                   | `vehicle_details`       | regression/precosPlanos.spec.ts                             | Só compara diferença, não ordinal estrito          |
-| CAP-06 | Bloqueio placa restrita (leilão) | `vehicle_details`       | blockers/cotacao-restricoes.spec.ts                         | test.fixme — QA não bloqueia placa de leilão       |
-| CAP-27 | Delta simétrico coberturas       | `coverages_selection`   | regression/validacaoValores.spec.ts                         | Danos Morais ✅; estender                          |
-| CAP-34 | Delta simétrico assistências     | `assistances_selection` | regression/validacaoValores.spec.ts                         | IPVA parcial no HEAD                               |
-| CAP-39 | Resumo assistências no checkout  | `checkout`              | ux/checkout.spec.ts, journeys/cotacao-plano-regular.spec.ts | Accordion assistências; expandir asserts dedicados |
+| ID     | Funcionalidade                   | Section                 | Spec atual                          | Próximo passo                                |
+| ------ | -------------------------------- | ----------------------- | ----------------------------------- | -------------------------------------------- |
+| CAP-04 | Toggle zero km                   | `vehicle_details`       | regression/precosPlanos.spec.ts     | Só compara diferença, não ordinal estrito    |
+| CAP-06 | Bloqueio placa restrita (leilão) | `vehicle_details`       | blockers/cotacao-restricoes.spec.ts | test.fixme — QA não bloqueia placa de leilão |
+| CAP-27 | Delta simétrico coberturas       | `coverages_selection`   | regression/validacaoValores.spec.ts | Danos Morais ✅; estender                    |
+| CAP-34 | Delta simétrico assistências     | `assistances_selection` | regression/validacaoValores.spec.ts | IPVA parcial no HEAD                         |
 
 <!-- COVERAGE_METRICS:END -->
 
@@ -146,14 +140,17 @@ Inventário completo com status por tela: **[`sync-report.md`](sync-report.md)**
 
 ### Backlog manual (prioridade)
 
-| Pri | Item                                               | Status |
-| --- | -------------------------------------------------- | ------ |
-| P2  | Delta simétrico: histórico, leva e traz, Roubo OFF | ⬜     |
-| P2  | Assistências imutáveis em plano pré-formatado      | ⬜     |
-| P2  | Tela `data_enrichment` / `risk_acceptance`         | ⬜     |
-| P3  | CEP alto risco, idade motorista                    | 🔒     |
-| P3  | Oráculo API PricingService                         | 🔒     |
-| P3  | Cross-sell checkout (residencial/vida)             | ⬜     |
+| Pri | Item                                                      | Status              |
+| --- | --------------------------------------------------------- | ------------------- |
+| P0  | CAP-06 placa leilão (`test.fixme`)                        | 🟡 aguarda massa QA |
+| P2  | CAP-04 zero km — ordinal estrito                          | 🟡 parcial          |
+| P2  | CAP-27 / CAP-34 — delta simétrico coberturas/assistências | 🟡 parcial          |
+| P2  | CAP-10 CEP alto risco · CAP-14 idade motorista            | 🔒 massa QA         |
+| P3  | Oráculo API `PricingService`                              | 🔒 repo API         |
+| P3  | A11y `aria-live` / axe expandido                          | backlog             |
+| P3  | CI: `@smoke` no PR vs nightly completo                    | backlog             |
+
+Concluídos (não repetir no backlog): CAP-02 UX, CAP-17, CAP-33, CAP-35, CAP-38, CAP-39.
 
 Detalhes de implementação: planners correspondentes.
 

@@ -1,101 +1,113 @@
 # Relatório de Sincronização de Cobertura
 
-> Gerado em **2026-06-19** · [`metrics.json`](metrics.json) · [`README.md`](README.md)
+> Gerado em **2026-06-24** · [`metrics.json`](metrics.json) · [`README.md`](README.md)
 
 ## Resumo executivo
 
 | Métrica                             |   Valor |
 | ----------------------------------- | ------: |
-| **Cobertura funcional (ponderada)** | **79%** |
-| Cobertura funcional estrita         |     71% |
-| Cobertura estrutural (POMs)         |     77% |
+| **Cobertura funcional (ponderada)** | **91%** |
+| Cobertura funcional estrita         |     86% |
+| Cobertura estrutural (POMs)         |     92% |
 | Sections no GitHub                  |      12 |
-| Testes E2E Auto                     |      55 |
-| Capacidades testáveis               |      42 |
-| Falta automatizar (⬜)              |       4 |
+| Testes E2E Auto                     |      73 |
+| Capacidades testáveis               |      44 |
+| Falta automatizar (⬜)              |       0 |
 | Bloqueado (🔒)                      |       2 |
 
 ## 1. Telas do front (GitHub) × automação
 
-| Section                      | Micro-frontend                    | Page Object                     | Estrutura   | Caps funcionais |
-| ---------------------------- | --------------------------------- | ------------------------------- | ----------- | --------------- |
-| `lead_info`                  | sales-lead-requirements           | LeadInfoPage.ts                 | ✅          | 1/2 caps ✅     |
-| `vehicle_details`            | sales-vehicle-details             | VehicleDetailsPage.ts           | ✅          | 2/4 caps ✅     |
-| `vehicle_additional_details` | sales-vehicle-additional-details  | VehicleAdditionalDetailsPage.ts | ✅          | 3/4 caps ✅     |
-| `person_data`                | sales-person-data                 | PersonDataPage.ts               | ✅          | 3/4 caps ✅     |
-| `bonuses_class`              | sales-bonus-class                 | BonusesClassPage.ts             | ✅          | 2/2 caps ✅     |
-| `data_enrichment`            | sales-data-enrichment             | —                               | 🟡 opcional | 0/1 caps ✅     |
-| `plan_selection`             | sales-plan-selection              | PlanSelectionPage.ts            | ✅          | 4/4 caps ✅     |
-| `coverages_selection`        | sales-personalization-coverages   | CoveragesSelectionPage.ts       | ✅          | 5/6 caps ✅     |
-| `assistances_selection`      | sales-personalization-assistances | AssistancesSelectionPage.ts     | ✅          | 5/7 caps ✅     |
-| `risk_acceptance`            | sales-risk-acceptance             | —                               | 🟡 opcional | 0/1 caps ✅     |
-| `checkout`                   | sales-checkout                    | CheckoutPage.ts                 | ✅          | 2/4 caps ✅     |
-| `issuance`                   | sales-issuance                    | IssuancePage.ts                 | ✅          | 1/1 caps ✅     |
+| Section                      | Micro-frontend                    | Page Object                     | Estrutura | Caps funcionais |
+| ---------------------------- | --------------------------------- | ------------------------------- | --------- | --------------- |
+| `lead_info`                  | sales-lead-requirements           | LeadInfoPage.ts                 | ✅        | 2/2 caps ✅     |
+| `vehicle_details`            | sales-vehicle-details             | VehicleDetailsPage.ts           | ✅        | 2/4 caps ✅     |
+| `vehicle_additional_details` | sales-vehicle-additional-details  | VehicleAdditionalDetailsPage.ts | ✅        | 3/4 caps ✅     |
+| `person_data`                | sales-person-data                 | PersonDataPage.ts               | ✅        | 3/4 caps ✅     |
+| `bonuses_class`              | sales-bonus-class                 | BonusesClassPage.ts             | ✅        | 2/2 caps ✅     |
+| `data_enrichment`            | sales-data-enrichment             | DataEnrichmentPage.ts           | ✅        | 1/1 caps ✅     |
+| `plan_selection`             | sales-plan-selection              | PlanSelectionPage.ts            | ✅        | 4/4 caps ✅     |
+| `coverages_selection`        | sales-personalization-coverages   | CoveragesSelectionPage.ts       | ✅        | 5/6 caps ✅     |
+| `assistances_selection`      | sales-personalization-assistances | AssistancesSelectionPage.ts     | ✅        | 6/7 caps ✅     |
+| `risk_acceptance`            | sales-risk-acceptance             | RiskAcceptancePage.ts           | ✅        | 1/1 caps ✅     |
+| `checkout`                   | sales-checkout                    | CheckoutPage.ts                 | ✅        | 6/6 caps ✅     |
+| `issuance`                   | sales-issuance                    | IssuancePage.ts                 | ✅        | 1/1 caps ✅     |
 
 ## 2. Inventário completo — o que o front permite testar
 
-| ID     | Funcionalidade                                | Section                      | Pri | Status | Spec(s)                                                                              |
-| ------ | --------------------------------------------- | ---------------------------- | --- | ------ | ------------------------------------------------------------------------------------ |
-| CAP-01 | Preencher nome, e-mail e telefone             | `lead_info`                  | P0  | ✅     | journeys/cotacao-plano-regular.spec.ts, ux/lead-info.spec.ts                         |
-| CAP-02 | Validação de campos obrigatórios              | `lead_info`                  | P2  | 🟡     | ux/lead-info.spec.ts                                                                 |
-| CAP-03 | Placa válida — avançar no funil               | `vehicle_details`            | P0  | ✅     | journeys/cotacao-plano-regular.spec.ts                                               |
-| CAP-04 | Toggle zero km                                | `vehicle_details`            | P2  | 🟡     | regression/precosPlanos.spec.ts                                                      |
-| CAP-05 | Bloqueio veículo blindado                     | `vehicle_details`            | P0  | ✅     | blockers/cotacao-restricoes.spec.ts                                                  |
-| CAP-06 | Bloqueio placa restrita (leilão)              | `vehicle_details`            | P0  | 🟡     | blockers/cotacao-restricoes.spec.ts                                                  |
-| CAP-07 | CEP e número do endereço                      | `vehicle_additional_details` | P0  | ✅     | journeys/cotacao-plano-regular.spec.ts                                               |
-| CAP-08 | Garagem noturna × preço                       | `vehicle_additional_details` | P1  | ✅     | regression/precosPlanos.spec.ts                                                      |
-| CAP-09 | Uso do veículo × preço                        | `vehicle_additional_details` | P1  | ✅     | regression/precosPlanos.spec.ts                                                      |
-| CAP-10 | CEP alto risco × preço                        | `vehicle_additional_details` | P2  | 🔒     | —                                                                                    |
-| CAP-11 | CPF válido — avançar                          | `person_data`                | P0  | ✅     | journeys/cotacao-plano-regular.spec.ts                                               |
-| CAP-12 | CPF blacklist / PEP                           | `person_data`                | P0  | ✅     | blockers/cotacao-restricoes.spec.ts                                                  |
-| CAP-13 | Estado civil × preço                          | `person_data`                | P1  | ✅     | regression/precosPlanos.spec.ts                                                      |
-| CAP-14 | Idade motorista × preço                       | `person_data`                | P2  | 🔒     | —                                                                                    |
-| CAP-15 | Modal "Não sei minha Classe de Bônus"         | `bonuses_class`              | P1  | ✅     | regression/validateBonusClass.spec.ts                                                |
-| CAP-16 | Seleção classe 1–10 × preço                   | `bonuses_class`              | P1  | ✅     | regression/precosPlanos.spec.ts, regression/validateBonusClass.spec.ts               |
-| CAP-17 | Tela de enriquecimento de dados               | `data_enrichment`            | P3  | ⬜     | —                                                                                    |
-| CAP-18 | Exibir planos Essencial / Regular / Auto 1504 | `plan_selection`             | P0  | ✅     | regression/coberturas.spec.ts, ux/plan-selection.spec.ts                             |
-| CAP-19 | Ordem de preço entre planos                   | `plan_selection`             | P0  | ✅     | regression/coberturas.spec.ts, regression/precosPlanos.spec.ts                       |
-| CAP-20 | Keywords coberturas/assistências nos cards    | `plan_selection`             | P1  | ✅     | regression/coberturas.spec.ts, ux/plan-selection.spec.ts                             |
-| CAP-21 | Entrada plano Personalizado                   | `plan_selection`             | P0  | ✅     | regression/personalizacao.spec.ts, regression/coberturas.spec.ts                     |
-| CAP-22 | Toggle cobertura opcional (Danos Morais)      | `coverages_selection`        | P1  | ✅     | regression/personalizacao.spec.ts                                                    |
-| CAP-23 | Desligar cobertura (Roubo e furto)            | `coverages_selection`        | P1  | ✅     | regression/personalizacao.spec.ts                                                    |
-| CAP-24 | Cobertura obrigatória não desliga             | `coverages_selection`        | P1  | ✅     | regression/personalizacao.spec.ts                                                    |
-| CAP-25 | Slider franquia × preço                       | `coverages_selection`        | P1  | ✅     | regression/personalizacao.spec.ts                                                    |
-| CAP-26 | Slider indenização × preço                    | `coverages_selection`        | P1  | ✅     | regression/personalizacao.spec.ts                                                    |
-| CAP-27 | Delta simétrico coberturas                    | `coverages_selection`        | P2  | 🟡     | regression/validacaoValores.spec.ts                                                  |
-| CAP-28 | Visibilidade catálogo assistências            | `assistances_selection`      | P1  | ✅     | regression/assistencias.spec.ts                                                      |
-| CAP-29 | Toggle assistência × preço (independentes)    | `assistances_selection`      | P1  | ✅     | regression/assistencias.spec.ts                                                      |
-| CAP-30 | Combo guincho + modal                         | `assistances_selection`      | P1  | ✅     | regression/assistencias.spec.ts                                                      |
-| CAP-31 | Dependência combo (disabled sem guincho)      | `assistances_selection`      | P1  | ✅     | regression/assistencias.spec.ts                                                      |
-| CAP-32 | Promo RPS grátis vs cobrado                   | `assistances_selection`      | P1  | ✅     | regression/assistenciaRpsPromo.spec.ts                                               |
-| CAP-33 | Assistências imutáveis (plano pré-formatado)  | `assistances_selection`      | P2  | ⬜     | —                                                                                    |
-| CAP-34 | Delta simétrico assistências                  | `assistances_selection`      | P2  | 🟡     | regression/validacaoValores.spec.ts                                                  |
-| CAP-35 | Tela aceite de risco                          | `risk_acceptance`            | P2  | ⬜     | —                                                                                    |
-| CAP-36 | Navegação até checkout (sem pagar)            | `checkout`                   | P1  | ✅     | ux/checkout.spec.ts, regression/personalizacao.spec.ts                               |
-| CAP-37 | Pagamento cartão + emissão                    | `checkout`                   | P0  | ✅     | journeys/cotacao-plano-regular.spec.ts, journeys/cotacao-plano-personalizado.spec.ts |
-| CAP-38 | Cross-sell residencial / vida                 | `checkout`                   | P3  | ⬜     | —                                                                                    |
-| CAP-39 | Resumo assistências no checkout               | `checkout`                   | P2  | 🟡     | ux/checkout.spec.ts, journeys/cotacao-plano-regular.spec.ts                          |
-| CAP-40 | Tela sucesso / apólice emitida                | `issuance`                   | P0  | ✅     | journeys/cotacao-plano-regular.spec.ts, journeys/cotacao-plano-personalizado.spec.ts |
-| CAP-41 | Idempotência de preço (mesmos dados)          | `transversal`                | P1  | ✅     | regression/precosPlanos.spec.ts                                                      |
-| CAP-42 | Sanidade guard-rails de preço                 | `transversal`                | P0  | ✅     | regression/precosPlanos.spec.ts, regression/coberturas.spec.ts                       |
+| ID     | Funcionalidade                                | Section                      | Pri | Status | Spec(s)                                                                                                                           |
+| ------ | --------------------------------------------- | ---------------------------- | --- | ------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| CAP-01 | Preencher nome, e-mail e telefone             | `lead_info`                  | P0  | ✅     | journeys/cotacao-plano-regular.spec.ts, ux/lead-info.spec.ts                                                                      |
+| CAP-02 | Validação de campos obrigatórios              | `lead_info`                  | P2  | ✅     | ux/lead-info.spec.ts, ux/vehicle-details.spec.ts, ux/vehicle-additional.spec.ts, ux/person-data.spec.ts, ux/bonuses-class.spec.ts |
+| CAP-03 | Placa válida — avançar no funil               | `vehicle_details`            | P0  | ✅     | journeys/cotacao-plano-regular.spec.ts                                                                                            |
+| CAP-04 | Toggle zero km                                | `vehicle_details`            | P2  | 🟡     | regression/precosPlanos.spec.ts                                                                                                   |
+| CAP-05 | Bloqueio veículo blindado                     | `vehicle_details`            | P0  | ✅     | blockers/cotacao-restricoes.spec.ts                                                                                               |
+| CAP-06 | Bloqueio placa restrita (leilão)              | `vehicle_details`            | P0  | 🟡     | blockers/cotacao-restricoes.spec.ts                                                                                               |
+| CAP-07 | CEP e número do endereço                      | `vehicle_additional_details` | P0  | ✅     | journeys/cotacao-plano-regular.spec.ts                                                                                            |
+| CAP-08 | Garagem noturna × preço                       | `vehicle_additional_details` | P1  | ✅     | regression/precosPlanos.spec.ts                                                                                                   |
+| CAP-09 | Uso do veículo × preço                        | `vehicle_additional_details` | P1  | ✅     | regression/precosPlanos.spec.ts                                                                                                   |
+| CAP-10 | CEP alto risco × preço                        | `vehicle_additional_details` | P2  | 🔒     | —                                                                                                                                 |
+| CAP-11 | CPF válido — avançar                          | `person_data`                | P0  | ✅     | journeys/cotacao-plano-regular.spec.ts                                                                                            |
+| CAP-12 | CPF blacklist / PEP                           | `person_data`                | P0  | ✅     | blockers/cotacao-restricoes.spec.ts                                                                                               |
+| CAP-13 | Estado civil × preço                          | `person_data`                | P1  | ✅     | regression/precosPlanos.spec.ts                                                                                                   |
+| CAP-14 | Idade motorista × preço                       | `person_data`                | P2  | 🔒     | —                                                                                                                                 |
+| CAP-15 | Modal "Não sei minha Classe de Bônus"         | `bonuses_class`              | P1  | ✅     | regression/validateBonusClass.spec.ts                                                                                             |
+| CAP-16 | Seleção classe 1–10 × preço                   | `bonuses_class`              | P1  | ✅     | regression/precosPlanos.spec.ts, regression/validateBonusClass.spec.ts                                                            |
+| CAP-17 | Tela de enriquecimento de dados               | `data_enrichment`            | P3  | ✅     | ux/data-enrichment.spec.ts                                                                                                        |
+| CAP-18 | Exibir planos Essencial / Regular / Auto 1504 | `plan_selection`             | P0  | ✅     | regression/coberturas.spec.ts, ux/plan-selection.spec.ts                                                                          |
+| CAP-19 | Ordem de preço entre planos                   | `plan_selection`             | P0  | ✅     | regression/coberturas.spec.ts, regression/precosPlanos.spec.ts                                                                    |
+| CAP-20 | Keywords coberturas/assistências nos cards    | `plan_selection`             | P1  | ✅     | regression/coberturas.spec.ts, ux/plan-selection.spec.ts                                                                          |
+| CAP-21 | Entrada plano Personalizado                   | `plan_selection`             | P0  | ✅     | regression/personalizacao.spec.ts, regression/coberturas.spec.ts                                                                  |
+| CAP-22 | Toggle cobertura opcional (Danos Morais)      | `coverages_selection`        | P1  | ✅     | regression/personalizacao.spec.ts                                                                                                 |
+| CAP-23 | Desligar cobertura (Roubo e furto)            | `coverages_selection`        | P1  | ✅     | regression/personalizacao.spec.ts                                                                                                 |
+| CAP-24 | Cobertura obrigatória não desliga             | `coverages_selection`        | P1  | ✅     | regression/personalizacao.spec.ts                                                                                                 |
+| CAP-25 | Slider franquia × preço                       | `coverages_selection`        | P1  | ✅     | regression/personalizacao.spec.ts                                                                                                 |
+| CAP-26 | Slider indenização × preço                    | `coverages_selection`        | P1  | ✅     | regression/personalizacao.spec.ts                                                                                                 |
+| CAP-27 | Delta simétrico coberturas                    | `coverages_selection`        | P2  | 🟡     | regression/validacaoValores.spec.ts                                                                                               |
+| CAP-28 | Visibilidade catálogo assistências            | `assistances_selection`      | P1  | ✅     | regression/assistencias.spec.ts                                                                                                   |
+| CAP-29 | Toggle assistência × preço (independentes)    | `assistances_selection`      | P1  | ✅     | regression/assistencias.spec.ts                                                                                                   |
+| CAP-30 | Combo guincho + modal                         | `assistances_selection`      | P1  | ✅     | regression/assistencias.spec.ts                                                                                                   |
+| CAP-31 | Dependência combo (disabled sem guincho)      | `assistances_selection`      | P1  | ✅     | regression/assistencias.spec.ts                                                                                                   |
+| CAP-32 | Promo RPS grátis vs cobrado                   | `assistances_selection`      | P1  | ✅     | regression/assistenciaRpsPromo.spec.ts                                                                                            |
+| CAP-33 | Assistências imutáveis (plano pré-formatado)  | `assistances_selection`      | P2  | ✅     | ux/plan-preformatted.spec.ts                                                                                                      |
+| CAP-34 | Delta simétrico assistências                  | `assistances_selection`      | P2  | 🟡     | regression/validacaoValores.spec.ts                                                                                               |
+| CAP-35 | Tela aceite de risco                          | `risk_acceptance`            | P2  | ✅     | ux/risk-acceptance.spec.ts                                                                                                        |
+| CAP-36 | Navegação até checkout (sem pagar)            | `checkout`                   | P1  | ✅     | ux/checkout.spec.ts, regression/personalizacao.spec.ts                                                                            |
+| CAP-37 | Pagamento cartão + emissão                    | `checkout`                   | P0  | ✅     | journeys/cotacao-plano-regular.spec.ts, journeys/cotacao-plano-personalizado.spec.ts                                              |
+| CAP-38 | Cross-sell residencial / vida                 | `checkout`                   | P3  | ✅     | ux/checkout.spec.ts                                                                                                               |
+| CAP-39 | Resumo assistências no checkout               | `checkout`                   | P2  | ✅     | ux/checkout.spec.ts, journeys/cotacao-plano-regular.spec.ts                                                                       |
+| CAP-45 | Pagamento PIX (UI + pendente)                 | `checkout`                   | P2  | ✅     | payment/checkout-pix.spec.ts                                                                                                      |
+| CAP-46 | Cartões Adyen Elo / Hipercard                 | `checkout`                   | P2  | ✅     | payment/checkout-cards.spec.ts                                                                                                    |
+| CAP-40 | Tela sucesso / apólice emitida                | `issuance`                   | P0  | ✅     | journeys/cotacao-plano-regular.spec.ts, journeys/cotacao-plano-personalizado.spec.ts                                              |
+| CAP-41 | Idempotência de preço (mesmos dados)          | `transversal`                | P1  | ✅     | regression/precosPlanos.spec.ts                                                                                                   |
+| CAP-42 | Sanidade guard-rails de preço                 | `transversal`                | P0  | ✅     | regression/precosPlanos.spec.ts, regression/coberturas.spec.ts                                                                    |
 
-## 3. Specs E2E (55 testes)
+## 3. Specs E2E (73 testes)
 
 | Spec                                           | Testes |
 | ---------------------------------------------- | ------ |
 | `blockers/cotacao-restricoes.spec.ts`          | 4      |
 | `journeys/cotacao-plano-personalizado.spec.ts` | 1      |
 | `journeys/cotacao-plano-regular.spec.ts`       | 2      |
+| `payment/checkout-cards.spec.ts`               | 2      |
+| `payment/checkout-pix-emission.spec.ts`        | 1      |
+| `payment/checkout-pix.spec.ts`                 | 4      |
 | `regression/assistenciaRpsPromo.spec.ts`       | 1      |
 | `regression/assistencias.spec.ts`              | 7      |
 | `regression/coberturas.spec.ts`                | 7      |
 | `regression/personalizacao.spec.ts`            | 8      |
-| `regression/precosPlanos.spec.ts`              | 13     |
-| `regression/validacaoValores.spec.ts`          | 3      |
+| `regression/precosPlanos.spec.ts`              | 1      |
+| `regression/validacaoValores.spec.ts`          | 1      |
 | `regression/validateBonusClass.spec.ts`        | 4      |
-| `ux/checkout.spec.ts`                          | 1      |
-| `ux/lead-info.spec.ts`                         | 3      |
+| `ux/bonuses-class.spec.ts`                     | 3      |
+| `ux/checkout.spec.ts`                          | 5      |
+| `ux/data-enrichment.spec.ts`                   | 1      |
+| `ux/lead-info.spec.ts`                         | 6      |
+| `ux/person-data.spec.ts`                       | 3      |
+| `ux/plan-preformatted.spec.ts`                 | 3      |
 | `ux/plan-selection.spec.ts`                    | 1      |
+| `ux/risk-acceptance.spec.ts`                   | 1      |
+| `ux/vehicle-additional.spec.ts`                | 4      |
+| `ux/vehicle-details.spec.ts`                   | 3      |
 
 ## 4. Gaps estruturais (GitHub × repo)
 

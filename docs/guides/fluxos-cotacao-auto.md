@@ -2,7 +2,7 @@
 
 > Inventário de **todas as telas, ações e caminhos** do funil web vs **automação E2E** existente.  
 > **Fonte:** `sales-frontend` (sections), Page Objects, specs, `scripts/coverage-inventory.ts`  
-> **Última revisão:** 2026-06-18
+> **Última revisão:** 2026-06-24
 
 ---
 
@@ -19,36 +19,37 @@ flowchart TD
   C --> D[person_data]
   D --> D1{CPF restrito?}
   D1 -->|Checkout| E1[Erro pagamento]
-  D1 -->|OK| E[bonuses_class]
-  E --> F[data_enrichment]
-  F --> G[plan_selection]
+  D1 -->|OK| F[data_enrichment]
+  F --> E[bonuses_class]
+  E --> G[plan_selection]
   G --> H1[Quero Esse]
   G --> H2[Personalizar]
   H2 --> I[coverages_selection]
   I --> J[assistances_selection]
-  J --> K[checkout]
+  J --> L{risk_acceptance?}
+  L --> K[checkout]
   H1 --> K
-  K --> L{risk_acceptance?}
-  L --> K
   K --> M[issuance]
   M --> N[/sucesso ou redirect/]
 ```
 
-**Sections GitHub (12 + sucesso):** `lead_info` → `vehicle_details` → `vehicle_additional_details` → `person_data` → `bonuses_class` → `data_enrichment` → `plan_selection` → `coverages_selection` → `assistances_selection` → `risk_acceptance` → `checkout` → `issuance` → `/sucesso`
+**Sections GitHub (12 + sucesso):** `lead_info` → `vehicle_details` → `vehicle_additional_details` → `person_data` → `data_enrichment` → `bonuses_class` → `plan_selection` → `coverages_selection` → `assistances_selection` → `risk_acceptance` → `checkout` → `issuance` → `/sucesso`
 
 ---
 
 ## Resumo de cobertura
 
-| Métrica                       |                                                      Valor |
-| ----------------------------- | ---------------------------------------------------------: |
-| Capacidades testáveis (CAP)   |                                                         42 |
-| Cobertura funcional ponderada |                                                    **79%** |
-| Cobertura estrita             |                                                        74% |
-| Telas com Page Object         |                                                10/13 (77%) |
-| Specs E2E                     | 14 arquivos · ~52 testes (journeys/ux/blockers/regression) |
-| Fluxos documentados abaixo    |                                                18 caminhos |
-| Fluxos com E2E dedicado       |                                        14 ✅ · 2 🟡 · 2 ⬜ |
+| Métrica                       |                                                     Valor |
+| ----------------------------- | --------------------------------------------------------: |
+| Capacidades testáveis (CAP)   |                                                        44 |
+| Cobertura funcional ponderada |                                                   **91%** |
+| Cobertura estrita             |                                                       86% |
+| Telas com Page Object         |                                               12/13 (92%) |
+| Specs E2E                     | 23 arquivos · **73** testes (`tests/spec/e2e/`, chromium) |
+| Specs UX (`e2e/ux/`)          |                                        10 · **30** testes |
+| Fluxos documentados abaixo    |                                               18 caminhos |
+| Gaps testáveis sem spec (⬜)  |                                                         0 |
+| Bloqueados por massa (🔒)     |                                                         2 |
 
 ---
 
@@ -56,17 +57,17 @@ flowchart TD
 
 **Persona:** usuário mobile/desktop · placa válida · sem bônus · plano Regular · cartão
 
-| #   | Tela                       | Ações principais                                              | POM                          | Spec                              |
-| --- | -------------------------- | ------------------------------------------------------------- | ---------------------------- | --------------------------------- |
-| 1   | lead_info                  | Nome, e-mail, telefone → Continuar                            | LeadInfoPage                 | cotacao-plano-regular             |
-| 2   | vehicle_details            | Placa · zero km off · blindado off → Continuar                | VehicleDetailsPage           | cotacao-plano-regular             |
-| 3   | vehicle_additional_details | CEP, número · garagem · uso Particular → Continuar            | VehicleAdditionalDetailsPage | cotacao-plano-regular             |
-| 4   | person_data                | CPF · estado civil → Continuar                                | PersonDataPage               | cotacao-plano-regular             |
-| 5   | bonuses_class              | Não (sem seguro anterior) → Continuar                         | BonusesClassPage             | cotacao-plano-regular             |
-| 6   | data_enrichment            | _(pode pular no QA)_                                          | —                            | —                                 |
-| 7   | plan_selection             | Quero esse **Regular**                                        | PlanSelectionPage            | cotacao-plano-regular, coberturas |
-| 8   | checkout                   | Checkbox e-mail · accordion assistências · cartão · Finalizar | CheckoutPage                 | cotacao-plano-regular             |
-| 9   | issuance                   | Pagamento confirmado / redirect / webhook                     | IssuancePage                 | cotacao-plano-regular             |
+| #   | Tela                       | Ações principais                                           | POM                          | Spec                                    |
+| --- | -------------------------- | ---------------------------------------------------------- | ---------------------------- | --------------------------------------- |
+| 1   | lead_info                  | Nome, e-mail, telefone → Continuar                         | LeadInfoPage                 | cotacao-plano-regular                   |
+| 2   | vehicle_details            | Placa · zero km off · blindado off → Continuar             | VehicleDetailsPage           | cotacao-plano-regular                   |
+| 3   | vehicle_additional_details | CEP, número · garagem · uso Particular → Continuar         | VehicleAdditionalDetailsPage | cotacao-plano-regular                   |
+| 4   | person_data                | CPF · estado civil → Continuar                             | PersonDataPage               | cotacao-plano-regular, person-data      |
+| 5   | data_enrichment            | Rota automática ou formulário (quando exibido)             | DataEnrichmentPage           | data-enrichment.spec.ts ✅ CAP-17       |
+| 6   | bonuses_class              | Não (sem seguro anterior) → Continuar                      | BonusesClassPage             | cotacao-plano-regular, bonuses-class    |
+| 7   | plan_selection             | Quero esse **Regular**                                     | PlanSelectionPage            | cotacao-plano-regular, plan-selection   |
+| 8   | checkout                   | Checkbox e-mail · accordion · upsells · cartão · Finalizar | CheckoutPage                 | checkout.spec.ts, cotacao-plano-regular |
+| 9   | issuance                   | Pagamento confirmado / redirect / webhook                  | IssuancePage                 | cotacao-plano-regular                   |
 
 **Status automação:** ✅ **CAP-01, 03, 07, 11, 18, 37, 40**
 
@@ -122,9 +123,9 @@ flowchart TD
 
 ### N4 — Campos obrigatórios vazios
 
-| Etapa                | Ação                    | Resultado esperado | Spec                  |
-| -------------------- | ----------------------- | ------------------ | --------------------- |
-| lead_info (e outras) | Continuar sem preencher | Erros inline       | ⬜ **CAP-02 missing** |
+| Etapa                | Ação                    | Resultado esperado          | Spec                 |
+| -------------------- | ----------------------- | --------------------------- | -------------------- |
+| lead_info (e outras) | Continuar sem preencher | Erros inline / btn disabled | ✅ **CAP-02** `ux/*` |
 
 ---
 
@@ -175,7 +176,7 @@ Cada linha = **duas cotações** com `resetSession` entre elas (`precosPlanos.sp
 | A6  | Combo guincho + modal                        | assistencias                   | CAP-30        |
 | A7  | Guincho habilita dependentes (RPS, chaveiro) | assistencias                   | CAP-31        |
 | A8  | Promo RPS grátis vs cobrado                  | assistenciaRpsPromo            | CAP-32        |
-| A9  | Assistências fixas no plano pré-formatado    | —                              | CAP-33 ⬜     |
+| A9  | Assistências fixas no plano pré-formatado    | plan-preformatted              | CAP-33 ✅     |
 
 ---
 
@@ -195,23 +196,28 @@ Cada linha = **duas cotações** com `resetSession` entre elas (`precosPlanos.sp
 | ID  | Cenário                                                  | Spec                                  | CAP       |
 | --- | -------------------------------------------------------- | ------------------------------------- | --------- |
 | K1  | Chegar checkout via helper                               | personalizacao                        | CAP-36    |
-| K2  | Accordion assistências visível                           | cotacao-plano-regular                 | CAP-39 🟡 |
-| K3  | Cross-sell residencial/vida **não** adicionado           | planner only                          | CAP-38 ⬜ |
-| K4  | Cross-sell interação adicionar                           | —                                     | CAP-38 ⬜ |
+| K2  | Accordion assistências visível                           | checkout, cotacao-plano-regular       | CAP-39 ✅ |
+| K3  | Cross-sell residencial/vida **não** adicionado           | checkout                              | CAP-38 ✅ |
+| K4  | Cross-sell interação adicionar                           | checkout                              | CAP-38 ✅ |
 | K5  | Pagamento + emissão                                      | cotacao-plano-regular, personalizacao | CAP-37    |
 | K6  | 3 caminhos pós-pagamento (sucesso / redirect / issuance) | personalizacao                        | CAP-40    |
+| K7  | Finalizar sem cartão — permanece em checkout             | checkout.spec.ts                      | CAP-02 ✅ |
 
 ---
 
-## Telas sem automação dedicada
+## Telas e capacidades — status atual
 
-| Section                             | Motivo                       | CAP    | Prioridade sugerida |
-| ----------------------------------- | ---------------------------- | ------ | ------------------- |
-| `data_enrichment`                   | Fluxo opcional / instável QA | CAP-17 | P3                  |
-| `risk_acceptance`                   | Sem POM · perfil específico  | CAP-35 | P2 quando mapeado   |
-| Validação inline lead               | Nunca implementado           | CAP-02 | P2                  |
-| Assistências imutáveis (plano fixo) | Sem spec                     | CAP-33 | P2                  |
-| Cross-sell checkout                 | Só assert visual happy path  | CAP-38 | P3                  |
+| Section / tema           | Spec / POM principal             | CAP    | Status |
+| ------------------------ | -------------------------------- | ------ | ------ |
+| Validação formulário 1–5 | `ux/lead-info` … `bonuses-class` | CAP-02 | ✅     |
+| `data_enrichment`        | `data-enrichment.spec.ts`        | CAP-17 | ✅     |
+| `risk_acceptance`        | `risk-acceptance.spec.ts`        | CAP-35 | ✅     |
+| Plano pré-formatado      | `plan-preformatted.spec.ts`      | CAP-33 | ✅     |
+| Cross-sell checkout      | `checkout.spec.ts`               | CAP-38 | ✅     |
+| Accordion assistências   | `checkout.spec.ts`               | CAP-39 | ✅     |
+| CEP alto risco × preço   | —                                | CAP-10 | 🔒     |
+| Idade motorista × preço  | —                                | CAP-14 | 🔒     |
+| Placa leilão             | `blockers/` fixme                | CAP-06 | 🟡     |
 
 ---
 
@@ -219,35 +225,35 @@ Cada linha = **duas cotações** com `resetSession` entre elas (`precosPlanos.sp
 
 | Section                    | Page Object                  | Specs que tocam                                                     | CAPs         |
 | -------------------------- | ---------------------------- | ------------------------------------------------------------------- | ------------ |
-| lead_info                  | LeadInfoPage                 | cotacao-plano-regular                                               | 01 ✅, 02 ⬜ |
-| vehicle_details            | VehicleDetailsPage           | cotacao-plano-regular, precosPlanos                                 | 03–06        |
-| vehicle_additional_details | VehicleAdditionalDetailsPage | cotacao-plano-regular, precosPlanos                                 | 07–10        |
-| person_data                | PersonDataPage               | cotacao-plano-regular, precosPlanos                                 | 11–14        |
-| bonuses_class              | BonusesClassPage             | cotacao-plano-regular, validateBonusClass, precosPlanos             | 15–16        |
-| data_enrichment            | —                            | —                                                                   | 17 ⬜        |
+| lead_info                  | LeadInfoPage                 | journeys, `ux/lead-info`                                            | 01 ✅, 02 ✅ |
+| vehicle_details            | VehicleDetailsPage           | journeys, `ux/vehicle-details`, precosPlanos                        | 03–06        |
+| vehicle_additional_details | VehicleAdditionalDetailsPage | journeys, `ux/vehicle-additional`, precosPlanos                     | 07–10        |
+| person_data                | PersonDataPage               | journeys, `ux/person-data`, precosPlanos                            | 11–14        |
+| bonuses_class              | BonusesClassPage             | journeys, `ux/bonuses-class`, validateBonusClass, precosPlanos      | 15–16        |
+| data_enrichment            | DataEnrichmentPage           | data-enrichment.spec.ts                                             | 17 ✅        |
 | plan_selection             | PlanSelectionPage            | cotacao-plano-regular, coberturas, precosPlanos, personalizacao     | 18–21        |
 | coverages_selection        | CoveragesSelectionPage       | personalizacao, validacaoValores                                    | 22–27        |
 | assistances_selection      | AssistancesSelectionPage     | assistencias, assistenciaRpsPromo, personalizacao, validacaoValores | 28–34        |
-| risk_acceptance            | —                            | —                                                                   | 35 ⬜        |
-| checkout                   | CheckoutPage                 | cotacao-plano-regular, personalizacao                               | 36–39        |
+| risk_acceptance            | RiskAcceptancePage           | risk-acceptance.spec.ts                                             | 35 ✅        |
+| checkout                   | CheckoutPage                 | journeys, `ux/checkout`, personalizacao                             | 36–39        |
 | issuance                   | IssuancePage                 | cotacao-plano-regular, personalizacao                               | 40           |
 | transversal                | funnel helpers               | precosPlanos, coberturas                                            | 41–44        |
 
 ---
 
-## Gaps prioritários (backlog de automação)
+## Gaps prioritários (backlog)
 
-| Prioridade | Gap                           | Fluxo  | Ação sugerida                                                |
-| ---------- | ----------------------------- | ------ | ------------------------------------------------------------ |
-| **P0**     | Placa leilão fixme            | N2     | Desbloquear massa QA ou skip documentado                     |
-| **P2**     | CAP-02 validação campos       | N4     | Spec negativo lead + vehicle                                 |
-| **P2**     | CAP-33 assistências imutáveis | A9     | Spec plano Regular — toggles absent/disabled                 |
-| **P2**     | CAP-35 risk_acceptance        | —      | POM + smoke quando estável                                   |
-| **P2**     | CAP-39 resumo checkout        | K2     | Assert conteúdo accordion                                    |
-| **P3**     | CAP-17 data_enrichment        | —      | Exploratório + POM mínimo                                    |
-| **P3**     | CAP-38 cross-sell             | K3–K4  | Interação Adicionar/Remover                                  |
-| **P3**     | Mobile viewport               | F1, F2 | Projeto Pixel 5 na CI                                        |
-| **P3**     | A11y axe smoke                | Todos  | Ver [accessibility-analysis.md](./accessibility-analysis.md) |
+| Prioridade | Gap                          | Status   | Ação sugerida                       |
+| ---------- | ---------------------------- | -------- | ----------------------------------- |
+| **P0**     | CAP-06 placa leilão          | 🟡 fixme | Massa QA ou skip documentado        |
+| **P2**     | CAP-04 zero km ordinal       | 🟡       | Assert estrito em `precosPlanos`    |
+| **P2**     | CAP-27 / CAP-34 deltas       | 🟡       | Estender `validacaoValores` ou API  |
+| **P2**     | CAP-10 / CAP-14 preço        | 🔒       | CEP alto risco + CPF/idade no QA    |
+| **P3**     | A11y axe expandido           | ⬜       | `a11y-gap-map.md`                   |
+| **P3**     | CI: smoke PR vs nightly full | ⬜       | `@smoke` no pipeline                |
+| **P3**     | CAP-02 P3 restante           | ⬜       | Mensagens inline; checkbox checkout |
+
+Itens concluídos recentemente: CAP-02 UX, CAP-17, CAP-33, CAP-35, CAP-38, CAP-39 — ver matriz acima.
 
 ---
 
@@ -267,7 +273,7 @@ npm run coverage:sync   # regenera métricas em docs/coverage/
 
 ## Relacionados
 
-- [Análise de acessibilidade (mobile/tablet)](./accessibility-analysis.md)
+- [Boas práticas do repositório](./boas-praticas.md)
 - [Cobertura funcional](../coverage/README.md)
 - [Planners de cenário](../planners/)
 - [Inventário CAP](../../scripts/coverage-inventory.ts)
