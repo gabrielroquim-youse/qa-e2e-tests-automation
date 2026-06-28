@@ -25,6 +25,9 @@ import { PersonDataPage } from '../pages/quotation/PersonDataPage';
 import { BonusesClassPage } from '../pages/quotation/BonusesClassPage';
 import { DataEnrichmentPage } from '../pages/quotation/DataEnrichmentPage';
 import { RiskAcceptancePage } from '../pages/quotation/RiskAcceptancePage';
+import { resetSession } from './session';
+
+export { resetSession };
 
 /** Timeout para o motor de precificação montar a tela de planos. */
 export const PLAN_TIMEOUT = 45_000;
@@ -69,31 +72,6 @@ export interface QuotationScenario {
 
 /** Override pontual dos dados gerados (ex.: CPF restrito em cenário negativo). */
 export type QuotationDataOverride = Partial<ReturnType<typeof generateQuotationData>>;
-
-/**
- * Reseta a sessão entre duas cotações no mesmo teste (storage + cookies).
- * Deve ser chamado enquanto a página ainda está no domínio do app.
- */
-export async function resetSession(page: Page): Promise<void> {
-  const onApp = /youse/i.test(page.url());
-  if (onApp) {
-    await page.evaluate(() => {
-      try {
-        localStorage.clear();
-      } catch {
-        /* no-op */
-      }
-      try {
-        sessionStorage.clear();
-      } catch {
-        /* no-op */
-      }
-    });
-  }
-  await page.context().clearCookies();
-  await page.goto('about:blank');
-  await new Promise((resolve) => setTimeout(resolve, 500));
-}
 
 /**
  * Percorre o funil completo até a tela de seleção de planos.

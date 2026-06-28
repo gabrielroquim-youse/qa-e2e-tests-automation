@@ -7,6 +7,7 @@
 import { Locator, Page } from '@playwright/test';
 import proxymise from 'proxymise';
 import TestConfig from '../../../config/test.config';
+import { resetSession } from '../../helpers/session';
 import { QuotationPageLayout } from './QuotationPageLayout';
 import { VehicleDetailsPage } from './VehicleDetailsPage';
 
@@ -29,6 +30,7 @@ export class LeadInfoPage extends QuotationPageLayout<VehicleDetailsPage> {
   }
 
   static async open(page: Page): Promise<LeadInfoPage> {
+    await resetSession(page);
     const instance = new LeadInfoPage(page);
     let lastError: unknown;
 

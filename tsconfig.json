@@ -9,6 +9,9 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "outDir": "dist",
     "types": ["node", "@playwright/test"]

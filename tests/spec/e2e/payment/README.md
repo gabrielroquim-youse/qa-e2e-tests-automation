@@ -9,6 +9,16 @@ Testes de **métodos de pagamento** no checkout QA. Cartão completo continua na
 | `checkout-pix-emission.spec.ts`               | Emissão após sandbox (híbrido) | PAY-P4b        | 🟡 `npm run test:pix:emission` |
 | `tests/spec/tools/pix-brcode-capture.spec.ts` | Captura BR Code                | —              | `npm run tool:pix-capture`     |
 
+## Massa PIX (sem restrição)
+
+Funil via `navigateToCheckoutForPix()` (`tests/helpers/pixQuotation.ts`):
+
+- **Placa:** `plate.noInspection` (`YOU-0020`)
+- **CPF:** `cpf.accepted` (`123.456.761-08`)
+- **E-mail:** único por execução (`qa.pix+{timestamp}@youse.com.br`)
+
+Cada nova cotação chama `resetSession()` em `LeadInfoPage.open` (cookies + storage + cache).
+
 ## Comandos
 
 ```bash

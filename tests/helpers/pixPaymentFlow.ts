@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 import { expect } from '../fixtures/setupQuotation';
-import CheckoutPage from '../pages/quotation/CheckoutPage';
+import { CheckoutPage } from '../pages/quotation/CheckoutPage';
 import { hasStarkCredentials, payBrcodeWithStark } from './starkPixPay';
 
 async function completeIssuanceRedirectIfNeeded(page: Page): Promise<void> {
@@ -11,6 +11,8 @@ async function completeIssuanceRedirectIfNeeded(page: Page): Promise<void> {
   try {
     await page.waitForURL(/\/sucesso|youse\.com\.br/, { timeout: 30_000 });
   } catch {
+    // isVisible() é intencional aqui: usado como guarda de fluxo condicional,
+    // não como assertion. Web-first assertion não se aplica nesse caso.
     if (await btnOk.isVisible()) {
       await btnOk.click();
     }
@@ -25,8 +27,8 @@ export async function confirmPixInSandboxAndFinalize(checkout: CheckoutPage, pag
   }
 
   const payment = await payBrcodeWithStark(brcode);
-  console.log(`\n[pix] Stark BrcodePayment: id=${payment.id} status=${payment.status}`);
-  console.log('[pix] Aguardando webhook e segundo Finalizar...\n');
+  console.info(`\n[pix] Stark BrcodePayment: id=${payment.id} status=${payment.status}`);
+  console.info('[pix] Aguardando webhook e segundo Finalizar...\n');
 
   await finalizePixPaymentWhenReady(checkout, page);
   await completeIssuanceRedirectIfNeeded(page);

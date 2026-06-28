@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 /**
  * Paga BR Code PIX no Stark Bank sandbox (quando credenciais disponíveis).
  *

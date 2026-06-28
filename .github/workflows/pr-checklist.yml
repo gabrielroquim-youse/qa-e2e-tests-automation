@@ -1,0 +1,274 @@
+# PR Quality Checklist - Youse QA E2E
+#
+# Roda em todo PR para `main` e faz tres coisas:
+#   1. Analise estatica completa (typecheck + lint + format + qa-checks)
+#   2. Solicita review automatico do GitHub Copilot
+#   3. Posta comentario com checklist auto-preenchido
+#
+# Permissoes necessarias:
+#   contents: read        - checkout
+#   pull-requests: write  - postar comentario e solicitar Copilot review
+
+name: PR Quality Checklist
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  # Job 1 - Analise estatica (typecheck + lint + format + qa-checks)
+  static-analysis:
+    name: Análise Estática
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    outputs:
+      typecheck: ${{ steps.typecheck.outcome }}
+      lint:      ${{ steps.lint.outcome }}
+      format:    ${{ steps.format.outcome }}
+      qa_checks: ${{ steps.qa.outcome }}
+      qa_report: ${{ steps.qa.outputs.report }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: TypeScript (typecheck)
+        id: typecheck
+        run: npm run typecheck
+        continue-on-error: true
+
+      - name: ESLint
+        id: lint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Prettier (format:check)
+        id: format
+        run: npm run format:check
+        continue-on-error: true
+
+      - name: QA Checks (qa-pre-commit-checks em modo PR)
+        id: qa
+        run: |
+          PR_BASE=origin/main \
+          QA_REPORT_JSON=/tmp/qa-report.json \
+          npx ts-node --transpile-only scripts/qa-pre-commit-checks.ts
+          echo "report=$(cat /tmp/qa-report.json | jq -c .)" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+  # Job 2 - Solicita Copilot Review (nativo do GitHub)
+  copilot-review:
+    name: Solicitar Copilot Review
+    runs-on: ubuntu-latest
+    needs: static-analysis
+    # Só executa uma vez (quando o PR é aberto), não a cada push
+    if: github.event.action == 'opened'
+
+    steps:
+      - name: Solicitar review do GitHub Copilot
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.pulls.requestReviewers({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              reviewers: [],
+              team_reviewers: [],
+            });
+
+            // Solicita Copilot code review via endpoint específico
+            try {
+              await github.request('POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers', {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                reviewers: ['copilot'],
+              });
+              console.log('✅ Copilot review solicitado.');
+            } catch (e) {
+              console.log(`ℹ️ Copilot review via API: ${e.message}`);
+            }
+
+  # Job 3 - Comentario com checklist auto-preenchido
+  post-checklist:
+    name: Comentário Checklist
+    runs-on: ubuntu-latest
+    needs: static-analysis
+    if: always()
+
+    steps:
+      - name: Gerar e postar checklist no PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const typecheck = '${{ needs.static-analysis.outputs.typecheck }}';
+            const lint      = '${{ needs.static-analysis.outputs.lint }}';
+            const format    = '${{ needs.static-analysis.outputs.format }}';
+            const qaOutcome = '${{ needs.static-analysis.outputs.qa_checks }}';
+
+            // Parse do relatório JSON dos qa-checks
+            let qaReport = null;
+            try {
+              qaReport = JSON.parse('${{ needs.static-analysis.outputs.qa_report }}');
+            } catch (_) {}
+
+            // ── helpers ─────────────────────────────────────────────────────
+            const icon = (outcome) => outcome === 'success' ? '✅' : outcome === 'failure' ? '❌' : '⬜';
+            const iconFromResults = (results, name) => {
+              if (!results) return '⬜';
+              const r = results.find(r => r.name === name);
+              if (!r) return '⬜';
+              if (r.violations.length === 0) return '✅';
+              return r.level === 'error' ? '❌' : '⚠️';
+            };
+            const checkByItem = (label) => {
+              if (!qaReport?.results) return '⬜';
+              const related = qaReport.results.filter(r => r.checklistItem === label);
+              if (related.length === 0) return '⬜';
+              const hasError = related.some(r => r.violations.length > 0 && r.level === 'error');
+              const hasWarn  = related.some(r => r.violations.length > 0 && r.level === 'warn');
+              if (hasError) return '❌';
+              if (hasWarn)  return '⚠️';
+              return '✅';
+            };
+            const violationsOf = (name) => {
+              const r = qaReport?.results?.find(r => r.name === name);
+              return r?.violations?.slice(0, 3).map(v => `  > \`${v}\``).join('\n') ?? '';
+            };
+
+            // ── status de cada check específico ─────────────────────────────
+            const s = (name) => iconFromResults(qaReport?.results, name);
+
+            // ── resumo QA ────────────────────────────────────────────────────
+            const summary = qaReport?.summary
+              ? `**${qaReport.summary.passed} OK** · **${qaReport.summary.warn} ⚠️** · **${qaReport.summary.fail} ❌**`
+              : '_não disponível_';
+
+            // ── violations detail (apenas errors/warns) ──────────────────────
+            const failDetails = (qaReport?.results ?? [])
+              .filter(r => r.violations.length > 0)
+              .map(r => {
+                const lvl = r.level === 'error' ? '❌' : '⚠️';
+                const vs  = r.violations.slice(0, 3).map(v => `    - \`${v}\``).join('\n');
+                const more = r.violations.length > 3 ? `\n    - _+${r.violations.length - 3} mais_` : '';
+                return `${lvl} **${r.name}**\n${vs}${more}`;
+              })
+              .join('\n\n');
+
+            const body = `## 🤖 QA Checklist Automático — Youse Seguradora
+
+> Gerado por \`scripts/qa-pre-commit-checks.ts\` · ${qaReport?.filesAnalyzed ?? '?'} arquivo(s) analisado(s)
+
+---
+
+### Validação Estática
+
+| Check | Status |
+|---|:---:|
+| TypeScript (typecheck) | ${icon(typecheck)} |
+| ESLint | ${icon(lint)} |
+| Prettier (format) | ${icon(format)} |
+| QA Checks (resumo) | ${summary} |
+
+---
+
+### Checklist de Qualidade
+
+#### Código
+
+| Item | Auto-detectado |
+|---|:---:|
+| ${s('Sem page.waitForTimeout / esperas fixas')} Não há \`page.waitForTimeout()\` ou esperas fixas | ${s('Sem page.waitForTimeout / esperas fixas')} |
+| Não há \`test.only\` ou \`test.skip\` sem justificativa | ${s('Sem test.only / describe.only / fdescribe')} |
+| Seletores usam locators de acessibilidade (\`getByRole\`, \`getByLabel\`) ou \`data-testid\` | ${s('Seletores devem usar getByRole/getByLabel/getByText/getByTestId (não CSS/XPath)')} |
+| Nenhum dado sensível (CPF real, e-mail pessoal, cartão real) | ${checkByItem('Nenhum dado sensível foi inserido')} |
+
+#### Testes
+
+| Item | Auto-detectado |
+|---|:---:|
+| Os testes são independentes entre si (sem \`mode: 'serial'\` desnecessário) | ${s('Evita mode: serial desnecessário (testes devem ser independentes)')} |
+| Nenhum valor de preço absoluto foi fixado | ${s('Evita preços absolutos hardcoded em specs (use relações ordinais ou faixas)')} |
+| Tags \`@smoke\`/\`@ux\`/\`@journey\`/\`@regression\`/\`@quotation_auto\` adicionadas | ${s('Novos specs precisam de tag (@smoke|@ux|@journey|@regression|@a11y|@pricing|@quotation_auto|@keyboard)')} |
+| Spec no diretório correto: \`journeys/\` · \`ux/\` · \`blockers/\` · \`regression/\` | ${s('Spec no diretório correto conforme tag (@ux→ux/ @journey→journeys/ @regression→regression/)')} |
+| ⬜ O teste foi executado localmente com VPN ativa e passou | _manual_ |
+
+#### Page Objects / Fixtures _(revisão manual)_
+
+| Item | Status |
+|---|:---:|
+| ⬜ Novos métodos adicionados ao Page Object (não na spec) | _manual_ |
+| ⬜ Helpers reutilizáveis extraídos para \`tests/helpers/\` ou \`fixtures/\` | _manual_ |
+| ⬜ Nenhuma lógica de negócio duplicada (DRY) | _manual_ |
+
+#### Documentação _(revisão manual)_
+
+| Item | Status |
+|---|:---:|
+| ⬜ Planner em \`docs/planners/planner-*.md\` atualizado | _manual_ |
+| ⬜ \`npm run coverage:sync\` executado se a cobertura CAP mudou | _manual_ |
+| ⬜ \`README.md\` atualizado se a estrutura mudou | _manual_ |
+
+---
+
+${failDetails ? `### Detalhes das Violações\n\n${failDetails}\n\n---\n` : ''}
+
+<details>
+<summary>Legenda</summary>
+
+| Ícone | Significado |
+|---|---|
+| ✅ | Verificado automaticamente — OK |
+| ⚠️ | Verificado automaticamente — aviso (não bloqueia) |
+| ❌ | Verificado automaticamente — falha (deve ser corrigido) |
+| ⬜ | Requer revisão manual |
+
+</details>
+
+> 💡 Para rodar os checks localmente: \`npm run qa:check\`
+`;
+
+            // Procura comentário anterior deste bot para atualizar em vez de duplicar
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const prev = comments.data.find(c =>
+              c.user?.login === 'github-actions[bot]' &&
+              c.body?.includes('QA Checklist Automático')
+            );
+
+            if (prev) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: prev.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }

@@ -33,6 +33,20 @@ allure-report/
 # Logs na raiz (Tee-Object, redirects manuais, playwright install)
 /*.log
 
+# Screenshots/debug na raiz (geradas por scripts de captura PIX, axe, etc.)
+/*.png
+/*.jpg
+/*.jpeg
+/*.mp4
+/*.webm
+/*.har
+/*.trace
+/*.zip
+
+# Vídeos de execução PIX (artefatos pesados — manter apenas o "latest" se necessário)
+docs/reports/videos/*.webm
+!docs/reports/videos/.gitkeep
+
 # Captura PIX local (BR Code + protocolo de sessão)
 docs/reports/pix-brcode-capture.json
 

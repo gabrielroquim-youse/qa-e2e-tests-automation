@@ -8,14 +8,14 @@
  * Próximo passo: npm run tool:pix-confirm
  */
 import { expect, test } from '../../fixtures/setupQuotation';
-import { navigateToCheckout } from '../../helpers/funnel';
+import { navigateToCheckoutForPix } from '../../helpers/pixQuotation';
 import { savePixBrcodeCapture } from '../../helpers/pixSandbox';
 
 test.describe('Tools — captura PIX BR Code', { tag: ['@tool', '@payment'] }, () => {
   test('Gera pix-brcode-capture.json no checkout pendente', async ({ page }) => {
     test.setTimeout(300_000);
 
-    const checkout = await navigateToCheckout(page);
+    const checkout = await navigateToCheckoutForPix(page);
     await checkout.checkEmailConfirmation();
     await checkout.selectPaymentMethod('pix');
     await checkout.expectPixPaymentVisible();

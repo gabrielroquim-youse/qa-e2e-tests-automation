@@ -46,6 +46,45 @@ export default [
       '@typescript-eslint/no-explicit-any': 'warn',
       // Variáveis não usadas (prefixo _ para ignorar intencionalmente)
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
+
+      // ── Clean Code / boas práticas gerais ─────────────────────────
+      // Comparação estrita evita coerção implícita (SOLID/Clean Code)
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
+      // `var` é legado — sempre `let`/`const`
+      'no-var': 'error',
+      // Variáveis que nunca são reatribuídas devem ser `const`
+      'prefer-const': 'error',
+      // Console permitido apenas para warn/error em produção; log em scripts é tratado pelo qa-pre-commit-checks
+      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
+      // Evita o operador `with` (já banido em strict mode, mas reforça intent)
+      'no-with': 'error',
+      // Evita comparação a si mesmo (`x === x`)
+      'no-self-compare': 'error',
+      // Evita `eval` e similares
+      'no-eval': 'error',
+      'no-implied-eval': 'error',
+      // Evita atribuição em expressão condicional (exceto quando parentizada explicitamente)
+      'no-cond-assign': ['error', 'except-parens'],
+      // Evita `else` desnecessário após `return`
+      'no-else-return': ['warn', { allowElseIf: false }],
+      // Evita acumular condições impossíveis
+      'no-duplicate-imports': 'error',
+    },
+  },
+
+  // ── Specs: console.log permitido (debug e diagnóstico locais) ────────────
+  {
+    files: ['tests/spec/**/*.ts'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
+
+  // ── Scripts de orquestração: console é parte da UX ───────────────────────
+  {
+    files: ['scripts/**/*.ts'],
+    rules: {
+      'no-console': 'off',
     },
   },
 

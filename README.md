@@ -734,52 +734,34 @@ npm run coverage:check   # validação CI — falha se mapa front × POM desatua
 | [`docs/guides/`](docs/guides/)     | Guias (troubleshooting, fluxos, [boas práticas](docs/guides/boas-praticas.md), a11y) |
 | [`docs/reports/`](docs/reports/)   | **Dashboards de tempo** (E2E, suíte completa, histórico)                             |
 
-### Pre-commit (Husky + lint-staged)
+### Git Hooks (Husky)
 
-Git hooks em [`.husky/pre-commit`](.husky/pre-commit) rodam **antes de cada `git commit`**. O hook chama `npx lint-staged`, que valida **somente os arquivos no stage** (rápido — não varre o projeto inteiro).
+Três camadas de validação automática, do mais rápido ao mais completo:
 
-Regras definidas em [`package.json`](package.json) → `"lint-staged"`:
+| Hook         | Quando dispara         | O que valida                                                                                                                                                                                                              |
+| ------------ | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pre-commit` | a cada `git commit`    | `lint-staged` (ESLint + Prettier nos staged) · `typecheck` se houver `.ts` staged · **QA pre-commit checks** (LGPD, antipadrões Playwright, secrets, tags obrigatórias, debug code, tamanho de arquivo, TODOs sem ticket) |
+| `commit-msg` | após escrever mensagem | Conventional Commits PT-BR (`feat/fix/refactor/chore/docs/test/...`) · título ≤ 72 chars · heurística anti-mistura de idiomas                                                                                             |
+| `pre-push`   | a cada `git push`      | `typecheck` completo · `lint` completo · `format:check` completo                                                                                                                                                          |
 
-| Arquivos staged      | O que roda                             |
-| -------------------- | -------------------------------------- |
-| `**/*.ts`            | ESLint (`--max-warnings=0`) + Prettier |
-| `**/*.{json,yml,md}` | Prettier                               |
+Guia completo dos checks e como adicionar novos: **[`docs/guides/pre-commit-checks.md`](docs/guides/pre-commit-checks.md)**.
 
-**Fluxo:**
-
-```
-git commit  →  .husky/pre-commit  →  lint-staged  →  ESLint + Prettier nos staged
-                                                          ↓
-                                              passou? commit gravado
-                                              falhou? commit cancelado
-```
-
-**O que você vê no terminal** (exemplo quando passa):
-
-```
-✔ Running tasks for staged files...
-✔ Staging changes from tasks...
-[feature/assistencia abc1234] sua mensagem
-```
-
-Se o Prettier corrigir formatação, ele re-adiciona o arquivo ao stage automaticamente (`Staging changes from tasks`).
-
-**Testar sem commitar:**
+**Rodar manualmente (sem commitar):**
 
 ```bash
-git add <arquivo>
-npx lint-staged --verbose
+npm run qa:precommit    # bateria de checks Youse sobre staged
+npm run qa:check        # validate + qa:precommit (espelha o que CI exigirá)
+npm run qa:commitmsg -- caminho/COMMIT_EDITMSG
 ```
 
 **Ativação:** após `npm install`, o script `"prepare": "husky"` registra os hooks. Não precisa rodar nada manualmente.
 
-**Pular o hook** (só em emergência):
+**Pular hooks em emergência** (sempre com justificativa explícita no PR):
 
 ```bash
-git commit --no-verify -m "mensagem"
+git commit --no-verify -m "..."
+git push --no-verify
 ```
-
-Se o ESLint falhar, leia o erro no terminal, corrija, `git add` de novo e tente o commit outra vez.
 
 ### GitHub Actions (CI)
 

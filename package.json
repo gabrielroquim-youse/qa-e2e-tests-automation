@@ -42,6 +42,9 @@
     "tool:pix-pay": "ts-node scripts/pix-sandbox-pay.ts",
     "tool:pix-video:export": "ts-node scripts/export-pix-video.ts",
     "qa:status": "ts-node scripts/qa-status.ts",
+    "qa:precommit": "ts-node --transpile-only scripts/qa-pre-commit-checks.ts",
+    "qa:commitmsg": "ts-node --transpile-only scripts/qa-commit-msg.ts",
+    "qa:check": "npm run validate && npm run qa:precommit",
     "prepare": "husky"
   },
   "lint-staged": {

@@ -4,7 +4,7 @@
  * Uso (VPN + navegador visível): npm run test:pix:emission
  */
 /* eslint-disable playwright/no-skipped-test, playwright/no-conditional-in-test, playwright/no-page-pause -- fluxo híbrido sandbox */
-import { navigateToCheckout } from '../../../helpers/funnel';
+import { navigateToCheckoutForPix } from '../../../helpers/pixQuotation';
 import { confirmPixInSandboxAndFinalize } from '../../../helpers/pixPaymentFlow';
 import { savePixBrcodeCapture } from '../../../helpers/pixSandbox';
 import { hasStarkCredentials } from '../../../helpers/starkPixPay';
@@ -16,7 +16,7 @@ test.describe('Payment — PIX emissão sandbox', { tag: ['@journey', '@quotatio
   test('PAY-P4b: deve emitir após confirmação PIX no sandbox', async ({ page }) => {
     test.setTimeout(900_000);
 
-    const checkout = await navigateToCheckout(page);
+    const checkout = await navigateToCheckoutForPix(page);
     await checkout.checkEmailConfirmation();
     await checkout.selectPaymentMethod('pix');
     await checkout.expectPixPaymentVisible();
