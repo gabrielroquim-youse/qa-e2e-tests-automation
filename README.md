@@ -348,26 +348,9 @@ A fixture `quotationData` gera dados únicos por execução via Faker. Valores p
 | `documentNumber`    | `123.456.761-08` (CPF aceito)              |
 | `creditCard.number` | `4111 1111 1111 1111` (cartão de teste)    |
 
-### CEPs — `data/cep.ts`
+### Dados estáticos — `data/cpf.ts`, `data/plate.ts`, `data/plans.ts`, `data/cep.ts`
 
-Pool de 20 CEPs reais validados no ViaCEP, cobrindo SP, RJ, MG, RS, PR, BA, PE, CE, DF e GO.
-O `generators.ts` usa este pool automaticamente — nunca use `faker.location.zipCode()` diretamente.
-
-```ts
-import { getRandomCep } from '../../data/cep';
-
-// CEP aleatório de qualquer estado
-const cep = getRandomCep().cep;
-
-// CEP de estado específico
-const cepSP = getRandomCep('SP').cep;
-```
-
-> **Por que não Faker?** `faker.location.zipCode('#####-###')` gera sequências numéricas aleatórias que não correspondem a CEPs reais — causam falha na validação de endereço do backend QA.
-
-### Dados estáticos — `data/cpf.ts` e `data/plate.ts`
-
-Use quando o cenário depende de um **comportamento específico** do CPF ou placa:
+Use quando o cenário depende de um **comportamento específico** (CPF PEP, placa de vistoria, CEP por estado):
 
 ```ts
 import { cpf } from '../../data/cpf';
@@ -380,46 +363,7 @@ await personDataPage.fillDocumentNumber(cpf.pepRefusedInsured.number);
 await vehicleDetailsPage.fillLicensePlate(plate.refusedAuction.number);
 ```
 
-**Categorias de CPF disponíveis (`data/cpf.ts`):**
-
-| Categoria               | Chave de exemplo                  | Quando usar                   |
-| ----------------------- | --------------------------------- | ----------------------------- |
-| Aceito                  | `accepted`, `acceptedPool[n]`     | Caminho feliz                 |
-| Recusado — PEP          | `pepRefusedInsured`               | Teste de bloqueio no checkout |
-| Recusado — blacklist    | `crivoRefusedInsuredCpfBlacklist` | Teste de bloqueio no checkout |
-| Recusado — morte        | `crivoRefusedInsuredDeath`        | Teste de bloqueio no checkout |
-| Negado — nome           | `crivoDeniedInsuredName`          | Teste de campos inválidos     |
-| Negado — não encontrado | `crivoDeniedCpfNotFound`          | Teste de CPF inexistente      |
-| Risco sistêmico         | `riskRatioHighRisk`               | Teste de bloqueio por risco   |
-
-**Catálogo de placas de teste (`data/plate.ts`):**
-
-> ⚠️ **Atenção:** as placas abaixo têm comportamento específico em QA. Nunca use `YOU-0020` ou `YOU-0023` em testes de fluxo feliz (happy path).
-
-| Placa    | Chave em `plate`   | Comportamento em QA após pagamento                |
-| -------- | ------------------ | ------------------------------------------------- |
-| YOU-0020 | `noInspection` ⚠️  | Aciona **vistoria online** — não é happy path     |
-| YOU-0003 | `onlineInspection` | Aciona vistoria online                            |
-| YOU-0002 | `onSiteInspection` | Aciona vistoria presencial (on-site)              |
-| YOU-0023 | `videoInspection`  | Aciona vistoria por **vídeo (Planetun / ivideo)** |
-
-Testes específicos para cada fluxo de vistoria: [`tests/spec/e2e/journeys/cotacao-vistoria-online.spec.ts`](tests/spec/e2e/journeys/cotacao-vistoria-online.spec.ts) e [`tests/spec/e2e/journeys/cotacao-vistoria-video.spec.ts`](tests/spec/e2e/journeys/cotacao-vistoria-video.spec.ts).
-
-### Catálogo de planos — `data/plans.ts`
-
-Fonte de verdade para coberturas, assistências e preços de referência:
-
-```ts
-import { plans, orderedPlans } from '../../data/plans';
-
-// Coberturas esperadas no card do Essencial
-const keywordsEssencial = plans['Essencial'].coverageKeywords;
-
-// Planos em ordem crescente de preço (para testes ordinais)
-for (const plan of orderedPlans) {
-  const preco = await planSelectionPage.getPlanMonthlyPriceValue(plan.name);
-}
-```
+Catálogo completo de CPFs, placas, CEPs e planos: **[`tests/data/README.md`](tests/data/README.md)**
 
 ---
 
