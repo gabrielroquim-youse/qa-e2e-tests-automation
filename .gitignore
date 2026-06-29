@@ -75,3 +75,6 @@ coverage/
 # ── Agentes Playwright (gerados pelo Copilot — não versionar) ────────────────
 .github/agents/
 .github/chatmodes/
+
+# -- Cursor IDE (usar VS Code) --------------------------------------------------
+.cursor/

@@ -642,33 +642,50 @@ expect(precoEssencial).toBe(2205.92);
 
 ### Commits
 
-Padrão [Conventional Commits](https://www.conventionalcommits.org/) em PT-BR:
+Todos os commits são validados automaticamente pelo hook `commit-msg` via [`scripts/qa-commit-msg.ts`](scripts/qa-commit-msg.ts).
+O padrão é **Conventional Commits em PT-BR**:
 
-```
-feat: adiciona testes de variação de preço por uso do veículo
-fix: corrige seletor do botão Finalizar no checkout
-refactor: extrai catálogo de planos para data/plans.ts
-test: adiciona massa de CPF recusado por blacklist
-chore: atualiza Playwright para v1.55
-docs: adiciona seção de troubleshooting no README
+| Tipo | Quando usar | Exemplo |
+|------|-------------|----------|
+| `feat` | Nova funcionalidade ou novo teste | `feat(ux): adiciona spec de validação do CEP` |
+| `fix` | Correção de bug em teste ou Page Object | `fix(checkout): corrige seletor do botão Finalizar` |
+| `refactor` | Refatoração sem mudança de comportamento | `refactor: extrai catálogo de planos para data/plans.ts` |
+| `test` | Novo teste ou massa de dados | `test: adiciona CPF recusado por blacklist` |
+| `chore` | Dependências, config, CI | `chore: atualiza Playwright para v1.55` |
+| `docs` | Documentação | `docs: adiciona seção de troubleshooting` |
+
+**Regras validadas automaticamente:**
+- Tipo obrigatório: `feat`, `fix`, `refactor`, `test`, `chore`, `docs`, `perf`, `ci`, `build`, `revert`
+- Título em minúsculas (sem capitalizar após o `:`)
+- Máximo 72 caracteres no título
+- Sem mistura de PT-BR e EN na mesma mensagem
+
+```bash
+# Testar uma mensagem antes de commitar
+echo 'feat(ux): texto da mensagem' | npx ts-node --transpile-only scripts/qa-commit-msg.ts /dev/stdin
 ```
 
 ---
 
 ## Agentes de IA
 
-### Orquestrador QA (Cursor Skill — versionado)
+### GitHub Copilot (VS Code)
 
-Skill do projeto em [`.cursor/skills/qa-orchestrator/SKILL.md`](.cursor/skills/qa-orchestrator/SKILL.md) · planner em [`docs/planners/planner-qa-agent.md`](docs/planners/planner-qa-agent.md).
+As instruções de contexto do repositório estão em [`.github/copilot-instructions.md`](.github/copilot-instructions.md) — aplicadas automaticamente em revisões de código, sugestões e chat do Copilot.
 
-| Papel               | O que faz                                                                                                            |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **qa-orchestrator** | Lê cobertura/planners, roda `validate` / `test:smoke` / `test:ux` / `test:a11y`, sincroniza dashboards, reporta gaps |
+Tópicos cobertos: Playwright antipadrões, estrutura de diretórios, tags obrigatórias, LGPD/segurança, Page Object patterns.
 
-Exemplo no chat do Cursor:
+**No chat do VS Code Copilot (`Ctrl+Alt+I`):**
 
 ```
-Use o skill qa-orchestrator para validar minhas mudanças em tests/spec/e2e/ux
+# Gerar plano de testes para uma nova tela
+"Gere um plano de testes para o fluxo de sinistro por WhatsApp"
+
+# Gerar spec a partir de um plano existente
+"Gere os testes a partir de docs/planners/planner-precos.md"
+
+# Corrigir um teste falhando
+"O teste coberturas.spec.ts está falhando no selector do card — corrija"
 ```
 
 ### Playwright Agents (Copilot — local)
@@ -829,27 +846,91 @@ Erros comuns ao rodar ou manter a suite. Guia completo: **[`docs/guides/troubles
 
 ## Contribuindo
 
+### Fluxo de trabalho com Git
+
+```
+git checkout -b feature/nome-da-feature
+    │
+    │  (desenvolve e faz git add)
+    │
+    ▼
+git commit -m "feat(ux): descrição"
+    │
+    ├─► pre-commit: lint-staged (ESLint + Prettier nos arquivos staged)
+    │              typecheck nos .ts staged
+    │              QA checks → exibe checklist ✅/❌/⚠️ no terminal
+    │
+    ├─► commit-msg: valida Conventional Commits PT-BR
+    │
+    ▼
+git push
+    │
+    ├─► pre-push: typecheck completo + lint + format:check
+    │
+    ▼
+Pull Request → CI automático
+    │
+    ├─► validate: typecheck + lint + format + QA checks no diff do PR
+    ├─► Copilot review: análise automática de código
+    └─► Checklist bot: comentário com ✅/❌ por item do checklist
+```
+
+### Passo a passo
+
 1. Crie uma branch a partir de `main`:
 
 ```bash
 git checkout -b feature/nome-da-feature
 ```
 
-2. Implemente seguindo as convenções do projeto
+2. Implemente seguindo as convenções do projeto (ver [`.github/copilot-instructions.md`](.github/copilot-instructions.md))
 
-3. Valide o projeto antes de commitar:
+3. Ao fazer `git commit`, os hooks rodam automaticamente e exibem:
 
-```bash
-npm run validate
+```
+🔍 QA Pre-Commit Checks — Youse Seguradora
+   3 arquivo(s) staged · 1 novo(s)
+
+  ✓ Bloqueia arquivos .env             · OK
+  ✓ Detecta secrets / tokens           · OK
+  ✗ Sem test.only / describe.only      · FAIL (1)
+      └─ tests/spec/e2e/ux/home.spec.ts:42 → test.only('...
+
+📊 Resumo
+   11 OK  ·  0 warn  ·  1 fail
+
+❌ Commit bloqueado: corrija os itens FAIL ou use --no-verify apenas em emergências.
 ```
 
-4. Rode os testes afetados localmente:
+4. Rode os testes afetados localmente (VPN ativa):
 
 ```bash
 npx playwright test tests/spec/e2e --project=chromium --reporter=list
 ```
 
-5. Abra um Pull Request para `main` com:
-   - Descrição clara do que foi testado
-   - Print ou vídeo do teste rodando (se for novo spec)
-   - Evidência de que os testes existentes continuam passando
+5. Ao abrir o PR, o bot posta automaticamente um checklist com status de cada item:
+
+```
+## 🤖 QA Checklist Automático — Youse Seguradora
+| TypeScript (typecheck) | ✅ |
+| ESLint                 | ✅ |
+| Sem test.only          | ✅ |
+| Nenhum dado sensível   | ✅ |
+...
+```
+
+6. O GitHub Copilot é adicionado automaticamente como revisor no PR.
+
+**Comandos manuais:**
+
+```bash
+npm run qa:precommit    # roda os QA checks nos staged (sem commitar)
+npm run qa:check        # validate + qa:precommit (espelha o CI)
+```
+
+**Emergência (pular hooks — sempre com justificativa no PR):**
+
+```bash
+git commit --no-verify -m "..."
+git push --no-verify
+```
