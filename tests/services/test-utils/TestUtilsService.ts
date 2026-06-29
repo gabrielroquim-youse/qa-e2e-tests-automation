@@ -19,10 +19,11 @@ export class TestUtilsService {
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       orderData = await (await request.get(`${TestConfig.urls.testUtilsUrl}/${protocolNumber}`)).json();
-      console.log(`Attempt ${attempt + 1}: ${orderData.flow} order status is ${orderData.status}`);
+      console.info(`Attempt ${attempt + 1}: ${orderData.flow} order status is ${orderData.status}`);
       if (orderData.status === 'done') {
         return orderData;
-      } else if (orderData.status === 'failed') {
+      }
+      if (orderData.status === 'failed') {
         throw new Error(`Order creation failed. Reason: "${JSON.stringify(orderData.failure_reasons, null, 2)}"`);
       }
 

@@ -3,37 +3,14 @@
  *
  * @see docs/guides/fluxos-cotacao-auto.md
  */
-import { MaritalStatuses } from '../../../enum/MaritalStatuses';
-import { VehicleUsages } from '../../../enum/VehicleUsages';
-import LeadInfoPage from '../../../pages/quotation/LeadInfoPage';
 import { expect, test } from '../../../fixtures/setupQuotation';
+import { navigateToPlans } from '../../../helpers/funnel';
 
 test.describe('Jornada — Plano Regular', { tag: ['@b2c', '@journey', '@quotation_auto', '@happy_path'] }, () => {
   test('Deve chegar ao checkout com plano Regular sem pagar', { tag: ['@smoke', '@ux'] }, async ({ page, quotationData }) => {
     test.setTimeout(240_000);
 
-    const paginaLead = await LeadInfoPage.open(page);
-    await paginaLead.fillLeadData({ name: quotationData.name, email: quotationData.email, phone: quotationData.phone });
-    const detalhesVeiculoPage = await paginaLead.clickContinueBtn();
-
-    await detalhesVeiculoPage.fillLicensePlate(quotationData.licensePlate);
-    await detalhesVeiculoPage.selectBrandNew(false);
-    await detalhesVeiculoPage.selectBulletproof(false);
-    const enderecoUsoPage = await detalhesVeiculoPage.clickContinueBtn();
-
-    await enderecoUsoPage.fillAddress(quotationData.zipCode, quotationData.addressNumber);
-    await enderecoUsoPage.isOvernightGarage(true);
-    await enderecoUsoPage.selectUsage(VehicleUsages.PRIVATE);
-    const dadosPessoaisPage = await enderecoUsoPage.clickContinueBtn();
-
-    await dadosPessoaisPage.fillDocumentNumber(quotationData.documentNumber);
-    await dadosPessoaisPage.selectMaritalStatus(MaritalStatuses.SINGLE);
-    const classeBonusPage = await dadosPessoaisPage.clickContinueBtn();
-
-    await classeBonusPage.useBonusClass(false);
-    const selecaoPlanoPage = await classeBonusPage.clickContinueBtn();
-
-    await expect(selecaoPlanoPage.title).toBeVisible({ timeout: 45_000 });
+    const selecaoPlanoPage = await navigateToPlans(page, {}, quotationData);
     const pagamentoPage = await selecaoPlanoPage.selectPlan('Regular');
 
     await expect(pagamentoPage.title).toBeVisible({ timeout: 60_000 });
@@ -44,28 +21,7 @@ test.describe('Jornada — Plano Regular', { tag: ['@b2c', '@journey', '@quotati
   test('Deve contratar com plano Regular até emissão', { tag: ['@regression'] }, async ({ page, quotationData }) => {
     test.setTimeout(360_000);
 
-    const paginaLead = await LeadInfoPage.open(page);
-    await paginaLead.fillLeadData({ name: quotationData.name, email: quotationData.email, phone: quotationData.phone });
-    const detalhesVeiculoPage = await paginaLead.clickContinueBtn();
-
-    await detalhesVeiculoPage.fillLicensePlate(quotationData.licensePlate);
-    await detalhesVeiculoPage.selectBrandNew(false);
-    await detalhesVeiculoPage.selectBulletproof(false);
-    const enderecoUsoPage = await detalhesVeiculoPage.clickContinueBtn();
-
-    await enderecoUsoPage.fillAddress(quotationData.zipCode, quotationData.addressNumber);
-    await enderecoUsoPage.isOvernightGarage(true);
-    await enderecoUsoPage.selectUsage(VehicleUsages.PRIVATE);
-    const dadosPessoaisPage = await enderecoUsoPage.clickContinueBtn();
-
-    await dadosPessoaisPage.fillDocumentNumber(quotationData.documentNumber);
-    await dadosPessoaisPage.selectMaritalStatus(MaritalStatuses.SINGLE);
-    const classeBonusPage = await dadosPessoaisPage.clickContinueBtn();
-
-    await classeBonusPage.useBonusClass(false);
-    const selecaoPlanoPage = await classeBonusPage.clickContinueBtn();
-
-    await expect(selecaoPlanoPage.title).toBeVisible({ timeout: 30_000 });
+    const selecaoPlanoPage = await navigateToPlans(page, {}, quotationData);
     const pagamentoPage = await selecaoPlanoPage.selectPlan('Regular');
 
     await pagamentoPage.checkEmailConfirmation();

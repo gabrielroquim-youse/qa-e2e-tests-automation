@@ -3,7 +3,7 @@
  *
  * Uso: npm run test:pix:record
  */
-/* eslint-disable playwright/no-skipped-test, playwright/no-conditional-in-test, playwright/no-page-pause -- gravação sandbox */
+/* eslint-disable playwright/no-skipped-test, playwright/no-conditional-in-test, playwright/no-conditional-expect, playwright/no-page-pause -- gravação sandbox */
 import { navigateToCheckoutForPix } from '../../../helpers/pixQuotation';
 import { confirmPixInSandboxAndFinalize, finalizePixPaymentWhenReady } from '../../../helpers/pixPaymentFlow';
 import { loadPixBrcodeCapture, savePixBrcodeCapture } from '../../../helpers/pixSandbox';

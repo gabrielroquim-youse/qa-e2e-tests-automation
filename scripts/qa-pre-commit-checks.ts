@@ -3,8 +3,8 @@
  * ---------------------------------------------------------------------------
  * Bateria de validaÃ§Ãµes automÃ¡ticas com dois modos de operaÃ§Ã£o:
  *
- *   LOCAL (pre-commit)  â†’ analisa arquivos STAGED (`git diff --cached`)
- *   CI    (PR check)    â†’ analisa arquivos modificados no PR via env PR_BASE
+ *   LOCAL (pre-commit)  -> analisa arquivos STAGED (`git diff --cached`)
+ *   CI    (PR check)    -> analisa arquivos modificados no PR via env PR_BASE
  *                         PR_BASE=origin/main ts-node qa-pre-commit-checks.ts
  *
  * Cada check segue o contrato:
@@ -28,9 +28,9 @@ import { execSync } from 'child_process';
 import { existsSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { extname, resolve } from 'path';
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ----------------------------------------------------------------------------
 // Modos de operaÃ§Ã£o
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ----------------------------------------------------------------------------
 
 const REPO_ROOT = resolve(__dirname, '..');
 /** Quando definido, opera sobre o diff do PR em vez do stage local. */
@@ -39,9 +39,9 @@ const PR_BASE = process.env['PR_BASE'];
 const REPORT_JSON = process.env['QA_REPORT_JSON'];
 const IS_CI = Boolean(PR_BASE);
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ----------------------------------------------------------------------------
 // Terminal colors (desativados em CI para saÃ­da limpa)
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ----------------------------------------------------------------------------
 
 const COLORS = {
   reset: '\x1b[0m',
@@ -56,9 +56,9 @@ const COLORS = {
 const NO_COLOR = IS_CI || Boolean(process.env['NO_COLOR']);
 const c = (color: keyof typeof COLORS, text: string): string => (NO_COLOR ? text : `${COLORS[color]}${text}${COLORS.reset}`);
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ----------------------------------------------------------------------------
 // Tipos
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ----------------------------------------------------------------------------
 
 type CheckLevel = 'error' | 'warn';
 
@@ -82,9 +82,9 @@ interface Context {
   newFiles: string[];
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ----------------------------------------------------------------------------
 // Listagem de arquivos (staged local ou diff de PR)
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ----------------------------------------------------------------------------
 
 function getFiles(): { staged: string[]; added: string[] } {
   const cmd = IS_CI ? `git diff --name-status --diff-filter=ACMR ${PR_BASE}...HEAD` : 'git diff --cached --name-status --diff-filter=ACMR';
@@ -104,9 +104,9 @@ function getFiles(): { staged: string[]; added: string[] } {
   return { staged, added };
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ----------------------------------------------------------------------------
 // Leitura de conteÃºdo
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ----------------------------------------------------------------------------
 
 function readContent(file: string): string | null {
   try {
@@ -123,9 +123,9 @@ function readContent(file: string): string | null {
   }
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ----------------------------------------------------------------------------
 // Helper: busca por regex em arquivos
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ----------------------------------------------------------------------------
 
 function findMatches(files: string[], pattern: RegExp, opts?: { onlyExt?: string[]; skipComments?: boolean }): string[] {
   const hits: string[] = [];
@@ -140,18 +140,18 @@ function findMatches(files: string[], pattern: RegExp, opts?: { onlyExt?: string
       if (opts?.skipComments && /^\s*(\/\/|\*|#)/.test(line)) continue;
       if (/eslint-disable(-next-line)?/.test(prev)) continue;
       const re = new RegExp(pattern.source, pattern.flags.replace('g', ''));
-      if (re.test(line)) hits.push(`${file}:${i + 1} â†’ ${line.trim().slice(0, 120)}`);
+      if (re.test(line)) hits.push(`${file}:${i + 1} -> ${line.trim().slice(0, 120)}`);
     }
   }
   return hits;
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ----------------------------------------------------------------------------
 // Checks
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ----------------------------------------------------------------------------
 
 const CHECKS: Check[] = [
-  // â”€â”€ SeguranÃ§a / LGPD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- SeguranÃ§a / LGPD -----------------------------------------------------
   {
     name: 'Bloqueia arquivos .env (exceto .env.example)',
     level: 'error',
@@ -165,7 +165,7 @@ const CHECKS: Check[] = [
     run: ({ stagedFiles }) =>
       stagedFiles
         .filter((f) => /^[^/]+\.(log|png|jpe?g|mp4|webm|zip|har|trace)$/i.test(f))
-        .map((f) => `Artefato local na raiz: ${f} â€” adicione ao .gitignore ou mova para docs/`),
+        .map((f) => `Artefato local na raiz: ${f} -- adicione ao .gitignore ou mova para docs/`),
   },
   {
     name: 'Detecta secrets / tokens / API keys em texto claro',
@@ -190,7 +190,7 @@ const CHECKS: Check[] = [
     },
   },
   {
-    name: 'Detecta e-mails pessoais (gmail/hotmail/yahoo/outlook) â€” LGPD',
+    name: 'Detecta e-mails pessoais (gmail/hotmail/yahoo/outlook) -- LGPD',
     level: 'warn',
     checklistItem: 'Nenhum dado sensÃ­vel foi inserido',
     run: ({ stagedFiles }) =>
@@ -200,7 +200,7 @@ const CHECKS: Check[] = [
       ),
   },
 
-  // â”€â”€ AntipadrÃµes Playwright â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- AntipadrÃµes Playwright -----------------------------------------------
   {
     name: 'Sem page.waitForTimeout / esperas fixas',
     level: 'error',
@@ -243,7 +243,7 @@ const CHECKS: Check[] = [
       ),
   },
 
-  // â”€â”€ Seletores de acessibilidade â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- Seletores de acessibilidade ------------------------------------------
   {
     name: 'Seletores devem usar getByRole/getByLabel/getByText/getByTestId (nÃ£o CSS/XPath)',
     level: 'warn',
@@ -257,7 +257,7 @@ const CHECKS: Check[] = [
       ),
   },
 
-  // â”€â”€ mode: serial desnecessÃ¡rio â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- mode: serial desnecessÃ¡rio -------------------------------------------
   {
     name: 'Evita mode: serial desnecessÃ¡rio (testes devem ser independentes)',
     level: 'warn',
@@ -270,7 +270,7 @@ const CHECKS: Check[] = [
       ),
   },
 
-  // â”€â”€ PreÃ§os absolutos hardcoded em specs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- PreÃ§os absolutos hardcoded em specs ----------------------------------
   {
     name: 'Evita preÃ§os absolutos hardcoded em specs (use relaÃ§Ãµes ordinais ou faixas)',
     level: 'warn',
@@ -284,9 +284,9 @@ const CHECKS: Check[] = [
       ),
   },
 
-  // â”€â”€ Spec no diretÃ³rio correto â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- Spec no diretÃ³rio correto --------------------------------------------
   {
-    name: 'Spec no diretÃ³rio correto conforme tag (@uxâ†’ux/ @journeyâ†’journeys/ @regressionâ†’regression/)',
+    name: 'Spec no diretÃ³rio correto conforme tag (@ux->ux/ @journey->journeys/ @regression->regression/)',
     level: 'warn',
     checklistItem: 'Spec no diretÃ³rio correto',
     run: ({ stagedFiles }) => {
@@ -304,7 +304,7 @@ const CHECKS: Check[] = [
     },
   },
 
-  // â”€â”€ Debug code residual â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- Debug code residual --------------------------------------------------
   {
     name: 'Sem debugger; no cÃ³digo fonte',
     level: 'error',
@@ -325,7 +325,7 @@ const CHECKS: Check[] = [
       ),
   },
 
-  // â”€â”€ Tags obrigatÃ³rias em novos specs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- Tags obrigatÃ³rias em novos specs -------------------------------------
   {
     name: 'Novos specs precisam de tag (@smoke|@ux|@journey|@regression|@a11y|@pricing|@quotation_auto|@keyboard)',
     level: 'error',
@@ -339,7 +339,7 @@ const CHECKS: Check[] = [
     },
   },
 
-  // â”€â”€ Tamanho de arquivo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- Tamanho de arquivo --------------------------------------------------
   {
     name: 'Arquivo > 500 KB (suspeito de binÃ¡rio/log)',
     level: 'warn',
@@ -359,7 +359,7 @@ const CHECKS: Check[] = [
     },
   },
 
-  // â”€â”€ TODO/FIXME sem ticket Jira â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- TODO/FIXME sem ticket Jira -------------------------------------------
   {
     name: 'TODO/FIXME deve referenciar ticket Jira (ex: TODO POSV-123)',
     level: 'warn',
@@ -371,23 +371,23 @@ const CHECKS: Check[] = [
   },
 ];
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ----------------------------------------------------------------------------
 // Runner
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ----------------------------------------------------------------------------
 
 function main(): number {
   const { staged, added } = getFiles();
   const mode = IS_CI ? `CI (diff vs ${PR_BASE})` : 'local (staged)';
 
   if (staged.length === 0) {
-    console.log(c('gray', `â€º Nenhum arquivo alterado [${mode}] â€” pulando checks Youse.`));
+    console.log(c('gray', `> Nenhum arquivo alterado [${mode}] -- pulando checks Youse.`));
     return 0;
   }
 
   if (!IS_CI) {
     console.log('');
-    console.log(c('bold', 'ðŸ” QA Pre-Commit Checks â€” Youse Seguradora'));
-    console.log(c('gray', `   ${staged.length} arquivo(s) staged Â· ${added.length} novo(s)`));
+    console.log(c('bold', '[??] QA Pre-Commit Checks -- Youse Seguradora'));
+    console.log(c('gray', `   ${staged.length} arquivo(s) staged . ${added.length} novo(s)`));
     console.log('');
   }
 
@@ -399,16 +399,16 @@ function main(): number {
     results.push({ name: check.name, level: check.level, violations, checklistItem: check.checklistItem });
 
     if (!IS_CI) {
-      const icon = violations.length === 0 ? c('green', 'âœ“') : check.level === 'error' ? c('red', 'âœ—') : c('yellow', '!');
+      const icon = violations.length === 0 ? c('green', '[ok]') : check.level === 'error' ? c('red', 'XX ') : c('yellow', '!');
       const tag =
         violations.length === 0
           ? c('green', 'OK')
           : check.level === 'error'
             ? c('red', `FAIL (${violations.length})`)
             : c('yellow', `WARN (${violations.length})`);
-      console.log(`  ${icon} ${check.name}  ${c('dim', 'Â·')} ${tag}`);
-      for (const v of violations.slice(0, 5)) console.log(c('gray', `      â””â”€ ${v}`));
-      if (violations.length > 5) console.log(c('gray', `      â””â”€ ... +${violations.length - 5} ocorrÃªncia(s)`));
+      console.log(`  ${icon} ${check.name}  ${c('dim', '.')} ${tag}`);
+      for (const v of violations.slice(0, 5)) console.log(c('gray', `        -  ${v}`));
+      if (violations.length > 5) console.log(c('gray', `        -  ... +${violations.length - 5} ocorrencia(s)`));
     }
   }
 
@@ -416,7 +416,7 @@ function main(): number {
   const warns = results.filter((r) => r.level === 'warn' && r.violations.length > 0);
   const passed = results.filter((r) => r.violations.length === 0);
 
-  // â”€â”€ SaÃ­da JSON para CI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- SaÃ­da JSON para CI ----------------------------------------------------
   if (IS_CI || REPORT_JSON) {
     const report = {
       mode,
@@ -435,10 +435,10 @@ function main(): number {
     return errors.length > 0 ? 1 : 0;
   }
 
-  // â”€â”€ SaÃ­da terminal (local) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- SaÃ­da terminal (local) ------------------------------------------------
   console.log('');
-  console.log(c('bold', 'ðŸ“Š Resumo'));
-  console.log(`   ${c('green', `${passed.length} OK`)}  Â·  ${c('yellow', `${warns.length} warn`)}  Â·  ${c('red', `${errors.length} fail`)}`);
+  console.log(c('bold', ' Resumo'));
+  console.log(`   ${c('green', `${passed.length} OK`)}  .  ${c('yellow', `${warns.length} warn`)}  .  ${c('red', `${errors.length} fail`)}`);
   console.log('');
 
   if (errors.length > 0) {
@@ -453,10 +453,10 @@ function main(): number {
   }
 
   if (warns.length > 0) {
-    console.log(c('yellow', 'âš ï¸  Commit autorizado, mas revise os WARNINGs acima.'));
+    console.log(c('yellow', '[!]  Commit autorizado, mas revise os WARNINGs acima.'));
     console.log('');
   } else {
-    console.log(c('green', 'âœ… Todos os checks passaram. Bom commit, Youser! ðŸ‘'));
+    console.log(c('green', '[OK] Todos os checks passaram. Bom commit, Youser! :)'));
     console.log('');
   }
 

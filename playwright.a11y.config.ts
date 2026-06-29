@@ -18,7 +18,9 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   retries: process.env.CI ? 1 : 0,
-  reporter: process.env.CI ? [['list']] : [['list'], ['html', { outputFolder: 'playwright-report/a11y', open: 'never' }]],
+  reporter: process.env.CI
+    ? [['list'], ['allure-playwright']]
+    : [['list'], ['html', { outputFolder: 'playwright-report/a11y', open: 'never' }], ['allure-playwright']],
   use: {
     baseURL: TestConfig.urls.autoQuotationUrl,
     screenshot: 'only-on-failure',

@@ -4,52 +4,77 @@ node_modules/
 # ── Ambiente (nunca versionar secrets) ───────────────────────────────────────
 .env
 .env.*
+!.env.example
 
 # ── SO / IDE ─────────────────────────────────────────────────────────────────
 .DS_Store
+Thumbs.db
 .vscode/
 .idea/
 *.swp
 *.swo
+*.orig
 
 # ── Build TypeScript ─────────────────────────────────────────────────────────
 dist/
+build/
 *.tsbuildinfo
+*.js.map
 
-# ── Playwright ───────────────────────────────────────────────────────────────
+# ── Playwright — artefatos de execução ───────────────────────────────────────
 playwright-report/
 test-results/
 blob-report/
 all-blob-reports/
 storage/
 
-# ── Allure ───────────────────────────────────────────────────────────────────
+# ── Allure — artefatos de execução ───────────────────────────────────────────
 allure-results/
 allure-report/
 
-# ── Artefatos locais de execução (scratch na raiz — saídas finais em docs/reports/)
+# ── Relatórios de execução (gerados automaticamente — não versionar) ─────────
+# Raiz
 /reports/
+# Exceção: histórico do Allure para rastreabilidade de tendências (5+ dias)
+!reports/allure-history/
+!reports/allure-history/**
 
-# Logs na raiz (Tee-Object, redirects manuais, playwright install)
-/*.log
-
-# Screenshots/debug na raiz (geradas por scripts de captura PIX, axe, etc.)
-/*.png
-/*.jpg
-/*.jpeg
-/*.mp4
-/*.webm
-/*.har
-/*.trace
-/*.zip
-
-# Vídeos de execução PIX (artefatos pesados — manter apenas o "latest" se necessário)
+# docs/reports: JSONs de timing, capturas de rede e histórico de runs
+docs/reports/*.json
+docs/reports/*.md
+docs/reports/history/
 docs/reports/videos/*.webm
-!docs/reports/videos/.gitkeep
+docs/reports/videos/*.mp4
+# Exceção: documentação estática do diretório
+!docs/reports/README.md
 
-# Captura PIX local (BR Code + protocolo de sessão)
-docs/reports/pix-brcode-capture.json
+# ── Logs e artefatos temporários ─────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# ── Agentes Playwright (gerados pelo Copilot — não versionar) ───────────────
+# ── Mídia gerada em execução (screenshots, vídeos, traces) ───────────────────
+*.png
+*.jpg
+*.jpeg
+*.mp4
+*.webm
+*.har
+*.trace
+*.zip
+
+# ── Cache e temporários ───────────────────────────────────────────────────────
+.cache/
+.tmp/
+tmp/
+temp/
+coverage/
+.nyc_output/
+
+# ── Agentes Playwright (gerados pelo Copilot — não versionar) ────────────────
 .github/agents/
 .github/chatmodes/
+
+# -- Cursor IDE (usar VS Code) --------------------------------------------------
+.cursor/

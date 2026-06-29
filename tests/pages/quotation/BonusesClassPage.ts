@@ -27,7 +27,7 @@ export class BonusesClassPage extends QuotationPageLayout<PlanSelectionPage> {
     this.btnYes = this.page.getByRole('button', { name: 'Sim', exact: true });
     this.whatsappBtn = this.page.getByRole('button', { name: 'Chame no whatsapp' });
     this.userBonusesClass = this.page.getByRole('textbox', { name: 'Selecione sua Classe de Bônus' });
-    this.knowNotBonusClass = this.page.getByRole('button', { name: 'Não sei minha Classe de Bônus', exact: true });
+    this.knowNotBonusClass = this.page.getByRole('button').filter({ hasText: /Não sei minha Classe de Bônus/ });
     this.modalDontKnowBonusClassTitle = this.page.getByRole('heading', { name: 'Não sabe sua Classe de Bônus?' });
   }
 
@@ -37,7 +37,7 @@ export class BonusesClassPage extends QuotationPageLayout<PlanSelectionPage> {
       await this.userBonusesClass.click();
       await this.page.getByText(userBonusClass, { exact: true }).click();
     } else {
-      await this.btnNo.click({ force: true });
+      await this.btnNo.click();
       await this.page.waitForURL(/\/bonuses_class/, { timeout: 15_000 });
       await this.whatsappBtn.isVisible();
     }

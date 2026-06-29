@@ -13,6 +13,26 @@
  * IMPORTANTE: os valores monetários em `referencePrice` são REFERÊNCIAS observadas
  * em QA com placa YOU-0020 / CEP 04777-020 / sem bônus. Não use como asserts absolutos —
  * use apenas para validar ordem de grandeza (> floor, < ceiling) e ordenação (A < B).
+ *
+ * ─── Mapeamento canônico de coberturas (pricing-engine) ───────────────────────
+ * auto/coverage/1  → Incêndio
+ * auto/coverage/2  → Perda Total
+ * auto/coverage/3  → Roubo e Furto
+ * auto/coverage/4  → Alagamento
+ * auto/coverage/5  → Danos corporais a terceiros
+ * auto/coverage/6  → Acidentes de passageiros
+ * auto/coverage/7  → Danos materiais a terceiros
+ * auto/coverage/8  → Colisão (Vale para qualquer batida)
+ *
+ * ─── Mapeamento canônico de assistências (pricing-engine) ─────────────────────
+ * AA2  → Guincho 200 km  (plano Essencial — PLAN23)
+ * AA3  → Guincho 400 km  (plano Regular/Intermediário — PLAN24)
+ * AA4b → Guincho 1000 km (plano Completo — PLAN25)
+ * AA9  → Básico 1.0 com ar — 7 dias (base, todos os planos)
+ *
+ * Fonte: pricing-engine/app/data/plans/auto_data.rb (PLAN23–PLAN25,
+ *        context: current_default_monolithic_plan)
+ * ─────────────────────────────────────────────────────────────────────────────
  */
 
 import type { PlanName } from '../pages/quotation/PlanSelectionPage';
@@ -42,9 +62,13 @@ export const plans: Record<PlanName, PlanDefinition> = {
     name: 'Essencial',
     uid: 'bra/auto/plan/1',
     position: 1,
-    coverageKeywords: ['Roubo', 'Furto', 'Incêndio', 'Alagamento', 'Colisão', 'Danos materiais', 'Danos corporais'],
-    assistanceKeywords: ['Proteção de Rodas', '200 km'],
-    minCoverageCount: 6,
+    // Coverages incluídas: Incêndio (cov/1), Roubo e Furto (cov/3).
+    // A UI exibe todas as coberturas disponíveis na tela de seleção; keywords abaixo
+    // são o subconjunto PRÉ-SELECIONADO conforme PLAN23 do pricing-engine.
+    coverageKeywords: ['Roubo', 'Furto', 'Incêndio'],
+    // Assistência diferenciadora: Guincho 200 km (AA2) — identificador único vs Regular.
+    assistanceKeywords: ['200 km'],
+    minCoverageCount: 2,
     referencePrice: { monthly: 2205.92, annual: 2205.92 },
   },
 
@@ -52,9 +76,12 @@ export const plans: Record<PlanName, PlanDefinition> = {
     name: 'Regular',
     uid: 'bra/auto/plan/2',
     position: 2,
-    coverageKeywords: ['Roubo', 'Furto', 'Incêndio', 'Alagamento', 'Colisão', 'Danos materiais', 'Danos corporais'],
-    assistanceKeywords: ['Proteção de Rodas', '400 km'],
-    minCoverageCount: 6,
+    // Coverages incluídas: Incêndio (cov/1), Roubo e Furto (cov/3),
+    // Danos corporais (cov/5), Danos materiais (cov/7) — PLAN24 do pricing-engine.
+    coverageKeywords: ['Roubo', 'Furto', 'Incêndio', 'Danos materiais', 'Danos corporais'],
+    // Assistência diferenciadora: Guincho 400 km (AA3).
+    assistanceKeywords: ['400 km'],
+    minCoverageCount: 4,
     referencePrice: { monthly: 2588.58, annual: 2588.58 },
   },
 
@@ -62,8 +89,11 @@ export const plans: Record<PlanName, PlanDefinition> = {
     name: 'Auto 1504',
     uid: 'bra/auto/plan/personalizado-1504',
     position: 3,
+    // Coverages incluídas: similar ao Regular + Perda Total (cov/2), Alagamento (cov/4),
+    // Colisão (cov/8) — confirmar via UI (plano personalizado-1504 não tem PLAN# no pricing-engine).
     coverageKeywords: ['Roubo', 'Furto', 'Incêndio', 'Alagamento', 'Colisão', 'Danos materiais', 'Danos corporais'],
-    assistanceKeywords: ['Reparos', 'Proteção de Rodas', '400 km'],
+    // Diferenciadores: Guincho 400 km (AA3) + Reparos especializados.
+    assistanceKeywords: ['400 km', 'Reparos'],
     minCoverageCount: 6,
     referencePrice: { monthly: 2747.17, annual: 2747.17 },
   },

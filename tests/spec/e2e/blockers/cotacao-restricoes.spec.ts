@@ -27,7 +27,7 @@ test.describe('Bloqueios — Cotação Auto', { tag: ['@b2c', '@quotation_auto',
     expect(isBlocked).toBeTruthy();
   });
 
-  test('Não deve avançar ao informar placa com restrição (veículo de leilão)', async ({ page }) => {
+  test('Não deve avançar ao informar placa com AS restrição (veículo de leilão)', async ({ page }) => {
     test.fixme();
 
     const paginaLead = await LeadInfoPage.open(page);

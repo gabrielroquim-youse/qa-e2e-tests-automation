@@ -3,7 +3,7 @@
  * Planner: docs/planners/planner-validacao-campos.md (A1–A4)
  */
 import { navigateToVehicleAdditional } from '../../../helpers/funnel';
-import { expectContinueDisabled, expectFieldInvalid } from '../../../helpers/formValidation';
+import { expectContinueDisabled, expectFieldInvalid, expectValidationMessage } from '../../../helpers/formValidation';
 import { VehicleUsages } from '../../../enum/VehicleUsages';
 import { expect, test } from '../../../fixtures/setupQuotation';
 
@@ -36,6 +36,7 @@ test.describe('UX — Endereço e uso do veículo', { tag: ['@ux', '@quotation_a
 
     await expectContinueDisabled(address.btnContinue);
     await expectFieldInvalid(address.zipCode);
+    await expectValidationMessage(page, /cep (inválido|não encontrado|válido)|informe o cep|digit[ae].*cep/i);
     await expect(nextStep(page)).toBeHidden({ timeout: 5_000 });
   });
 

@@ -11,7 +11,7 @@ import { MaritalStatuses } from '../../../enum/MaritalStatuses';
 import LeadInfoPage from '../../../pages/quotation/LeadInfoPage';
 import { UserBonusClass } from '../../../enum/UserBonusClass';
 
-test.describe('Classe de Bônus - Seguro Auto', { tag: ['@b2c', '@quotation_auto'] }, () => {
+test.describe('Classe de Bônus - Seguro Auto', { tag: ['@b2c', '@quotation_auto', '@regression'] }, () => {
   test('Não deve utilizar classe de bônus', async ({ page }) => {
     const result = await LeadInfoPage.open(page)
       .fillLeadData()
@@ -28,7 +28,7 @@ test.describe('Classe de Bônus - Seguro Auto', { tag: ['@b2c', '@quotation_auto
       .selectMaritalStatus(MaritalStatuses.SINGLE)
       .clickContinueBtn()
       .useBonusClass(false);
-    await expect(result.whatsappBtn).toHaveText('Chame no whatsapp');
+    await expect(result.whatsappBtn).toBeVisible();
   });
 
   test('Deve exibir modal ao clicar em "Não sei minha Classe de Bônus"', async ({ page }) => {

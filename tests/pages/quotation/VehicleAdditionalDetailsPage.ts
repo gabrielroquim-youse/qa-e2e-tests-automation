@@ -21,7 +21,9 @@ export class VehicleAdditionalDetailsPage extends QuotationPageLayout<PersonData
     this.zipCode = this.page.getByRole('textbox', { name: 'CEP do veículo' });
     this.number = this.page.getByRole('textbox', { name: 'Número' });
     this.overnightGarageYes = this.page.getByRole('button', { name: 'Sim', exact: true });
-    this.overnightGarageNo = this.page.getByRole('button', { name: 'Não', exact: true });
+    // O botão "Não" pode conter ícone no nome acessível (ex: "check-circle Não").
+    // Usamos filter por textContent visível para ser robusto a mudanças de ícone.
+    this.overnightGarageNo = this.page.getByRole('button').filter({ hasText: /^Não$/ });
   }
 
   async fillAddress(zipCode = '04777020', addressNumber = '99999') {

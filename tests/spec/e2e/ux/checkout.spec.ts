@@ -78,4 +78,25 @@ test.describe('UX — Checkout', { tag: ['@ux', '@quotation_auto'] }, () => {
     await expect(checkout.title).toBeVisible();
     await expect(checkout.cardHolderName).toBeVisible();
   });
+
+  test('Não deve finalizar sem confirmar e-mail e telefone', { tag: ['@regression', '@negative'] }, async ({ page }) => {
+    test.setTimeout(240_000);
+
+    const plansPage = await navigateToPlans(page);
+    const checkout = await plansPage.selectPlan('Regular');
+    await expect(checkout.title).toBeVisible({ timeout: 60_000 });
+
+    // Preenche cartão mas NÃO marca a confirmação de e-mail
+    const { getAdyenTestCard } = await import('../../../data/adyenTestCards');
+    const card = getAdyenTestCard('approved');
+    await checkout.fillCreditCardData(card.number, card.expireDate, card.cvv, card.holderName);
+
+    // Clica em Finalizar sem o checkbox de confirmação marcado
+    await checkout.btnFinish.click({ noWaitAfter: true });
+
+    // Deve permanecer no checkout — o checkbox de confirmação é obrigatório
+    await expectStayOnUrl(page, /\/checkout/);
+    await expect(checkout.emailConfirmation).toBeVisible();
+    await expect(checkout.emailConfirmationInput).not.toBeChecked();
+  });
 });

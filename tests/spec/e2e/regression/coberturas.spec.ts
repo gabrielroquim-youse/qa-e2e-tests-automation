@@ -19,42 +19,9 @@
  * Pré-requisito: VPN Youse ativa com acesso ao ambiente QA.
  * Uso: npx playwright test coberturas --project=chromium --reporter=list
  */
-import { expect, test, generateQuotationData } from '../../../fixtures/setupQuotation';
-import { MaritalStatuses } from '../../../enum/MaritalStatuses';
-import { VehicleUsages } from '../../../enum/VehicleUsages';
+import { expect, test } from '../../../fixtures/setupQuotation';
 import { orderedPlans } from '../../../data/plans';
-import LeadInfoPage from '../../../pages/quotation/LeadInfoPage';
-import { PlanSelectionPage } from '../../../pages/quotation/PlanSelectionPage';
-
-// ─── Helper: navega até a seleção de planos (perfil médio risco) ─────────────
-
-async function goToPlanSelection(page: Parameters<typeof LeadInfoPage.open>[0]): Promise<PlanSelectionPage> {
-  const data = generateQuotationData();
-
-  const paginaLead = await LeadInfoPage.open(page);
-  await paginaLead.fillLeadData({ name: data.name, email: data.email, phone: data.phone });
-  const detalhesVeiculoPage = await paginaLead.clickContinueBtn();
-
-  await detalhesVeiculoPage.fillLicensePlate(data.licensePlate);
-  await detalhesVeiculoPage.selectBrandNew(false);
-  await detalhesVeiculoPage.selectBulletproof(false);
-  const enderecoUsoPage = await detalhesVeiculoPage.clickContinueBtn();
-
-  await enderecoUsoPage.fillAddress(data.zipCode, data.addressNumber);
-  await enderecoUsoPage.isOvernightGarage(true);
-  await enderecoUsoPage.selectUsage(VehicleUsages.PRIVATE);
-  const dadosPessoaisPage = await enderecoUsoPage.clickContinueBtn();
-
-  await dadosPessoaisPage.fillDocumentNumber(data.documentNumber);
-  await dadosPessoaisPage.selectMaritalStatus(MaritalStatuses.SINGLE);
-  const classeBonusPage = await dadosPessoaisPage.clickContinueBtn();
-
-  await classeBonusPage.useBonusClass(false);
-  const selecaoPlanoPage = await classeBonusPage.clickContinueBtn();
-
-  await expect(selecaoPlanoPage.title).toBeVisible({ timeout: 45_000 });
-  return selecaoPlanoPage;
-}
+import { navigateToPlans } from '../../../helpers/funnel';
 
 // ─── Suite ───────────────────────────────────────────────────────────────────
 
@@ -63,7 +30,7 @@ test.describe('Coberturas, Assistências e Integridade de Preço — Seguro Auto
   test('Deve exibir os três planos pré-formatados na tela de seleção', { tag: ['@smoke'] }, async ({ page }) => {
     test.setTimeout(180_000);
 
-    const selecaoPlanoPage = await goToPlanSelection(page);
+    const selecaoPlanoPage = await navigateToPlans(page);
 
     for (const plan of orderedPlans) {
       const card = selecaoPlanoPage.planCard(plan.name);
@@ -76,7 +43,7 @@ test.describe('Coberturas, Assistências e Integridade de Preço — Seguro Auto
   test('Cada plano deve exibir suas coberturas esperadas no card', { tag: ['@regression'] }, async ({ page }) => {
     test.setTimeout(180_000);
 
-    const selecaoPlanoPage = await goToPlanSelection(page);
+    const selecaoPlanoPage = await navigateToPlans(page);
 
     for (const plan of orderedPlans) {
       for (const keyword of plan.coverageKeywords) {
@@ -91,7 +58,7 @@ test.describe('Coberturas, Assistências e Integridade de Preço — Seguro Auto
   test('Cada plano deve exibir suas assistências esperadas no card', { tag: ['@regression'] }, async ({ page }) => {
     test.setTimeout(180_000);
 
-    const selecaoPlanoPage = await goToPlanSelection(page);
+    const selecaoPlanoPage = await navigateToPlans(page);
 
     for (const plan of orderedPlans) {
       const textoAssistencias = await selecaoPlanoPage.getPlanAssistanceText(plan.name);
@@ -107,7 +74,7 @@ test.describe('Coberturas, Assistências e Integridade de Preço — Seguro Auto
   test('Essencial deve ter Guincho 200km; Regular e Auto 1504 devem ter Guincho 400km', { tag: ['@regression'] }, async ({ page }) => {
     test.setTimeout(180_000);
 
-    const selecaoPlanoPage = await goToPlanSelection(page);
+    const selecaoPlanoPage = await navigateToPlans(page);
 
     // Essencial: 200 km
     const textoEssencial = await selecaoPlanoPage.getPlanAssistanceText('Essencial');
@@ -130,7 +97,7 @@ test.describe('Coberturas, Assistências e Integridade de Preço — Seguro Auto
   test('Preço deve crescer conforme a abrangência: Essencial < Regular < Auto 1504', { tag: ['@regression', '@price'] }, async ({ page }) => {
     test.setTimeout(180_000);
 
-    const selecaoPlanoPage = await goToPlanSelection(page);
+    const selecaoPlanoPage = await navigateToPlans(page);
 
     const precos: Record<string, number> = {};
     for (const plan of orderedPlans) {
@@ -153,7 +120,7 @@ test.describe('Coberturas, Assistências e Integridade de Preço — Seguro Auto
   test('Opção de plano personalizado deve estar disponível na tela', { tag: ['@smoke'] }, async ({ page }) => {
     test.setTimeout(180_000);
 
-    await goToPlanSelection(page);
+    await navigateToPlans(page);
 
     // O card "Personalizado" pode ter texto "Monte do seu jeito"
     const cardPersonalizado = page.getByText(/Monte do seu jeito|Personalizado/i);
@@ -166,7 +133,7 @@ test.describe('Coberturas, Assistências e Integridade de Preço — Seguro Auto
   test('Preços de todos os planos devem estar dentro dos guarda-rails de sanidade', { tag: ['@sanity'] }, async ({ page }) => {
     test.setTimeout(180_000);
 
-    const selecaoPlanoPage = await goToPlanSelection(page);
+    const selecaoPlanoPage = await navigateToPlans(page);
 
     for (const plan of orderedPlans) {
       const preco = await selecaoPlanoPage.getPlanMonthlyPriceValue(plan.name);
