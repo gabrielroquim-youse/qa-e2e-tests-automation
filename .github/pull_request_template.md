@@ -31,17 +31,9 @@
 - [ ] Nenhum valor de preço absoluto foi fixado (usar relações ordinais ou faixas)
 - [ ] Tags `@smoke` / `@ux` / `@journey` / `@regression` / `@quotation_auto` foram adicionadas corretamente
 - [ ] Spec no diretório correto: `journeys/` · `ux/` · `blockers/` · `regression/`
-- [ ] O teste foi executado localmente com VPN ativa e passou
-
-### Page Objects / Fixtures
-
-- [ ] Novos métodos foram adicionados ao Page Object correspondente (não na spec)
-- [ ] Helpers reutilizáveis foram extraídos para `tests/helpers/` ou `fixtures/`
-- [ ] Nenhuma lógica de negócio foi duplicada (DRY)
 
 ### Documentação
 
-- [ ] O planner em `docs/planners/planner-*.md` correspondente foi atualizado com os novos cenários
 - [ ] `npm run coverage:sync` foi executado se a cobertura CAP mudou
 - [ ] O `README.md` foi atualizado se a estrutura do projeto mudou
 
