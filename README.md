@@ -337,33 +337,7 @@ O `CheckoutPage.clickFinishBtn()` lida automaticamente com todos esses caminhos 
 
 ## Massa de Dados
 
-### Dados dinâmicos — `fixtures/setupQuotation.ts`
-
-A fixture `quotationData` gera dados únicos por execução via Faker. Valores padrão:
-
-| Campo               | Valor padrão                               |
-| ------------------- | ------------------------------------------ |
-| `licensePlate`      | `YOU-0020` (placa de teste aceita pelo QA) |
-| `zipCode`           | `04777-020` (São Paulo — risco médio)      |
-| `documentNumber`    | `123.456.761-08` (CPF aceito)              |
-| `creditCard.number` | `4111 1111 1111 1111` (cartão de teste)    |
-
-### Dados estáticos — `data/cpf.ts`, `data/plate.ts`, `data/plans.ts`, `data/cep.ts`
-
-Use quando o cenário depende de um **comportamento específico** (CPF PEP, placa de vistoria, CEP por estado):
-
-```ts
-import { cpf } from '../../data/cpf';
-import { plate } from '../../data/plate';
-
-// Cenário de bloqueio por CPF PEP
-await personDataPage.fillDocumentNumber(cpf.pepRefusedInsured.number);
-
-// Cenário de bloqueio por veículo de leilão
-await vehicleDetailsPage.fillLicensePlate(plate.refusedAuction.number);
-```
-
-Catálogo completo de CPFs, placas, CEPs e planos: **[`tests/data/README.md`](tests/data/README.md)**
+Catálogo de CPFs, placas, CEPs, planos e valores padrão da fixture: **[`tests/data/README.md`](tests/data/README.md)**
 
 ---
 

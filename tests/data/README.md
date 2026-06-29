@@ -5,6 +5,19 @@ Para geração dinâmica (nomes, e-mails, etc.) use `generators.ts` ou `fixtures
 
 ---
 
+## Fixture — valores padrão (`fixtures/setupQuotation.ts`)
+
+A fixture `quotationData` gera dados únicos por execução via Faker. Valores padrão:
+
+| Campo               | Valor padrão                               |
+| ------------------- | ------------------------------------------ |
+| `licensePlate`      | `YOU-0020` (placa de teste aceita pelo QA) |
+| `zipCode`           | `04777-020` (São Paulo — risco médio)      |
+| `documentNumber`    | `123.456.761-08` (CPF aceito)              |
+| `creditCard.number` | `4111 1111 1111 1111` (cartão de teste)    |
+
+---
+
 ## CEPs — `cep.ts`
 
 Pool de 20 CEPs reais validados no ViaCEP, cobrindo SP, RJ, MG, RS, PR, BA, PE, CE, DF e GO.
