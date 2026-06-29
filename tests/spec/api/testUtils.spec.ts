@@ -1,41 +1,22 @@
-import { expect, test } from '../../fixtures/matchers';
-import { test as Test } from '../../fixtures/setupPolicy';
-import { Product } from '../../enum/Product';
-import { TestUtilsService } from '../../services/test-utils/TestUtilsService';
-import {
-  TestUtilsCiDataSchema,
-  TestUtilsClaimDataSchema,
-  TestUtilsCustomerDataSchema,
-  TestUtilsPolicyDataSchema,
-} from '../../schemas/test-utils/TestUtilsServiceSchemas';
+/**
+ * ⚠️  MIGRADO — estes testes vivem em qa-api-tests-automation.
+ *
+ * Spec canônico: tests/spec/testUtilsService.spec.ts
+ *
+ * Para executar:
+ *   cd qa-api-tests-automation
+ *   npx playwright test testUtilsService
+ */
+/* eslint-disable playwright/no-skipped-test -- redirecionamento; spec canônico vive no repo API */
+import { test } from '@playwright/test';
 
-test.describe('Test Utils Service', { tag: ['@test_utils'] }, () => {
-  Test('Deve criar apólice de seguro AUTO via Test Utils', async ({ request }) => {
-    const res = await TestUtilsService.createInsurancePolicy(request, Product.AUTO);
-
-    console.log('Created policy data:', JSON.stringify(res, null, 2));
-    await expect(res).toMatchSchema(TestUtilsPolicyDataSchema);
-  });
-
-  test('Deve criar cliente via Test Utils', async ({ request }) => {
-    const res = await TestUtilsService.createCustomer(request);
-
-    await expect(res).toMatchSchema(TestUtilsCustomerDataSchema);
-  });
-
-  test('Deve gerar número de CI via Test Utils', async ({ request }) => {
-    const res = await TestUtilsService.generateCiNumber(request);
-
-    await expect(res).toMatchSchema(TestUtilsCiDataSchema);
-  });
-
-  Test('Fixture autoPolicyDminus1 deve retornar apólice válida', async ({ autoPolicyDminus1 }) => {
-    await expect(autoPolicyDminus1).toMatchSchema(TestUtilsPolicyDataSchema);
-  });
-
-  Test('Deve criar sinistro AUTO via Test Utils', async ({ request }) => {
-    const res = await TestUtilsService.createClaim(request, Product.AUTO);
-
-    await expect(res).toMatchSchema(TestUtilsClaimDataSchema);
+test.describe.skip('Test Utils Service — migrado para qa-api-tests-automation', { tag: ['@test_utils'] }, () => {
+  // eslint-disable-next-line playwright/expect-expect -- stub de redirecionamento; spec canonico vive em qa-api-tests-automation
+  test('Executar: cd qa-api-tests-automation && npx playwright test testUtilsService', () => {
+    /* redirect */
   });
 });
+
+// ---- conteúdo original abaixo (mantido para histórico de git) ----
+// Os mesmos testes (policy, claim, customer, CI) existem em:
+//   qa-api-tests-automation/tests/spec/testUtilsService.spec.ts
