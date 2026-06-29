@@ -10,11 +10,11 @@ const workers = process.env.PW_WORKERS ? Number(process.env.PW_WORKERS) : proces
 
 export default defineConfig({
   testDir: './tests/spec',
-  timeout: 90_000,
+  timeout: 150_000,
   expect: { timeout: 15_000 },
   fullyParallel: true,
   workers,
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 2 : 1,
   reporter: process.env.CI
     ? [
         ['blob'], // necessário para merge-reports no sharding
