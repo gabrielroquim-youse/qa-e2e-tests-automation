@@ -37,6 +37,8 @@ test.describe('UX — Dados do segurado', { tag: ['@ux', '@quotation_auto', '@b2
     await person.documentNumber.blur();
 
     await expectContinueDisabled(person.btnContinue);
+    await expectFieldInvalid(person.documentNumber);
+    await expectValidationMessage(page, /cpf inválido|informe o cpf/i);
     await expect(nextStep(page)).toBeHidden({ timeout: 5_000 });
   });
 });

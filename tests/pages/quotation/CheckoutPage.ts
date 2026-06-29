@@ -20,6 +20,8 @@ export class CheckoutPage extends BasePage {
   readonly cardCvv: Locator;
   readonly cardHolderName: Locator;
   readonly emailConfirmation: Locator;
+  /** Input oculto (CSS-hidden) para assertions de estado (toBeChecked). */
+  readonly emailConfirmationInput: Locator;
   readonly btnFinish: Locator;
   readonly assistenciasAccordion: Locator;
   readonly btnPaymentApproved: Locator;
@@ -47,9 +49,11 @@ export class CheckoutPage extends BasePage {
       .contentFrame()
       .getByRole('textbox', { name: 'Campo de código de segurança' });
     this.cardHolderName = this.page.getByRole('textbox', { name: 'Nome no cartão' });
-    this.emailConfirmation = this.page.getByRole('checkbox', {
-      name: /Confirmo que o e-mail e telefone estão corretos/i,
-    });
+    // O <input type="checkbox"> é CSS-hidden (clip/position absolute). Aponta ao
+    // <label> visível que o envolve, compatível com toBeVisible() e com .click().
+    this.emailConfirmation = this.page.locator('label').filter({ has: this.page.locator('input[name="confirmEmailAndPhone"]') });
+    // Input real para verificar estado (toBeChecked / not.toBeChecked).
+    this.emailConfirmationInput = this.page.locator('input[name="confirmEmailAndPhone"]');
     this.btnFinish = this.page.getByRole('button', { name: /^Finalizar$/ });
     this.assistenciasAccordion = this.page.getByRole('button', { name: /assistências/i });
     this.otherPaymentMethodsToggle = page.getByText(/veja outras formas de pagamento/i);
@@ -198,7 +202,7 @@ export class CheckoutPage extends BasePage {
 
   async checkEmailConfirmation() {
     await this.title.waitFor({ state: 'visible', timeout: 60_000 });
-    await this.emailConfirmation.evaluate((el) => (el as HTMLElement).click());
+    await this.emailConfirmation.click();
     return this;
   }
 

@@ -27,6 +27,18 @@ Suite de testes automatizados da **Youse Seguradora** — fluxos E2E, API e pric
 
 ---
 
+> **Novo no projeto? Comece aqui:**
+>
+> ```bash
+> npm install && npx playwright install chromium
+> cp .env.example .env          # preencha BASE_URL e ative VPN Youse
+> npm run test:smoke             # ~5 min · valida que tudo funciona
+> ```
+>
+> Dúvidas? → [Troubleshooting](./docs/guides/troubleshooting.md) · [Boas práticas](./docs/guides/boas-praticas.md)
+
+---
+
 ## Índice
 
 - [Visão Geral](#visão-geral)
@@ -379,6 +391,19 @@ await vehicleDetailsPage.fillLicensePlate(plate.refusedAuction.number);
 | Negado — nome           | `crivoDeniedInsuredName`          | Teste de campos inválidos     |
 | Negado — não encontrado | `crivoDeniedCpfNotFound`          | Teste de CPF inexistente      |
 | Risco sistêmico         | `riskRatioHighRisk`               | Teste de bloqueio por risco   |
+
+**Catálogo de placas de teste (`data/plate.ts`):**
+
+> ⚠️ **Atenção:** as placas abaixo têm comportamento específico em QA. Nunca use `YOU-0020` ou `YOU-0023` em testes de fluxo feliz (happy path).
+
+| Placa    | Chave em `plate`   | Comportamento em QA após pagamento                |
+| -------- | ------------------ | ------------------------------------------------- |
+| YOU-0020 | `noInspection` ⚠️  | Aciona **vistoria online** — não é happy path     |
+| YOU-0003 | `onlineInspection` | Aciona vistoria online                            |
+| YOU-0002 | `onSiteInspection` | Aciona vistoria presencial (on-site)              |
+| YOU-0023 | `videoInspection`  | Aciona vistoria por **vídeo (Planetun / ivideo)** |
+
+Testes específicos para cada fluxo de vistoria: [`tests/spec/e2e/journeys/cotacao-vistoria-online.spec.ts`](tests/spec/e2e/journeys/cotacao-vistoria-online.spec.ts) e [`tests/spec/e2e/journeys/cotacao-vistoria-video.spec.ts`](tests/spec/e2e/journeys/cotacao-vistoria-video.spec.ts).
 
 ### Catálogo de planos — `data/plans.ts`
 

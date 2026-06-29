@@ -49,6 +49,12 @@ export const plate = {
   /**
    * Placa padrão aceita — sem necessidade de inspeção.
    * Mesma placa de TestConfig.credentials.licensePlate.
+   *
+   * @deprecated ⚠️ Em QA, esta placa aciona **vistoria online** após o pagamento.
+   * NÃO usar em testes de fluxo feliz sem inspeção.
+   * Use uma placa que não acione inspeção ou forneça via `TEST_LICENSE_PLATE`.
+   * Para testar a vistoria online, prefira referenciar esta placa explicitamente:
+   *   `plate.onlineInspection.number` ou `'YOU-0020'` no spec.
    */
   noInspection: {
     number: 'YOU-0020',
@@ -115,7 +121,7 @@ export const plate = {
     },
   } as PlateData,
 
-  /** Placa aceita — requer inspeção por vídeo */
+  /** Placa aceita — requer inspeção por vídeo via Planetun (ivideo). */
   videoInspection: {
     number: 'YOU-0023',
     status: 'accepted',

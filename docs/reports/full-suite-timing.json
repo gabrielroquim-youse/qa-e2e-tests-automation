@@ -1,8 +1,0 @@
-{
-  "generatedAt": null,
-  "executionId": null,
-  "logFile": null,
-  "totals": { "tests": 0, "passed": 0, "failed": 0, "skipped": 0, "totalMs": 0 },
-  "layers": [],
-  "phases": []
-}
