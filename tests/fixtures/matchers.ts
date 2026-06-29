@@ -19,6 +19,7 @@ export const expect = baseExpect.extend({
     try {
       expected.parse(obj);
       pass = true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       pass = false;
       message = e.message;

@@ -31,6 +31,7 @@ test.describe('Payment — PIX checkout', { tag: ['@regression', '@quotation_aut
   test('PAY-P3: deve exibir CPF do segurado em Suas informações com PIX selecionado', async ({ page }) => {
     test.setTimeout(300_000);
 
+    // eslint-disable-next-line playwright/no-conditional-in-test
     const acceptedCpf = unrestrictedQuotationOverrides().documentNumber ?? cpf.accepted.number;
     const checkout = await navigateToCheckoutForPix(page);
     await checkout.checkEmailConfirmation();

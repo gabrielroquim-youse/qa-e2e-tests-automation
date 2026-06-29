@@ -645,16 +645,17 @@ expect(precoEssencial).toBe(2205.92);
 Todos os commits são validados automaticamente pelo hook `commit-msg` via [`scripts/qa-commit-msg.ts`](scripts/qa-commit-msg.ts).
 O padrão é **Conventional Commits em PT-BR**:
 
-| Tipo | Quando usar | Exemplo |
-|------|-------------|----------|
-| `feat` | Nova funcionalidade ou novo teste | `feat(ux): adiciona spec de validação do CEP` |
-| `fix` | Correção de bug em teste ou Page Object | `fix(checkout): corrige seletor do botão Finalizar` |
+| Tipo       | Quando usar                              | Exemplo                                                  |
+| ---------- | ---------------------------------------- | -------------------------------------------------------- |
+| `feat`     | Nova funcionalidade ou novo teste        | `feat(ux): adiciona spec de validação do CEP`            |
+| `fix`      | Correção de bug em teste ou Page Object  | `fix(checkout): corrige seletor do botão Finalizar`      |
 | `refactor` | Refatoração sem mudança de comportamento | `refactor: extrai catálogo de planos para data/plans.ts` |
-| `test` | Novo teste ou massa de dados | `test: adiciona CPF recusado por blacklist` |
-| `chore` | Dependências, config, CI | `chore: atualiza Playwright para v1.55` |
-| `docs` | Documentação | `docs: adiciona seção de troubleshooting` |
+| `test`     | Novo teste ou massa de dados             | `test: adiciona CPF recusado por blacklist`              |
+| `chore`    | Dependências, config, CI                 | `chore: atualiza Playwright para v1.55`                  |
+| `docs`     | Documentação                             | `docs: adiciona seção de troubleshooting`                |
 
 **Regras validadas automaticamente:**
+
 - Tipo obrigatório: `feat`, `fix`, `refactor`, `test`, `chore`, `docs`, `perf`, `ci`, `build`, `revert`
 - Título em minúsculas (sem capitalizar após o `:`)
 - Máximo 72 caracteres no título
