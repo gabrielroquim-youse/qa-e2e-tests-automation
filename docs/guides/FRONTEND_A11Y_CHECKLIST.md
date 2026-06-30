@@ -12,7 +12,7 @@
 
 #### 1.1 Remove Invalid ARIA Roles
 
-- [ ] **Remove**: `<div role="header">` 
+- [ ] **Remove**: `<div role="header">`
   - **Replace with**: `<header>` or `<div role="banner">`
   - **Why:** "header" not valid in ARIA spec; use semantic `<header>` for page headers
   - **WCAG:** 4.1.2
@@ -34,6 +34,7 @@
   - **WCAG:** 4.1.2
 
 **Validation:**
+
 ```bash
 cd packages/sales-lead-requirements
 npm run lint  # Should pass a11y linter
@@ -47,6 +48,7 @@ npm run test:a11y  # Should show 0 violations
 **File:** `packages/sales-lead-requirements/src/components/Contact.tsx` (or similar)
 
 - [ ] Add descriptive label to WhatsApp link
+
   ```tsx
   // ❌ BEFORE
   <a href="whatsapp://send?phone=...">
@@ -54,8 +56,8 @@ npm run test:a11y  # Should show 0 violations
   </a>
 
   // ✅ AFTER
-  <a 
-    href="whatsapp://send?phone=..." 
+  <a
+    href="whatsapp://send?phone=..."
     aria-label="Fale conosco via WhatsApp"
     title="Fale conosco via WhatsApp"
   >
@@ -80,15 +82,16 @@ npm run test:a11y  # Should show 0 violations
 **Issue:** "Continuar" button unreachable after 60 Tab presses (WCAG 2.1.1 failure)
 
 - [ ] Check "Continuar" button or parent container for:
+
   ```tsx
   // ❌ REMOVE negative tabindex
   <button tabindex="-1">Continuar</button>
-  
+
   // ❌ REMOVE focus-blocking styles
   <div style={{ overflow: 'hidden', height: 0 }}>
     <button>Continuar</button>
   </div>
-  
+
   // ✅ USE positive tabindex or default
   <button tabindex="0">Continuar</button>
   // or just:
@@ -98,6 +101,7 @@ npm run test:a11y  # Should show 0 violations
 - [ ] Check parent containers for `pointer-events: none` or `display: none` hiding the button
 
 - [ ] Ensure focus visible indicator is styled:
+
   ```css
   button:focus,
   button:focus-visible {
@@ -119,6 +123,7 @@ npm run test:a11y  # Should show 0 violations
 ### 3. All Form Inputs (Across MFEs)
 
 **Affected:**
+
 - lead_info: email, phone, etc.
 - vehicle_details: license plate, ZIP
 - risk_acceptance: CPF validation
@@ -134,9 +139,9 @@ npm run test:a11y  # Should show 0 violations
 <label htmlFor="email-input">
   Email <span aria-label="obrigatório">*</span>
 </label>
-<input 
+<input
   id="email-input"
-  type="email" 
+  type="email"
   placeholder="seu@email.com"
   aria-required="true"
   aria-describedby="email-hint"
@@ -161,14 +166,9 @@ setError('Email inválido');
 // ... renders: <span>{error}</span>
 
 // ✅ RIGHT: Error announced via aria-live
-<div 
-  id="error-region"
-  role="alert" 
-  aria-live="polite" 
-  aria-atomic="true"
->
+<div id="error-region" role="alert" aria-live="polite" aria-atomic="true">
   {error && `❌ ${error}`}
-</div>
+</div>;
 ```
 
 - [ ] All validation errors wrapped in `role="alert"` region
@@ -192,7 +192,7 @@ setError('Email inválido');
   CEP
   <span aria-label="obrigatório">*</span>
 </label>
-<input 
+<input
   id="cep"
   type="text"
   placeholder="00000-000"
@@ -303,7 +303,7 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid #0066cc;  /* Brand color */
+  outline: 3px solid #0066cc; /* Brand color */
   outline-offset: 2px;
 }
 
@@ -312,7 +312,7 @@ textarea:focus-visible {
   button:focus-visible,
   a:focus-visible,
   input:focus-visible {
-    outline-color: #66b3ff;  /* Lighter blue */
+    outline-color: #66b3ff; /* Lighter blue */
   }
 }
 ```
@@ -332,35 +332,17 @@ textarea:focus-visible {
 // ✅ GOOD
 <fieldset>
   <legend>Cartão de Crédito</legend>
-  
+
   <label htmlFor="card-number">Número do Cartão *</label>
-  <input 
-    id="card-number"
-    type="text"
-    inputMode="numeric"
-    placeholder="1234 5678 9012 3456"
-    aria-describedby="card-format-hint"
-  />
+  <input id="card-number" type="text" inputMode="numeric" placeholder="1234 5678 9012 3456" aria-describedby="card-format-hint" />
   <small id="card-format-hint">16 dígitos sem espaços</small>
-  
+
   <label htmlFor="card-expiry">Validade (MM/AA) *</label>
-  <input 
-    id="card-expiry"
-    type="text"
-    inputMode="numeric"
-    placeholder="MM/AA"
-    aria-describedby="card-expiry-hint"
-  />
+  <input id="card-expiry" type="text" inputMode="numeric" placeholder="MM/AA" aria-describedby="card-expiry-hint" />
   <small id="card-expiry-hint">Mês/Ano (ex: 12/25)</small>
-  
+
   <label htmlFor="card-cvv">CVV *</label>
-  <input 
-    id="card-cvv"
-    type="password"
-    inputMode="numeric"
-    placeholder="•••"
-    aria-describedby="card-cvv-hint"
-  />
+  <input id="card-cvv" type="password" inputMode="numeric" placeholder="•••" aria-describedby="card-cvv-hint" />
   <small id="card-cvv-hint">3 dígitos no verso</small>
 </fieldset>
 ```
@@ -376,8 +358,8 @@ textarea:focus-visible {
 ```tsx
 // ✅ GOOD
 <label>
-  <input 
-    type="checkbox" 
+  <input
+    type="checkbox"
     name="terms"
     required
     aria-required="true"
@@ -402,6 +384,7 @@ textarea:focus-visible {
 #### 6.1 Audit Color Contrast
 
 **WCAG AA Requirements:**
+
 - Normal text: 4.5:1 ratio
 - Large text (18pt+ or 14pt+ bold): 3:1 ratio
 - UI components: 3:1 ratio
@@ -412,6 +395,7 @@ textarea:focus-visible {
 - [ ] Don't rely on color alone for meaning (add icons/text)
 
 **Example: Status indicators**
+
 ```tsx
 // ❌ WRONG: Color only
 <div style={{ color: 'red' }}>Erro</div>
@@ -487,6 +471,7 @@ npm run allure:open
 ```
 
 **Expected Results:**
+
 - ✅ 0 axe critical violations
 - ✅ 0 keyboard navigation failures
 - ✅ All 5 funnel stages testable with keyboard only
@@ -545,12 +530,14 @@ Before merging PR with a11y changes:
 ## 📞 Questions / Escalation
 
 **Can't decide how to fix something?**
+
 1. Check [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 2. Ask #qa-accessibility-team (Slack)
 3. Check this checklist for similar pattern
 4. Escalate to Design + QA if unsure
 
 **Need to discuss timeline?**
+
 - Contact @qa-team + @frontend-team lead
 - P0 fixes must be done before PR merge (blocks CI)
 - P1 fixes target sprint +1

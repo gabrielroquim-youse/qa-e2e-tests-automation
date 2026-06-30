@@ -1,10 +1,10 @@
 #!/usr/bin/env ts-node
 /**
  * Gera relatório completo de acessibilidade a partir dos resultados de testes
- * 
+ *
  * Uso:
  *   npx ts-node scripts/generate-a11y-report.ts [--format html|json|markdown]
- * 
+ *
  * Output:
  *   reports/a11y-report-{timestamp}.html
  */
@@ -90,9 +90,7 @@ function extractViolations(): {
     const files = readdirSync(allureDir);
     for (const file of files) {
       if (file.endsWith('-result.json')) {
-        const content = JSON.parse(
-          readFileSync(join(allureDir, file), 'utf8')
-        ) as Partial<AllureResult>;
+        const content = JSON.parse(readFileSync(join(allureDir, file), 'utf8')) as Partial<AllureResult>;
 
         // Procura por attachments com violações (criado pelos testes a11y)
         if (content.attachments) {
@@ -130,7 +128,7 @@ function generateHtmlReport(report: A11yReport): string {
       <p><strong>Help:</strong> <a href="${v.helpUrl}" target="_blank">${v.help}</a></p>
       <details>
         <summary>Affected HTML</summary>
-        <pre><code>${v.nodes.map(n => n.html).join('\n\n')}</code></pre>
+        <pre><code>${v.nodes.map((n) => n.html).join('\n\n')}</code></pre>
       </details>
     </article>
   `;
@@ -217,23 +215,31 @@ function generateHtmlReport(report: A11yReport): string {
 
       <div class="score">
         ${report.summary.passRate >= 80 ? '✅' : report.summary.passRate >= 60 ? '⚠️' : '❌'}
-        Pontuação: ${(report.summary.passRate * 100 / 100).toFixed(0)}/100
+        Pontuação: ${((report.summary.passRate * 100) / 100).toFixed(0)}/100
       </div>
     </section>
 
-    ${report.summary.criticalViolations > 0 ? `
+    ${
+      report.summary.criticalViolations > 0
+        ? `
       <section>
         <h2>🔴 Violações Críticas (P0) — Deve Corrigir</h2>
-        ${report.violations.critical.map(v => formatViolation(v, 'critical')).join('')}
+        ${report.violations.critical.map((v) => formatViolation(v, 'critical')).join('')}
       </section>
-    ` : ''}
+    `
+        : ''
+    }
 
-    ${report.summary.seriousViolations > 0 ? `
+    ${
+      report.summary.seriousViolations > 0
+        ? `
       <section>
         <h2>🟠 Violações Sérias (P1) — Próximo Sprint</h2>
-        ${report.violations.serious.map(v => formatViolation(v, 'serious')).join('')}
+        ${report.violations.serious.map((v) => formatViolation(v, 'serious')).join('')}
       </section>
-    ` : ''}
+    `
+        : ''
+    }
 
     <section>
       <h2>📱 Cobertura de Dispositivos</h2>
@@ -247,7 +253,9 @@ function generateHtmlReport(report: A11yReport): string {
           </tr>
         </thead>
         <tbody>
-          ${Object.entries(report.deviceCoverage).map(([device, data]) => `
+          ${Object.entries(report.deviceCoverage)
+            .map(
+              ([device, data]) => `
             <tr>
               <td>${device}</td>
               <td>${device === 'desktop' ? '1280×800' : device === 'desktop-wide' ? '1920×1080' : device === 'tablet' ? '810×1080' : 'mobile'}</td>
@@ -256,21 +264,27 @@ function generateHtmlReport(report: A11yReport): string {
               </td>
               <td>${data.violations}</td>
             </tr>
-          `).join('')}
+          `,
+            )
+            .join('')}
         </tbody>
       </table>
     </section>
 
-    ${report.recommendations.length > 0 ? `
+    ${
+      report.recommendations.length > 0
+        ? `
       <section>
         <div class="recommendations">
           <h2 style="border: none; padding: 0; margin-bottom: 15px;">✅ Recomendações</h2>
           <ol>
-            ${report.recommendations.map(r => `<li>${r}</li>`).join('')}
+            ${report.recommendations.map((r) => `<li>${r}</li>`).join('')}
           </ol>
         </div>
       </section>
-    ` : ''}
+    `
+        : ''
+    }
 
     <footer>
       <p>Relatório gerado automaticamente por: qa-e2e-tests-automation</p>
@@ -308,28 +322,49 @@ Gerado: ${new Date(report.timestamp).toLocaleString('pt-BR')}
 
 ## 🔴 Violações Críticas (P0)
 
-${report.violations.critical.length === 0 ? '✅ Nenhuma' : report.violations.critical.map(v => `
+${
+  report.violations.critical.length === 0
+    ? '✅ Nenhuma'
+    : report.violations.critical
+        .map(
+          (v) => `
 ### ${v.description}
 - **ID:** \`${v.id}\`
 - **Impacto:** ${v.impact}
 - **Elementos afetados:** ${v.nodes.length}
 - **Help:** [${v.help}](${v.helpUrl})
-`).join('')}
+`,
+        )
+        .join('')
+}
 
 ## 🟠 Violações Sérias (P1)
 
-${report.violations.serious.length === 0 ? '✅ Nenhuma' : report.violations.serious.map(v => `
+${
+  report.violations.serious.length === 0
+    ? '✅ Nenhuma'
+    : report.violations.serious
+        .map(
+          (v) => `
 ### ${v.description}
 - **ID:** \`${v.id}\`
 - **Impacto:** ${v.impact}
 - **Elementos afetados:** ${v.nodes.length}
-`).join('')}
+`,
+        )
+        .join('')
+}
 
 ## 📱 Cobertura de Dispositivos
 
 | Dispositivo | Resolução | Status | Violações |
 |-------------|-----------|--------|-----------|
-${Object.entries(report.deviceCoverage).map(([device, data]) => `| ${device} | ${device === 'desktop' ? '1280×800' : device === 'desktop-wide' ? '1920×1080' : device === 'tablet' ? '810×1080' : 'mobile'} | ${data.status === 'tested' ? '✅' : '❌'} | ${data.violations} |`).join('\n')}
+${Object.entries(report.deviceCoverage)
+  .map(
+    ([device, data]) =>
+      `| ${device} | ${device === 'desktop' ? '1280×800' : device === 'desktop-wide' ? '1920×1080' : device === 'tablet' ? '810×1080' : 'mobile'} | ${data.status === 'tested' ? '✅' : '❌'} | ${data.violations} |`,
+  )
+  .join('\n')}
 
 ## ✅ Recomendações
 
@@ -354,33 +389,31 @@ async function main() {
     timestamp: new Date().toISOString(),
     summary: {
       totalTests: allureResults.length || 29,
-      passedTests: allureResults.filter(r => r.status === 'passed').length || 17,
-      failedTests: allureResults.filter(r => r.status === 'failed').length || 12,
-      passRate: allureResults.length > 0 
-        ? (allureResults.filter(r => r.status === 'passed').length / allureResults.length) * 100
-        : 59,
+      passedTests: allureResults.filter((r) => r.status === 'passed').length || 17,
+      failedTests: allureResults.filter((r) => r.status === 'failed').length || 12,
+      passRate: allureResults.length > 0 ? (allureResults.filter((r) => r.status === 'passed').length / allureResults.length) * 100 : 59,
       criticalViolations: critical.length,
       seriousViolations: serious.length,
-      platformsCovered: ['Desktop (Chrome)', 'Tablet (iPad)', 'Mobile (reference)']
+      platformsCovered: ['Desktop (Chrome)', 'Tablet (iPad)', 'Mobile (reference)'],
     },
     violations: {
       critical,
       serious,
-      moderate: []
+      moderate: [],
     },
     deviceCoverage: {
       'desktop (1280×800)': { status: 'tested', violations: critical.length },
       'desktop-wide (1920×1080)': { status: 'tested', violations: critical.length },
       'tablet (810×1080)': { status: 'tested', violations: critical.length },
-      'mobile': { status: 'reference', violations: 0 }
+      mobile: { status: 'reference', violations: 0 },
     },
     recommendations: [
       'Corrigir 4 violações P0 em lead_info + plan_selection (1 semana)',
       'Expandir baseline axe para todos 5 estágios do funnel (2 semanas)',
       'Adicionar testes de contraste + mensagens de erro (1 semana)',
       'Gerar gate de a11y em CI/CD bloqueando regressions (1 semana)',
-      'Conduzir teste manual com screen reader nos estágios P0 (2 horas)'
-    ]
+      'Conduzir teste manual com screen reader nos estágios P0 (2 horas)',
+    ],
   };
 
   let content: string;
@@ -421,7 +454,7 @@ async function main() {
   return filepath;
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error('❌ Erro ao gerar relatório:', err);
   process.exit(1);
 });
