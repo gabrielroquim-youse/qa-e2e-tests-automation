@@ -9,12 +9,8 @@
  *   reports/a11y-report-{timestamp}.html
  */
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'fs';
 import { join, resolve } from 'path';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-
-const execAsync = promisify(exec);
 
 interface AllureResult {
   name: string;
@@ -26,7 +22,7 @@ interface AllureResult {
 interface A11yViolation {
   id: string;
   impact: 'critical' | 'serious' | 'moderate' | 'minor';
-  nodes: Array<{ html: string; any: Array<{ data: any }> }>;
+  nodes: Array<{ html: string; any: Array<{ data: unknown }> }>;
   description: string;
   help: string;
   helpUrl: string;
@@ -63,10 +59,10 @@ function readAllureResults(): AllureResult[] {
   }
 
   try {
-    const { execSync } = require('child_process');
     const summaryJson = join(allureDir, 'data', 'summary.json');
     if (existsSync(summaryJson)) {
-      return JSON.parse(readFileSync(summaryJson, 'utf8')).tests || [];
+      const data = JSON.parse(readFileSync(summaryJson, 'utf8')) as { tests?: AllureResult[] };
+      return data.tests || [];
     }
   } catch {
     return [];
@@ -86,26 +82,30 @@ function extractViolations(): {
   const serious: A11yViolation[] = [];
 
   // Busca por arquivos de attachment com violações axe
+  if (!existsSync(allureDir)) {
+    return { critical, serious };
+  }
+
   try {
-    const files = require('fs').readdirSync(allureDir);
+    const files = readdirSync(allureDir);
     for (const file of files) {
       if (file.endsWith('-result.json')) {
         const content = JSON.parse(
           readFileSync(join(allureDir, file), 'utf8')
-        );
-        
+        ) as Partial<AllureResult>;
+
         // Procura por attachments com violações (criado pelos testes a11y)
         if (content.attachments) {
           for (const att of content.attachments) {
             if (att.name === 'axe-violations.json') {
               try {
-                const violations = JSON.parse(att.source);
+                const violations = JSON.parse(att.source) as A11yViolation[];
                 violations.forEach((v: A11yViolation) => {
                   if (v.impact === 'critical') critical.push(v);
                   if (v.impact === 'serious') serious.push(v);
                 });
               } catch {
-                // ignore
+                // ignore parse error
               }
             }
           }
@@ -113,7 +113,7 @@ function extractViolations(): {
       }
     }
   } catch {
-    // ignore
+    // ignore read error
   }
 
   return { critical, serious };
