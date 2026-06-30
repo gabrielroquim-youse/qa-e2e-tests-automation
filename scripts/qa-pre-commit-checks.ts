@@ -1,26 +1,26 @@
 /**
  * QA Pre-Commit / PR Checks
  * ---------------------------------------------------------------------------
- * Bateria de validaÃ§Ãµes automÃ¡ticas com dois modos de operaÃ§Ã£o:
+ * Bateria de validações automáticas com dois modos de operação:
  *
  *   LOCAL (pre-commit)  -> analisa arquivos STAGED (`git diff --cached`)
  *   CI    (PR check)    -> analisa arquivos modificados no PR via env PR_BASE
  *                         PR_BASE=origin/main ts-node qa-pre-commit-checks.ts
  *
  * Cada check segue o contrato:
- *   - name:     tÃ­tulo exibido no relatÃ³rio e no comentÃ¡rio do PR
+ *   - name:     título exibido no relatório e no comentário do PR
  *   - level:    'error' (bloqueia commit/PR) | 'warn' (apenas alerta)
  *   - checklistItem: mapeia para item do PR template (optional)
- *   - run():    retorna lista de violaÃ§Ãµes (string[])
+ *   - run():    retorna lista de violações (string[])
  *
- * SaÃ­da em modo CI (PR_BASE definido):
+ * Saída em modo CI (PR_BASE definido):
  *   - JSON estruturado para o workflow `pr-checklist.yml` processar
- *   - Pode ser lido por actions/github-script para gerar comentÃ¡rio
+ *   - Pode ser lido por actions/github-script para gerar comentário
  *
- * Os requisitos vÃªm de:
+ * Os requisitos vêm de:
  *   - .github/pull_request_template.md  (checklist de qualidade)
  *   - default.instructions.md           (LGPD, Clean Code, Conventional Commits)
- *   - eslint.config.mjs                 (antipadrÃµes Playwright jÃ¡ cobertos por lint)
+ *   - eslint.config.mjs                 (antipadrões Playwright já cobertos por lint)
  * ---------------------------------------------------------------------------
  */
 
@@ -29,7 +29,7 @@ import { existsSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { extname, resolve } from 'path';
 
 // ----------------------------------------------------------------------------
-// Modos de operaÃ§Ã£o
+// Modos de operação
 // ----------------------------------------------------------------------------
 
 const REPO_ROOT = resolve(__dirname, '..');
@@ -40,7 +40,7 @@ const REPORT_JSON = process.env['QA_REPORT_JSON'];
 const IS_CI = Boolean(PR_BASE);
 
 // ----------------------------------------------------------------------------
-// Terminal colors (desativados em CI para saÃ­da limpa)
+// Terminal colors (desativados em CI para saída limpa)
 // ----------------------------------------------------------------------------
 
 const COLORS = {
@@ -66,7 +66,7 @@ interface CheckResult {
   name: string;
   level: CheckLevel;
   violations: string[];
-  /** ReferÃªncia ao item do PR template que este check automatiza */
+  /** Referência ao item do PR template que este check automatiza */
   checklistItem?: string;
 }
 
@@ -105,18 +105,18 @@ function getFiles(): { staged: string[]; added: string[] } {
 }
 
 // ----------------------------------------------------------------------------
-// Leitura de conteÃºdo
+// Leitura de conteúdo
 // ----------------------------------------------------------------------------
 
 function readContent(file: string): string | null {
   try {
-    // Em modo CI, lÃª o arquivo direto do disco (jÃ¡ estÃ¡ no checkout completo)
+    // Em modo CI, lê o arquivo direto do disco (já está no checkout completo)
     if (IS_CI) {
       const abs = resolve(REPO_ROOT, file);
       if (!existsSync(abs)) return null;
       return readFileSync(abs, 'utf8');
     }
-    // Modo local: lÃª da Ã¡rea de stage
+    // Modo local: lê da área de stage
     return execSync(`git show :"${file}"`, { cwd: REPO_ROOT, encoding: 'utf8' });
   } catch {
     return null;
@@ -151,16 +151,16 @@ function findMatches(files: string[], pattern: RegExp, opts?: { onlyExt?: string
 // ----------------------------------------------------------------------------
 
 const CHECKS: Check[] = [
-  // -- SeguranÃ§a / LGPD -----------------------------------------------------
+  // -- Segurança / LGPD -----------------------------------------------------
   {
     name: 'Bloqueia arquivos .env (exceto .env.example)',
     level: 'error',
-    checklistItem: 'Nenhum dado sensÃ­vel foi inserido',
+    checklistItem: 'Nenhum dado sensível foi inserido',
     run: ({ stagedFiles }) =>
       stagedFiles.filter((f) => /(^|\/)\.env(\.[\w-]+)?$/.test(f) && !/\.env\.example$/.test(f)).map((f) => `Arquivo proibido: ${f}`),
   },
   {
-    name: 'Bloqueia artefatos de execuÃ§Ã£o na raiz (.log, .png, .mp4, .webm, .zip)',
+    name: 'Bloqueia artefatos de execução na raiz (.log, .png, .mp4, .webm, .zip)',
     level: 'error',
     run: ({ stagedFiles }) =>
       stagedFiles
@@ -170,7 +170,7 @@ const CHECKS: Check[] = [
   {
     name: 'Detecta secrets / tokens / API keys em texto claro',
     level: 'error',
-    checklistItem: 'Nenhum dado sensÃ­vel foi inserido',
+    checklistItem: 'Nenhum dado sensível foi inserido',
     run: ({ stagedFiles }) =>
       findMatches(
         stagedFiles.filter((f) => /\.(ts|js|json|ya?ml|md|env\.example)$/i.test(f)),
@@ -180,7 +180,7 @@ const CHECKS: Check[] = [
   {
     name: 'Detecta CPFs reais hardcoded (LGPD)',
     level: 'warn',
-    checklistItem: 'Nenhum dado sensÃ­vel foi inserido',
+    checklistItem: 'Nenhum dado sensível foi inserido',
     run: ({ stagedFiles }) => {
       const re = /\b(?!000\.?000\.?000)(\d{3}\.?\d{3}\.?\d{3}-?\d{2})\b/;
       return findMatches(
@@ -192,7 +192,7 @@ const CHECKS: Check[] = [
   {
     name: 'Detecta e-mails pessoais (gmail/hotmail/yahoo/outlook) -- LGPD',
     level: 'warn',
-    checklistItem: 'Nenhum dado sensÃ­vel foi inserido',
+    checklistItem: 'Nenhum dado sensível foi inserido',
     run: ({ stagedFiles }) =>
       findMatches(
         stagedFiles.filter((f) => /\.(ts|js|json|md)$/i.test(f)),
@@ -200,11 +200,11 @@ const CHECKS: Check[] = [
       ),
   },
 
-  // -- AntipadrÃµes Playwright -----------------------------------------------
+  // -- Antipadrões Playwright -----------------------------------------------
   {
     name: 'Sem page.waitForTimeout / esperas fixas',
     level: 'error',
-    checklistItem: 'NÃ£o hÃ¡ page.waitForTimeout() ou esperas fixas',
+    checklistItem: 'Não há page.waitForTimeout() ou esperas fixas',
     run: ({ stagedFiles }) =>
       findMatches(
         stagedFiles.filter((f) => f.startsWith('tests/') && f.endsWith('.ts')),
@@ -215,7 +215,7 @@ const CHECKS: Check[] = [
   {
     name: 'Sem test.only / describe.only / fdescribe',
     level: 'error',
-    checklistItem: 'NÃ£o hÃ¡ test.only ou test.skip sem justificativa',
+    checklistItem: 'Não há test.only ou test.skip sem justificativa',
     run: ({ stagedFiles }) =>
       findMatches(
         stagedFiles.filter((f) => f.startsWith('tests/') && f.endsWith('.ts')),
@@ -223,7 +223,7 @@ const CHECKS: Check[] = [
       ),
   },
   {
-    name: 'Evita { force: true } em aÃ§Ãµes Playwright',
+    name: 'Evita { force: true } em ações Playwright',
     level: 'warn',
     run: ({ stagedFiles }) =>
       findMatches(
@@ -233,7 +233,7 @@ const CHECKS: Check[] = [
       ),
   },
   {
-    name: 'Prefira toBeVisible() ao invÃ©s de isVisible()',
+    name: 'Prefira toBeVisible() ao invés de isVisible()',
     level: 'warn',
     run: ({ stagedFiles }) =>
       findMatches(
@@ -245,7 +245,7 @@ const CHECKS: Check[] = [
 
   // -- Seletores de acessibilidade ------------------------------------------
   {
-    name: 'Seletores devem usar getByRole/getByLabel/getByText/getByTestId (nÃ£o CSS/XPath)',
+    name: 'Seletores devem usar getByRole/getByLabel/getByText/getByTestId (não CSS/XPath)',
     level: 'warn',
     checklistItem: 'Seletores usam locators de acessibilidade ou data-testid',
     run: ({ stagedFiles }) =>
@@ -257,11 +257,11 @@ const CHECKS: Check[] = [
       ),
   },
 
-  // -- mode: serial desnecessÃ¡rio -------------------------------------------
+  // -- mode: serial desnecessário -------------------------------------------
   {
-    name: 'Evita mode: serial desnecessÃ¡rio (testes devem ser independentes)',
+    name: 'Evita mode: serial desnecessário (testes devem ser independentes)',
     level: 'warn',
-    checklistItem: 'Os testes sÃ£o independentes entre si',
+    checklistItem: 'Os testes são independentes entre si',
     run: ({ stagedFiles }) =>
       findMatches(
         stagedFiles.filter((f) => /^tests\/spec\/.+\.spec\.ts$/.test(f)),
@@ -270,11 +270,11 @@ const CHECKS: Check[] = [
       ),
   },
 
-  // -- PreÃ§os absolutos hardcoded em specs ----------------------------------
+  // -- Preços absolutos hardcoded em specs ----------------------------------
   {
-    name: 'Evita preÃ§os absolutos hardcoded em specs (use relaÃ§Ãµes ordinais ou faixas)',
+    name: 'Evita preços absolutos hardcoded em specs (use relações ordinais ou faixas)',
     level: 'warn',
-    checklistItem: 'Nenhum valor de preÃ§o absoluto foi fixado',
+    checklistItem: 'Nenhum valor de preço absoluto foi fixado',
     run: ({ stagedFiles }) =>
       findMatches(
         stagedFiles.filter((f) => /^tests\/spec\/.+\.spec\.ts$/.test(f)),
@@ -284,11 +284,11 @@ const CHECKS: Check[] = [
       ),
   },
 
-  // -- Spec no diretÃ³rio correto --------------------------------------------
+  // -- Spec no diretório correto --------------------------------------------
   {
-    name: 'Spec no diretÃ³rio correto conforme tag (@ux->ux/ @journey->journeys/ @regression->regression/)',
+    name: 'Spec no diretório correto conforme tag (@ux->ux/ @journey->journeys/ @regression->regression/)',
     level: 'warn',
-    checklistItem: 'Spec no diretÃ³rio correto',
+    checklistItem: 'Spec no diretório correto',
     run: ({ stagedFiles }) => {
       const violations: string[] = [];
       for (const f of stagedFiles.filter((f) => /^tests\/spec\/.+\.spec\.ts$/.test(f))) {
@@ -296,7 +296,7 @@ const CHECKS: Check[] = [
         const tagMap: Record<string, string> = { '@ux': 'ux/', '@journey': 'journeys/', '@regression': 'regression/' };
         for (const [tag, dir] of Object.entries(tagMap)) {
           if (content.includes(tag) && !f.includes(dir)) {
-            violations.push(`${f} tem tag ${tag} mas estÃ¡ fora de tests/spec/e2e/${dir}`);
+            violations.push(`${f} tem tag ${tag} mas está fora de tests/spec/e2e/${dir}`);
           }
         }
       }
@@ -306,7 +306,7 @@ const CHECKS: Check[] = [
 
   // -- Debug code residual --------------------------------------------------
   {
-    name: 'Sem debugger; no cÃ³digo fonte',
+    name: 'Sem debugger; no código fonte',
     level: 'error',
     run: ({ stagedFiles }) =>
       findMatches(
@@ -325,7 +325,7 @@ const CHECKS: Check[] = [
       ),
   },
 
-  // -- Tags obrigatÃ³rias em novos specs -------------------------------------
+  // -- Tags obrigatórias em novos specs -------------------------------------
   {
     name: 'Novos specs precisam de tag (@smoke|@ux|@journey|@regression|@a11y|@pricing|@quotation_auto|@keyboard)',
     level: 'error',
@@ -341,7 +341,7 @@ const CHECKS: Check[] = [
 
   // -- Tamanho de arquivo --------------------------------------------------
   {
-    name: 'Arquivo > 500 KB (suspeito de binÃ¡rio/log)',
+    name: 'Arquivo > 500 KB (suspeito de binário/log)',
     level: 'warn',
     run: ({ stagedFiles }) => {
       const big: string[] = [];
@@ -416,7 +416,7 @@ function main(): number {
   const warns = results.filter((r) => r.level === 'warn' && r.violations.length > 0);
   const passed = results.filter((r) => r.violations.length === 0);
 
-  // -- SaÃ­da JSON para CI ----------------------------------------------------
+  // -- Saída JSON para CI ----------------------------------------------------
   if (IS_CI || REPORT_JSON) {
     const report = {
       mode,
@@ -435,7 +435,7 @@ function main(): number {
     return errors.length > 0 ? 1 : 0;
   }
 
-  // -- SaÃ­da terminal (local) ------------------------------------------------
+  // -- Saída terminal (local) ------------------------------------------------
   console.log('');
   console.log(c('bold', ' Resumo'));
   console.log(`   ${c('green', `${passed.length} OK`)}  .  ${c('yellow', `${warns.length} warn`)}  .  ${c('red', `${errors.length} fail`)}`);
@@ -445,7 +445,7 @@ function main(): number {
     console.log(
       c(
         'red',
-        'âŒ Commit bloqueado: corrija os itens marcados como FAIL ou use `git commit --no-verify` apenas em emergÃªncias (com justificativa no PR).',
+        'âŒ Commit bloqueado: corrija os itens marcados como FAIL ou use `git commit --no-verify` apenas em emergências (com justificativa no PR).',
       ),
     );
     console.log('');
