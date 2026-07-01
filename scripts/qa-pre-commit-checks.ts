@@ -369,6 +369,58 @@ const CHECKS: Check[] = [
         /^\s*(\/\/|\*|#).*\b(TODO|FIXME|XXX)\b(?!.{0,40}[A-Z]{2,}-\d+)/,
       ),
   },
+
+  // -- Anti-padrão pós-pagamento: toHaveURL após clickFinishBtn -------------
+  {
+    name: 'Anti-padrão: toHaveURL() após clickFinishBtn() (clickFinishBtn já navega internamente)',
+    level: 'error',
+    checklistItem: 'Pós-clickFinishBtn() usa padrão multi-path',
+    run: ({ stagedFiles }) => {
+      const violations: string[] = [];
+      for (const f of stagedFiles.filter((f) => /^tests\/spec\/.+\.spec\.ts$/.test(f))) {
+        const content = readContent(f);
+        if (!content) continue;
+        const lines = content.split('\n');
+        for (let i = 0; i < lines.length - 1; i++) {
+          const isFinishLine = /clickFinishBtn\s*\(\s*\)/.test(lines[i]);
+          if (!isFinishLine) continue;
+          // Verifica as próximas 5 linhas para toHaveURL isolado
+          for (let j = i + 1; j < Math.min(i + 6, lines.length); j++) {
+            if (/toHaveURL\s*\(/.test(lines[j]) && !/isOnSuccessPage|youse\.com\.br/.test(lines[j])) {
+              violations.push(`${f}:${j + 1} -> ${lines[j].trim().slice(0, 120)}`);
+              break;
+            }
+            // Parar se encontrar o padrão correto (multi-path com isOnSuccessPage)
+            if (/isOnSuccessPage\s*\(\s*\)/.test(lines[j])) break;
+          }
+        }
+      }
+      return violations;
+    },
+  },
+
+  // -- Testes de pagamento devem usar cpf.acceptedPool ----------------------
+  {
+    name: 'Testes de pagamento devem usar cpf.acceptedPool[] em vez de CPF fixo hardcoded',
+    level: 'warn',
+    checklistItem: 'Testes de pagamento usam cpf.acceptedPool[N]',
+    run: ({ stagedFiles }) => {
+      const violations: string[] = [];
+      const paymentSpecs = stagedFiles.filter((f) => /^tests\/spec\/e2e\/(journeys|payment)\/.+\.spec\.ts$/.test(f));
+      for (const f of paymentSpecs) {
+        const content = readContent(f);
+        if (!content) continue;
+        // Spec com clickFinishBtn (indica pagamento real) + CPF fixo hardcoded
+        const hasPayment = /clickFinishBtn\s*\(\s*\)/.test(content);
+        const hasFixedCpf = /123\.456\.761-08|12345676108/.test(content);
+        const usesPool = /cpf\.acceptedPool/.test(content);
+        if (hasPayment && hasFixedCpf && !usesPool) {
+          violations.push(`${f} -> usa CPF fixo em teste de pagamento; prefira cpf.acceptedPool[N] de tests/data/cpf.ts`);
+        }
+      }
+      return violations;
+    },
+  },
 ];
 
 // ----------------------------------------------------------------------------

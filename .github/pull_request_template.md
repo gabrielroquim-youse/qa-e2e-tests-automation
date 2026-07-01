@@ -31,6 +31,13 @@
 - [ ] Nenhum valor de preço absoluto foi fixado (usar relações ordinais ou faixas)
 - [ ] Tags `@smoke` / `@ux` / `@journey` / `@regression` / `@quotation_auto` foram adicionadas corretamente
 - [ ] Spec no diretório correto: `journeys/` · `ux/` · `blockers/` · `regression/`
+- [ ] Testes de pagamento usam `cpf.acceptedPool[N]` e não o CPF fixo `123.456.761-08`
+- [ ] Pós-`clickFinishBtn()` usa padrão multi-path (sucesso/youse.com.br/issuance) — não `toHaveURL` isolado
+
+### Acessibilidade
+
+- [ ] Mudanças em UI do funil têm spec de axe correspondente em `tests/spec/a11y/` (ou justificativa)
+- [ ] Novos helpers de a11y estão documentados em `tests/spec/a11y/README.md`
 
 ### Documentação
 

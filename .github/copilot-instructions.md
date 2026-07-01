@@ -84,6 +84,47 @@ Todo novo `.spec.ts` precisa de uma tag correspondente ao diretório onde está.
 - **NUNCA** fixe um preço absoluto como `R$ 1.234,56` em assertions de spec.
 - Use relações ordinais ("plano mais barato", "primeiro resultado") ou faixas ("entre R$ 800 e R$ 1.500").
 
+### Testes de pagamento — CPF e pós-pagamento
+
+- **NUNCA** use o CPF fixo `123.456.761-08` em testes de jornada com pagamento real (vistoria, cartão Elo/Hipercard, PIX). O backend QA aplica throttling após múltiplos pagamentos com o mesmo CPF na mesma janela de tempo.
+- Para testes de pagamento, use `cpf.acceptedPool[N]` (importar de `tests/data/cpf`), reservando índices distintos por spec:
+  ```ts
+  import { cpf } from '../../../data/cpf';
+  // ...
+  await navigateToPlans(page, {}, { ...quotationData, documentNumber: cpf.acceptedPool[0].number });
+  ```
+- **NUNCA** faça `await expect(page).toHaveURL(...)` imediatamente após `await checkout.clickFinishBtn()`. O método `clickFinishBtn()` já aguarda internamente a transição de URL via `waitForPostPaymentRedirect()`. A asserção de URL vem duplicada e falha quando o pagamento avança além de `/issuance`. Use o retorno `IssuancePage` com o padrão multi-path:
+
+  ```ts
+  // ✅ Correto — aceita os 3 estados possíveis no QA
+  const emissaoPage = await checkout.clickFinishBtn();
+  if (emissaoPage.isOnSuccessPage()) {
+    await expect(emissaoPage.title).toBeVisible({ timeout: 15_000 });
+  } else if (page.url().includes('youse.com.br')) {
+    await expect(page).toHaveURL(/youse\.com\.br/);
+  } else {
+    await expect(page).toHaveURL(/\/issuance/);
+  }
+
+  // ❌ Incorreto — URL já pode ter avançado além de /issuance
+  await checkout.clickFinishBtn();
+  await expect(page).toHaveURL(/\/issuance/, { timeout: 90_000 });
+  ```
+
+### Acessibilidade (a11y)
+
+- Novos testes de a11y ficam em `tests/spec/a11y/` com as tags `@a11y` e/ou `@keyboard`.
+- Para scan axe, use `expectNoAccessibilityViolations(page, { stepName })` de `tests/helpers/a11y.ts`.
+- Para verificar tamanho mínimo de alvo touch (WCAG 2.5.5, ≥ 44×44px), use `expectMinTouchTarget(locator, label)` de `tests/helpers/a11yTouch.ts`.
+- Etapas condicionais do funil (`data_enrichment`, `risk_acceptance`) devem usar `test.skip(true, 'motivo')` quando não aparecerem, nunca falhar:
+  ```ts
+  await page.waitForURL(/data_enrichment|bonuses_class/, { timeout: 60_000 });
+  if (!page.url().includes('data_enrichment')) {
+    test.skip(true, 'data_enrichment não apareceu nesta execução');
+    return;
+  }
+  ```
+
 ### Commits e PRs
 
 - Conventional Commits em PT-BR: `feat(scope): descrição`, `fix(scope): ...`, `chore(ci): ...`
@@ -104,3 +145,7 @@ Ao revisar um PR neste repositório, verifique especialmente:
 8. `mode: 'serial'` desnecessário → quebra isolamento.
 9. Preço absoluto em assertion → teste quebrará em qualquer variação de precificação.
 10. Lógica de negócio na spec (deveria estar no Page Object).
+11. Teste de pagamento usando CPF fixo `123.456.761-08` → sugerir `cpf.acceptedPool[N]`.
+12. `toHaveURL()` após `clickFinishBtn()` → anti-padrão; `clickFinishBtn()` já navega internamente.
+13. Novo spec de a11y sem `@a11y` ou `@keyboard` tag, ou sem atualizar `tests/spec/a11y/README.md`.
+14. `test.skip` sem justificativa em string — deve explicar o motivo.

@@ -121,10 +121,21 @@ A moldura aparece em volta da página — útil para inspecionar layout, foco do
 ```
 playwright.a11y.config.ts     ← entry do sandbox
 tests/config/a11yDevices.ts   ← perfis + factory de projetos
-tests/spec/a11y/*.spec.ts     ← specs axe e teclado
-tests/helpers/a11y.ts         ← axe WCAG
-tests/helpers/a11yKeyboard.ts ← Tab / Enter
+tests/spec/a11y/*.spec.ts     ← specs axe, teclado e touch
+tests/helpers/a11y.ts         ← axe WCAG (expectNoAccessibilityViolations)
+tests/helpers/a11yKeyboard.ts ← Tab / Enter (tabUntilFocused, activateFocused)
+tests/helpers/a11yTouch.ts    ← touch targets WCAG 2.5.5 (expectMinTouchTarget)
 ```
+
+### Specs disponíveis
+
+| Spec                                           | O que valida                             | Tag         |
+| ---------------------------------------------- | ---------------------------------------- | ----------- |
+| `tests/spec/a11y/cotacaoFunnel.a11y.spec.ts`   | axe em todas as etapas do funil          | `@a11y`     |
+| `tests/spec/a11y/cotacaoKeyboard.a11y.spec.ts` | Navegação por teclado (Tab/Enter)        | `@keyboard` |
+| `tests/spec/a11y/cotacaoTouch.a11y.spec.ts`    | Tamanho mínimo de alvo touch (≥ 44×44px) | `@a11y`     |
+
+Documentação completa dos specs: [`tests/spec/a11y/README.md`](../../tests/spec/a11y/README.md)
 
 O `playwright.config.ts` principal **reutiliza** os mesmos perfis para manter paridade.
 
