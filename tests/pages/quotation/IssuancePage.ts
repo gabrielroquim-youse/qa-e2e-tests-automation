@@ -21,7 +21,7 @@ export class IssuancePage extends BasePage {
   constructor(page: Page) {
     super(page);
     // Locators para a tela /sucesso — confirmação completa da contratação
-    this.title = this.page.getByText('Pagamento confirmado', { exact: false });
+    this.title = this.page.getByTestId('title'); // <p data-testid="title">Pagamento confirmado</p>
     this.tagCotacaoRealizada = this.page.getByText('Cotação realizada', { exact: false });
     this.tagPagamentoValidado = this.page.getByText('Pagamento validado', { exact: false });
     this.apoliceSectionAuto = this.page.getByText('Seguro Auto', { exact: true }).first();
