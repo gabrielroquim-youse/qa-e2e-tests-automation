@@ -286,16 +286,19 @@ const CHECKS: Check[] = [
 
   // -- Spec no diretório correto --------------------------------------------
   {
-    name: 'Spec no diretório correto conforme tag (@ux->ux/ @journey->journeys/ @regression->regression/)',
+    name: 'Spec no diretório correto conforme tag (@ux->ux/ @journey->journeys/)',
     level: 'warn',
     checklistItem: 'Spec no diretório correto',
     run: ({ stagedFiles }) => {
       const violations: string[] = [];
+      // Regra: @ux deve estar em ux/, @journey em journeys/.
+      // @regression é tag de ciclo de vida (nightly) — pode coexistir em qualquer pasta
+      // junto com @ux, @journey, @a11y ou @negative. Não mapear @regression → regression/.
+      const tagMap: Record<string, string> = { '@ux': 'ux/', '@journey': 'journeys/' };
       for (const f of stagedFiles.filter((f) => /^tests\/spec\/.+\.spec\.ts$/.test(f))) {
         const content = readContent(f) ?? '';
-        const tagMap: Record<string, string> = { '@ux': 'ux/', '@journey': 'journeys/', '@regression': 'regression/' };
         for (const [tag, dir] of Object.entries(tagMap)) {
-          if (content.includes(tag) && !f.includes(dir)) {
+          if (content.includes(tag) && !f.includes(dir) && !f.includes('a11y/')) {
             violations.push(`${f} tem tag ${tag} mas está fora de tests/spec/e2e/${dir}`);
           }
         }
