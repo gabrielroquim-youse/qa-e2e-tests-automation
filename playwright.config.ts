@@ -1,10 +1,12 @@
 import { defineConfig } from '@playwright/test';
 import 'dotenv/config';
+import 'dd-trace/ci/init';
 import TestConfig from './config/test.config';
 
 /**
- * Workers — padrão Playwright: 50% dos processadores lógicos (local).
- * i7-1165G7 (8 threads) → 4 workers. CI: 4 (sharding). Override: PW_WORKERS=2
+ * Workers — 1 localmente para evitar conflito de CPF fixo (123.456.761-08):
+ * requisições paralelas com o mesmo CPF são rejeitadas pelo backend QA.
+ * CI: 4 (sharding por shard). Override: PW_WORKERS=N
  */
 const workers = process.env.PW_WORKERS ? Number(process.env.PW_WORKERS) : process.env.CI ? 4 : 1;
 

@@ -490,63 +490,18 @@ Toda interação com a UI fica encapsulada em classes em `tests/pages/`. Os spec
 Spec ──▶ Fixture ──▶ Page Object ──▶ Browser
 ```
 
-### Custom Fixtures (`test.extend`)
+Page Objects são injetados via `test.extend` em [`tests/fixtures/setupQuotation.ts`](tests/fixtures/setupQuotation.ts) — não instancie manualmente nos specs.
 
-Em vez de instanciar Page Objects manualmente, eles são injetados via fixture:
+O encadeamento fluente entre páginas usa [`proxymise`](https://github.com/nicholasgasior/proxymise), evitando `await` em cada transição.
 
-```ts
-// ✅ Correto — via fixture
-import { test } from '../../fixtures/setupQuotation';
-
-test('exemplo', async ({ planSelectionPage, quotationData }) => {
-  await planSelectionPage.getPlanMonthlyPriceValue('Essencial');
-});
-
-// ❌ Evitar — instância manual
-import { PlanSelectionPage } from '../../pages/quotation/PlanSelectionPage';
-const page = new PlanSelectionPage(page); // acoplamento desnecessário
-```
-
-### Encadeamento fluente com `proxymise`
-
-Detalhes e anti-padrões: [`docs/guides/boas-praticas.md`](docs/guides/boas-praticas.md).
-
-O `proxymise` permite chamar métodos em cadeia sem `await` em cada linha:
-
-```ts
-// Fluente (proxymise)
-const checkoutPage = await LeadInfoPage.open(page).fillLeadData(data).clickContinueBtn().fillLicensePlate(data.licensePlate).clickContinueBtn();
-
-// Sem proxymise (mais verboso)
-const lead = await LeadInfoPage.open(page);
-await lead.fillLeadData(data);
-const vehicle = await lead.clickContinueBtn();
-await vehicle.fillLicensePlate(data.licensePlate);
-const checkout = await vehicle.clickContinueBtn();
-```
-
-### Validação de preços sem valores absolutos
-
-O motor de precificação é dinâmico — os preços mudam com reajustes tarifários, campanhas e tabela FIPE. Por isso, os testes de preço usam **relações ordinais** e **faixas percentuais** em vez de valores fixos:
-
-```ts
-// ✅ Ordinal — não falha com reajuste
-expect(precoEssencial).toBeLessThan(precoRegular);
-
-// ✅ Tolerância — aceita variação de ±2%
-expectPriceWithinTolerance(preco1, preco2, 2);
-
-// ❌ Valor absoluto — falha com qualquer reajuste
-expect(precoEssencial).toBe(2205.92);
-```
+> **Guia completo de padrões, anti-padrões e exemplos:** [`docs/guides/boas-praticas.md`](docs/guides/boas-praticas.md)
 
 ### Seletores — prioridade
 
 1. `getByRole` — acessibilidade em primeiro lugar
 2. `getByLabel` / `getByText`
 3. `getByTestId`
-4. `locator('[data-testid="..."]')`
-5. CSS/XPath — **evitar**; usar apenas como último recurso
+4. CSS/XPath — **evitar**; usar apenas como último recurso
 
 ### Nomenclatura
 
