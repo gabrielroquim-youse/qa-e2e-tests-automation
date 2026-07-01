@@ -71,6 +71,7 @@
   "description": "",
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
+    "@datadog/datadog-ci": "^5.20.1",
     "@faker-js/faker": "^10.0.0",
     "@playwright/test": "^1.55.0",
     "@types/node": "^20.19.17",
@@ -80,6 +81,7 @@
     "allure-playwright": "^3.4.1",
     "cpf-cnpj-validator": "^1.0.3",
     "cross-env": "^10.1.0",
+    "dd-trace": "^5.110.0",
     "dotenv": "^17.2.2",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
