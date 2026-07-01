@@ -55,6 +55,18 @@ export default defineConfig({
         },
       },
     },
+    {
+      // Smoke cross-browser — detecta incompatibilidades CSS/JS/Adyen que o Chromium não vê.
+      // Roda apenas @smoke para manter o CI rápido; regressão completa fica no Chromium.
+      // Local: requer `npx playwright install firefox` (uma vez por máquina).
+      name: 'firefox',
+      testIgnore: /\/a11y\//,
+      grep: /@smoke/,
+      use: {
+        browserName: 'firefox',
+        headless: !!process.env.CI,
+      },
+    },
   ],
   // globalSetup: './tests/global-setup.ts', // opcional
 });

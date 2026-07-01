@@ -9,11 +9,13 @@ Rodam no sandbox a11y — `playwright.a11y.config.ts` — com perfis `mobile-chr
 
 ## Specs
 
-| Arquivo                                                        | O que valida                                                      | WCAG           | Tag         |
-| -------------------------------------------------------------- | ----------------------------------------------------------------- | -------------- | ----------- | --- | -------------------------------------------------------------- | --------------------------------------------------------- | ----- | ------- |
-| [`cotacaoFunnel.a11y.spec.ts`](cotacaoFunnel.a11y.spec.ts)     | Scan **axe** em cada etapa do funil (serious/critical)            | 2.0/2.1/2.2 AA | `@a11y`     |
-| [`cotacaoKeyboard.a11y.spec.ts`](cotacaoKeyboard.a11y.spec.ts) | Navegação por **teclado** (Tab/Enter) nas telas críticas          | 2.1.1 · 2.4.3  | `@keyboard` |
-| [`cotacaoTouch.a11y.spec.ts`](cotacaoTouch.a11y.spec.ts)       | **Tamanho mínimo de alvo touch** (≥ 44×44px) em steppers/switches | 2.5.5          | `@a11y`     |     | [`cotacaoDarkMode.a11y.spec.ts`](cotacaoDarkMode.a11y.spec.ts) | Contraste em **dark mode** (`prefers-color-scheme: dark`) | 1.4.3 | `@a11y` |
+| Arquivo                                                            | O que valida                                                          | WCAG           | Tag         |
+| ------------------------------------------------------------------ | --------------------------------------------------------------------- | -------------- | ----------- |
+| [`cotacaoFunnel.a11y.spec.ts`](cotacaoFunnel.a11y.spec.ts)         | Scan **axe** em cada etapa do funil (serious/critical)                | 2.0/2.1/2.2 AA | `@a11y`     |
+| [`cotacaoKeyboard.a11y.spec.ts`](cotacaoKeyboard.a11y.spec.ts)     | Navegação por **teclado** (Tab/Enter) nas telas críticas              | 2.1.1 · 2.4.3  | `@keyboard` |
+| [`cotacaoTouch.a11y.spec.ts`](cotacaoTouch.a11y.spec.ts)           | **Tamanho mínimo de alvo touch** (≥ 44×44px) em steppers/switches     | 2.5.5          | `@a11y`     |
+| [`cotacaoDarkMode.a11y.spec.ts`](cotacaoDarkMode.a11y.spec.ts)     | Contraste em **dark mode** (`prefers-color-scheme: dark`)             | 1.4.3          | `@a11y`     |
+| [`cotacaoFormErrors.a11y.spec.ts`](cotacaoFormErrors.a11y.spec.ts) | axe em **estado de erro** — aria-invalid, aria-describedby, aria-live | 3.3.1 · 1.3.1  | `@a11y`     |
 
 ## Cobertura por etapa do funil
 

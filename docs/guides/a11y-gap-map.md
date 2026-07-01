@@ -21,16 +21,16 @@
 
 ## Onde focar (resumo executivo)
 
-| Prioridade | Área                                                        | Motivo                                               | Ação principal                                      |
-| ---------- | ----------------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------- |
-| **P0**     | `lead_info` — roles ARIA + link WhatsApp                    | 🔴 axe **critical/serious** em Android, iOS e tablet | Corrigir markup no MFE `sales-lead-requirements`    |
-| **P0**     | `plan_selection` — ordem de tabulação                       | 🔴 teclado não alcança Continuar (timeout 4 min)     | Revisar tab order e foco nos cards                  |
-| **P1**     | Steppers franquia/indenização (`coverages_selection`)       | 🟠 alvos pequenos · sem nome acessível · WCAG 2.5.5  | `aria-label` + área de toque ≥ 44px                 |
-| **P1**     | Switches coberturas/assistências                            | 🟠 localizados via XPath · alvo touch pequeno        | Label + switch semântico                            |
-| **P1**     | Cards de plano                                              | 🟠 semântica fraca (`CSS` class)                     | `<article>` / `role="group"` + heading              |
-| **P2**     | CAP-02 validação obrigatória                                | 🟡 sem teste · mensagens de erro                     | `aria-live` + foco no primeiro erro                 |
-| **P2**     | Checkout checkbox e-mail                                    | 🟡 click via JS nos testes                           | Label clicável nativa                               |
-| **P2**     | Telas intermediárias (`data_enrichment`, `risk_acceptance`) | ⚪ condicionais — teste condicional adicionado       | `cotacaoFunnel.a11y.spec.ts` — skip se não aparecer |
+| Prioridade | Área                                                        | Motivo                                                                 | Ação principal                                      |
+| ---------- | ----------------------------------------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------- |
+| **P0**     | `lead_info` — roles ARIA + link WhatsApp                    | 🔴 axe **critical/serious** em Android, iOS e tablet                   | Corrigir markup no MFE `sales-lead-requirements`    |
+| **P0**     | `plan_selection` — ordem de tabulação                       | 🔴 teclado não alcança Continuar (timeout 4 min)                       | Revisar tab order e foco nos cards                  |
+| **P1**     | Steppers franquia/indenização (`coverages_selection`)       | 🟠 alvos pequenos · sem nome acessível · WCAG 2.5.5                    | `aria-label` + área de toque ≥ 44px                 |
+| **P1**     | Switches coberturas/assistências                            | 🟠 localizados via XPath · alvo touch pequeno                          | Label + switch semântico                            |
+| **P1**     | Cards de plano                                              | 🟠 semântica fraca (`CSS` class)                                       | `<article>` / `role="group"` + heading              |
+| **P2**     | CAP-02 validação obrigatória                                | 🟡 axe em estado de erro adicionado → `cotacaoFormErrors.a11y.spec.ts` | `aria-live` + foco no primeiro erro                 |
+| **P2**     | Checkout checkbox e-mail                                    | 🟡 click via JS nos testes                                             | Label clicável nativa                               |
+| **P2**     | Telas intermediárias (`data_enrichment`, `risk_acceptance`) | ⚪ condicionais — teste condicional adicionado                         | `cotacaoFunnel.a11y.spec.ts` — skip se não aparecer |
 
 > **Atualização 2026:** testes axe adicionados para `vehicle_details`, `vehicle_additional_details`, `person_data`, `bonuses_class`, `data_enrichment` (condicional) e `risk_acceptance` (condicional) em `cotacaoFunnel.a11y.spec.ts`. Testes de touch target (WCAG 2.5.5) para steppers e switches em `cotacaoTouch.a11y.spec.ts`.
 
