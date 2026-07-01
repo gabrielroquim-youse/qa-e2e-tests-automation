@@ -10,10 +10,10 @@ Rodam no sandbox a11y — `playwright.a11y.config.ts` — com perfis `mobile-chr
 ## Specs
 
 | Arquivo                                                        | O que valida                                                      | WCAG           | Tag         |
-| -------------------------------------------------------------- | ----------------------------------------------------------------- | -------------- | ----------- |
+| -------------------------------------------------------------- | ----------------------------------------------------------------- | -------------- | ----------- | --- | -------------------------------------------------------------- | --------------------------------------------------------- | ----- | ------- |
 | [`cotacaoFunnel.a11y.spec.ts`](cotacaoFunnel.a11y.spec.ts)     | Scan **axe** em cada etapa do funil (serious/critical)            | 2.0/2.1/2.2 AA | `@a11y`     |
 | [`cotacaoKeyboard.a11y.spec.ts`](cotacaoKeyboard.a11y.spec.ts) | Navegação por **teclado** (Tab/Enter) nas telas críticas          | 2.1.1 · 2.4.3  | `@keyboard` |
-| [`cotacaoTouch.a11y.spec.ts`](cotacaoTouch.a11y.spec.ts)       | **Tamanho mínimo de alvo touch** (≥ 44×44px) em steppers/switches | 2.5.5          | `@a11y`     |
+| [`cotacaoTouch.a11y.spec.ts`](cotacaoTouch.a11y.spec.ts)       | **Tamanho mínimo de alvo touch** (≥ 44×44px) em steppers/switches | 2.5.5          | `@a11y`     |     | [`cotacaoDarkMode.a11y.spec.ts`](cotacaoDarkMode.a11y.spec.ts) | Contraste em **dark mode** (`prefers-color-scheme: dark`) | 1.4.3 | `@a11y` |
 
 ## Cobertura por etapa do funil
 
@@ -33,7 +33,15 @@ Rodam no sandbox a11y — `playwright.a11y.config.ts` — com perfis `mobile-chr
 
 _Condicional = `test.skip` quando a etapa não aparece nessa execução (CPF/perfil sem gatilho)._
 
-## Comandos
+## Perfis de dispositivo (sandbox a11y)
+
+| Projeto Playwright | Viewport | Orientação    | Por que existe                                              |
+| ------------------ | -------- | ------------- | ----------------------------------------------------------- |
+| `desktop`          | 1280×800 | —             | Baseline desktop                                            |
+| `tablet`           | 810×1080 | Portrait      | Tablet em pé (mais comum)                                   |
+| `tablet-landscape` | 1080×810 | **Landscape** | WCAG 1.3.4 — conteúdo não pode ser bloqueado por orientação |
+
+> Celular (Android/iOS) é coberto pelo `qa-mobile-tests-automation` via Appium. Os perfis `mobile-chrome` e `mobile-ios` existem neste config apenas como referência.
 
 ```bash
 # Sandbox completo — 3 perfis × specs @a11y + @keyboard

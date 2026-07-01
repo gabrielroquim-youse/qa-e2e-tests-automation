@@ -6,7 +6,7 @@ import { devices, type PlaywrightTestProject } from '@playwright/test';
  * Escopo deste repositório: desktop e tablet.
  * Celular (Android/iOS): coberto por qa-mobile-tests-automation.
  */
-export type A11yDeviceId = 'desktop' | 'desktop-wide' | 'tablet' | 'mobile-chrome' | 'mobile-ios';
+export type A11yDeviceId = 'desktop' | 'desktop-wide' | 'tablet' | 'tablet-landscape' | 'mobile-chrome' | 'mobile-ios';
 
 export interface A11yDeviceProfile {
   id: A11yDeviceId;
@@ -45,6 +45,15 @@ export const A11Y_DEVICE_PROFILES: Record<A11yDeviceId, A11yDeviceProfile> = {
     category: 'tablet',
     playwrightDeviceKey: 'iPad (gen 7)',
     viewport: { width: 810, height: 1080 },
+    nativeBrowser: 'webkit',
+  },
+  'tablet-landscape': {
+    id: 'tablet-landscape',
+    // WCAG 1.3.4 — conteúdo não deve ser bloqueado por orientação
+    label: 'Tablet Landscape — iPad 7ª geração deitado (1080×810)',
+    category: 'tablet',
+    playwrightDeviceKey: 'iPad (gen 7) landscape',
+    viewport: { width: 1080, height: 810 },
     nativeBrowser: 'webkit',
   },
   // ── Mobile — manter aqui somente como referência; use qa-mobile-tests-automation ──
@@ -96,11 +105,11 @@ function createA11yProject(profile: A11yDeviceProfile): PlaywrightTestProject {
 
 /**
  * Projetos Playwright do sandbox a11y.
- * Padrão: desktop + tablet (foco deste repo).
+ * Padrão: desktop + tablet portrait + tablet landscape (foco deste repo).
  * Mobile: qa-mobile-tests-automation.
  */
 export function createA11yProjects(deviceIds?: A11yDeviceId[]): PlaywrightTestProject[] {
-  const ids = deviceIds ?? (['desktop', 'tablet'] as A11yDeviceId[]);
+  const ids = deviceIds ?? (['desktop', 'tablet', 'tablet-landscape'] as A11yDeviceId[]);
   return ids.map((id) => createA11yProject(A11Y_DEVICE_PROFILES[id]));
 }
 
