@@ -16,6 +16,6 @@
     "outDir": "dist",
     "types": ["node", "@playwright/test"]
   },
-  "include": ["tests/**/*", "scripts/**/*", "playwright.config.ts", "playwright.a11y.config.ts"],
+  "include": ["tests/**/*", "scripts/**/*", "playwright.config.ts", "playwright.a11y.config.ts", "playwright.visual.config.ts"],
   "exclude": ["dist", "node_modules", "playwright-report", "storage"]
 }

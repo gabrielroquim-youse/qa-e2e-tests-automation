@@ -28,6 +28,11 @@ blob-report/
 all-blob-reports/
 storage/
 
+# Visual regression — diffs (temporários por execução) NÃO versionados.
+# Os BASELINES em tests/__snapshots__/ SÃO versionados (contrato visual).
+tests/__snapshots__/**/*-diff.png
+tests/__snapshots__/**/*-actual.png
+
 # ── Allure — artefatos de execução ───────────────────────────────────────────
 allure-results/
 allure-report/
