@@ -414,6 +414,34 @@ npx playwright test --grep "@quotation_auto" --reporter=list
 CI=true npx playwright test --reporter=list
 ```
 
+### Cross-browser — Firefox smoke
+
+```bash
+# Roda apenas os testes @smoke no Firefox (detecta incompatibilidades CSS/Adyen)
+npx playwright test --project=firefox --grep "@smoke" --reporter=list
+```
+
+### Resiliência de rede
+
+```bash
+# Simula 3G lento e BFF 503 — verifica que a app não navega silenciosamente
+npx playwright test tests/spec/e2e/ux/network-resilience.spec.ts --project=chromium --reporter=list
+```
+
+### Visual regression
+
+```bash
+# Compara screenshots com baselines (falha se diferença > 2%)
+npm run test:visual
+
+# Atualizar baselines após mudança intencional de UI
+npm run test:visual:update
+
+# Commitar baselines novos/atualizados
+git add tests/__snapshots__
+git commit -m "test(visual): atualiza baselines após [descreva a mudança]"
+```
+
 ### Debug interativo (abre o browser e pausa no erro)
 
 ```bash
@@ -431,17 +459,28 @@ As tags organizam os testes por pipeline e finalidade. Use sempre `--grep` para 
 | `@smoke`          | A cada PR (`npm run test:smoke`)                         | ~5–10 min                                     |
 | `@ux`             | Usabilidade por tela — formulário, planos, checkout (PR) | ~11–12 min (`npm run test:ux`, `--workers=1`) |
 | `@journey`        | Jornadas E2E completas (nightly)                         | ~15–30 min                                    |
-| `@a11y`           | On release / PR (com VPN)                                | ~15–25 min (mobile + tablet)                  |
+| `@a11y`           | WCAG axe, teclado, touch, dark mode, erros (VPN)         | ~15–25 min (`npm run test:a11y`)              |
+| `@visual`         | Screenshot diff vs baseline (`npm run test:visual`)      | ~5–10 min                                     |
 | `@regression`     | Nightly (UX — visibilidade, navegação)                   | ~20 min                                       |
+| `@negative`       | Cenários de erro — CPF restrito, rede, formulário        | —                                             |
+| `@keyboard`       | Navegação por teclado (Tab/Enter)                        | ~10 min (`npm run test:keyboard`)             |
 | `@price`          | **Repo API** (`test:pricing`) — não E2E                  | —                                             |
-| `@sanity`         | On release                                               | ~5 min                                        |
-| `@b2c`            | Todos os testes de jornada B2C                           | —                                             |
 | `@quotation_auto` | Todos os testes do funil de cotação                      | —                                             |
 | `@happy_path`     | Somente caminho feliz                                    | —                                             |
-| `@bonus_class`    | Testes de Classe de Bônus                                | —                                             |
-| `@coberturas`     | UX coberturas na tela (preço → repo API)                 | —                                             |
-| `@personalizacao` | UX personalização (preço → repo API)                     | —                                             |
-| `@assistencias`   | UX assistências (preço → repo API)                       | —                                             |
+
+### Cobertura de acessibilidade (specs em `tests/spec/a11y/`)
+
+| Spec                                | WCAG           | O que valida                                   |
+| ----------------------------------- | -------------- | ---------------------------------------------- |
+| `cotacaoFunnel.a11y.spec.ts`        | 2.0/2.1/2.2 AA | Axe em todas as 11 etapas do funil             |
+| `cotacaoKeyboard.a11y.spec.ts`      | 2.1.1 · 2.4.3  | Navegação Tab/Enter nas telas críticas         |
+| `cotacaoTouch.a11y.spec.ts`         | 2.5.5          | Tamanho mínimo de alvo touch (≥ 44×44px)       |
+| `cotacaoDarkMode.a11y.spec.ts`      | 1.4.3          | Contraste em `prefers-color-scheme: dark`      |
+| `cotacaoFormErrors.a11y.spec.ts`    | 3.3.1 · 1.3.1  | Axe em estado de erro — aria-invalid/aria-live |
+| `cotacaoReducedMotion.a11y.spec.ts` | 2.3.3          | Funil funciona com `prefers-reduced-motion`    |
+
+Perfis de dispositivo: `desktop` · `tablet` (portrait) · `tablet-landscape` · `mobile-chrome` · `mobile-ios`
+Guia completo: [`tests/spec/a11y/README.md`](tests/spec/a11y/README.md) · [`docs/guides/a11y-device-sandbox.md`](docs/guides/a11y-device-sandbox.md)
 
 ---
 
@@ -624,8 +663,15 @@ npm run test:ux         # usabilidade por tela (30 testes, ~11 min)
 npm run test:regression # apenas testes @regression E2E
 npm run test:payment    # pagamento checkout (PIX + cartões Elo/Hipercard)
 npm run test:api        # cilia + test-utils (cotação → qa-api-tests-automation)
-npm run test:a11y       # smoke axe mobile (Pixel 5) + tablet (iPad) — navegador visível · VPN
+npm run test:a11y       # smoke axe — todas as etapas do funil · VPN
 npm run test:keyboard   # navegação por teclado (@keyboard) — navegador visível · VPN
+
+# Visual regression (screenshot diff vs baseline)
+npm run test:visual          # compara com baselines em tests/__snapshots__/
+npm run test:visual:update   # atualiza baselines após mudança intencional de UI
+
+# Enviar branch para repositório pessoal (validate + push)
+npm run push:personal
 
 # Relatório de tempo E2E (dashboard em docs/reports/)
 npm run test:ux:timing                           # UX + atualiza e2e-timing-report (~12 min)
