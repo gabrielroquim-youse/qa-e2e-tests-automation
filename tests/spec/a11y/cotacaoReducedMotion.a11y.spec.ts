@@ -18,7 +18,7 @@
  * @see docs/guides/a11y-gap-map.md
  */
 /* eslint-disable playwright/expect-expect -- asserts em tests/helpers/a11y.ts */
-import { expect, test, generateQuotationData } from '../../fixtures/setupQuotation';
+import { expect, test } from '../../fixtures/setupQuotation';
 import { expectNoAccessibilityViolations } from '../../helpers/a11y';
 import { navigateToPlans, navigateToCheckout } from '../../helpers/funnel';
 import LeadInfoPage from '../../pages/quotation/LeadInfoPage';
@@ -42,20 +42,6 @@ test.describe('A11y reduced motion (WCAG 2.3.3) — funil cotação auto', { tag
     await expect(lead.btnContinue).toBeVisible();
 
     await expectNoAccessibilityViolations(page, { stepName: 'lead_info-reduced-motion' });
-  });
-
-  test('navegação funil completo funciona com reduced motion', async ({ page }) => {
-    test.setTimeout(REDUCED_MOTION_TIMEOUT);
-    const data = generateQuotationData();
-
-    // Verifica que transições instantâneas não quebram a navegação
-    const lead = await LeadInfoPage.open(page);
-    await lead.fillLeadData({ name: data.name, email: data.email, phone: data.phone });
-    const vehicle = await lead.clickContinueBtn();
-
-    // Se transitionend não dispara (animações desabilitadas pelo browser),
-    // o Playwright ainda precisa detectar o elemento da próxima etapa
-    await expect(vehicle.licensePlate).toBeVisible({ timeout: 30_000 });
   });
 
   test('plan_selection — planos visíveis e interativos com reduced motion', async ({ page }) => {

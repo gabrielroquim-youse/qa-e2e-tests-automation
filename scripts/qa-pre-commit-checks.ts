@@ -330,11 +330,11 @@ const CHECKS: Check[] = [
 
   // -- Tags obrigatórias em novos specs -------------------------------------
   {
-    name: 'Novos specs precisam de tag (@smoke|@ux|@journey|@regression|@a11y|@pricing|@quotation_auto|@keyboard)',
+    name: 'Novos specs precisam de tag (@smoke|@ux|@journey|@regression|@a11y|@pricing|@quotation_auto|@keyboard|@visual|@negative)',
     level: 'error',
     checklistItem: 'Tags foram adicionadas corretamente',
     run: ({ newFiles }) => {
-      const tagRe = /@(smoke|ux|journey|regression|a11y|pricing|quotation_auto|keyboard)\b/;
+      const tagRe = /@(smoke|ux|journey|regression|a11y|pricing|quotation_auto|keyboard|visual|negative)\b/;
       return newFiles
         .filter((f) => /^tests\/spec\/.+\.spec\.ts$/.test(f))
         .filter((f) => !tagRe.test(readContent(f) ?? ''))

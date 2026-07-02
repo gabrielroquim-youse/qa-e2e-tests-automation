@@ -17,11 +17,11 @@
  *
  * @see docs/guides/a11y-gap-map.md — formulários e feedback de erro
  */
-import { expect, test } from '../../../fixtures/setupQuotation';
+import { expect, test, generateQuotationData } from '../../../fixtures/setupQuotation';
 import LeadInfoPage from '../../../pages/quotation/LeadInfoPage';
 
-/** Padrão que corresponde a qualquer chamada ao BFF de cotação. */
-const BFF_PATTERN = /qa-bff\.youse\.io|qa-cotacao\.youse\.io\/api|\/api\//;
+/** Padrão que corresponde às chamadas do BFF de cotação (não intercepta rotas genéricas). */
+const BFF_PATTERN = /qa-bff\.youse\.io|qa-cotacao\.youse\.io\/api\/(cotacao|bff)/;
 
 /** Simula resposta de erro do servidor (serviço indisponível). */
 async function routeServerError(page: import('@playwright/test').Page, statusCode: 503 | 500 = 503): Promise<void> {
@@ -42,7 +42,7 @@ async function routeSlowNetwork(page: import('@playwright/test').Page, delayMs =
   });
 }
 
-test.describe('Network resilience — funil cotação auto', { tag: ['@regression', '@negative', '@quotation_auto'] }, () => {
+test.describe('Network resilience — funil cotação auto', { tag: ['@ux', '@regression', '@negative', '@quotation_auto'] }, () => {
   test('lead_info — carrega mesmo com BFF lento (3G)', async ({ page }) => {
     test.setTimeout(120_000);
 
@@ -60,6 +60,7 @@ test.describe('Network resilience — funil cotação auto', { tag: ['@regressio
 
   test('lead_info — exibe mensagem de erro acessível quando BFF retorna 503', async ({ page }) => {
     test.setTimeout(60_000);
+    const data = generateQuotationData();
 
     // Bloqueia apenas calls de validação/submit do funil (não o carregamento inicial da tela)
     const lead = await LeadInfoPage.open(page);
@@ -70,30 +71,23 @@ test.describe('Network resilience — funil cotação auto', { tag: ['@regressio
 
     // Tenta avançar — o BFF vai retornar 503
     await lead.fillLeadData({
-      name: 'John Youser',
-      email: `qa.resiliencia+${Date.now()}@youse.com.br`,
-      phone: '(11) 91234-5678',
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
     });
 
     // Clica em Continuar — a chamada ao BFF falha com 503
     await lead.btnContinue.click();
 
-    // A tela NÃO deve navegar; deve exibir algum feedback (error state ou mensagem inline).
-    // Aceita tanto mensagem de erro explícita quanto permanência na mesma URL.
-    /* eslint-disable playwright/no-conditional-in-test, playwright/no-conditional-expect -- 3 estados válidos após 503: mensagem, permanece ou erro */
-    const currentUrl = page.url();
-    const errorMsg = page.getByText(/alguma coisa deu errada|erro|tente novamente|indisponível/i).first();
-    const hasError = await errorMsg.isVisible({ timeout: 5_000 }).catch(() => false);
-
-    if (!hasError) {
-      // Se não exibiu mensagem, verifica que ao menos não avançou silenciosamente
-      expect(page.url()).toBe(currentUrl);
-    }
-    /* eslint-enable playwright/no-conditional-in-test, playwright/no-conditional-expect */
+    // O funil NÃO deve navegar para a próxima etapa — a URL deve permanecer no lead_info
+    await expect(page).toHaveURL(/lead_info|seguro-auto(?!\/[a-f0-9]{8}-)/, { timeout: 5_000 });
+    // O campo nome permanece visível (confirma que não houve navegação)
+    await expect(lead.nome).toBeVisible();
   });
 
   test('plan_selection — exibe estado de carregamento com rede lenta', async ({ page }) => {
     test.setTimeout(180_000);
+    const data = generateQuotationData();
 
     // Carrega o lead normalmente (sem interceptação)
     const lead = await LeadInfoPage.open(page);
@@ -103,9 +97,9 @@ test.describe('Network resilience — funil cotação auto', { tag: ['@regressio
     await routeSlowNetwork(page, 3_000);
 
     await lead.fillLeadData({
-      name: 'John Youser',
-      email: `qa.resiliencia+${Date.now()}@youse.com.br`,
-      phone: '(11) 91234-5678',
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
     });
     await lead.btnContinue.click();
 
