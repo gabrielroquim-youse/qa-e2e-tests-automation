@@ -9,6 +9,7 @@
 import { faker } from '@faker-js/faker/locale/pt_BR';
 import { test as base } from '@playwright/test';
 import { cpf } from '../data/cpf';
+import { ADYEN_TEST_CARDS } from '../data/adyenTestCards';
 import { BonusesClassPage } from '../pages/quotation/BonusesClassPage';
 import { CheckoutPage } from '../pages/quotation/CheckoutPage';
 import { IssuancePage } from '../pages/quotation/IssuancePage';
@@ -59,11 +60,13 @@ export function generateQuotationData(overrides?: Partial<QuotationData>): Quota
     // para criação de apólice D-1 e conflita com workflows internos do QA.
     // Para cenários de erro específicos, passe overrides.documentNumber.
     documentNumber: cpf.acceptedPool[0].number,
+    // Cartão Visa aprovado do catálogo Adyen (sandbox Youse).
+    // Para outros cenários (Elo, Hipercard, recusado), passe overrides.creditCard.
     creditCard: {
-      number: '4111 1111 1111 1111',
-      expireDate: '0330',
-      cvv: '737',
-      holderName: 'youse',
+      number: ADYEN_TEST_CARDS.approved.number,
+      expireDate: ADYEN_TEST_CARDS.approved.expireDate,
+      cvv: ADYEN_TEST_CARDS.approved.cvv,
+      holderName: ADYEN_TEST_CARDS.approved.holderName,
     },
     ...overrides,
   };
