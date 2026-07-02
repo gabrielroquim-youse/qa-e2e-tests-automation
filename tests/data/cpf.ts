@@ -378,7 +378,11 @@ export const cpf = {
 
   // ── Aceito — Caminho feliz ─────────────────────────────────────────────────
 
-  /** CPF padrão aceito sem restrições (mesmo valor de TestConfig.credentials.documentNumber) */
+  /**
+   * CPF reservado para criação de apólice D-1 (data retroativa de um dia).
+   * NÃO usar em testes de caminho feliz genéricos — use `cpf.acceptedPool[N]`.
+   * Este CPF coincide com TestConfig.credentials.documentNumber.
+   */
   accepted: {
     number: '123.456.761-08',
     status: 'accepted',

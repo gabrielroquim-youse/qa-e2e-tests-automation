@@ -8,6 +8,7 @@
  */
 import { faker } from '@faker-js/faker/locale/pt_BR';
 import { test as base } from '@playwright/test';
+import { cpf } from '../data/cpf';
 import { BonusesClassPage } from '../pages/quotation/BonusesClassPage';
 import { CheckoutPage } from '../pages/quotation/CheckoutPage';
 import { IssuancePage } from '../pages/quotation/IssuancePage';
@@ -53,7 +54,11 @@ export function generateQuotationData(overrides?: Partial<QuotationData>): Quota
     licensePlate: 'YOU-0020',
     zipCode: '04777-020',
     addressNumber: '99999',
-    documentNumber: '123.456.761-08',
+    // CPF de mock para caminho feliz (sem restrições, sem propósito especial).
+    // NÃO usar cpf.accepted ('123.456.761-08') aqui — esse CPF é reservado
+    // para criação de apólice D-1 e conflita com workflows internos do QA.
+    // Para cenários de erro específicos, passe overrides.documentNumber.
+    documentNumber: cpf.acceptedPool[0].number,
     creditCard: {
       number: '4111 1111 1111 1111',
       expireDate: '0330',

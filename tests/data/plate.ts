@@ -211,27 +211,31 @@ export const plate = {
     },
   } as PlateData,
 
-  /** Aceita — dados do veículo completamente sem correspondência (matched vazio) */
-  acceptedNoMatchedData: {
-    number: 'YOU-0014',
-    status: 'accepted',
-    source: 'risk-acceptance',
-    description: 'Sem restrições',
-    result: {
-      vehicle: {
-        'license_plate:': null,
-        license_plate_state: null,
-        vin: null,
-        renavam: null,
-        matched: {
-          fuel_type: null,
-          vin: null,
-          year: null,
-          external_codes: [],
-        },
-      },
-    },
-  } as PlateData,
+  // TODO: YOU-0014 retorna dados de veículo nulos no QA (license_plate, vin, renavam = null).
+  // Antes de usar esta placa em automação, confirmar com a equipe de backend se o
+  // mock foi corrigido e o campo `license_plate:` (com dois pontos) não é um typo no contrato.
+  // Reativar removendo este bloco de comentário quando o ambiente QA retornar dados válidos.
+  //
+  // acceptedNoMatchedData: {
+  //   number: 'YOU-0014',
+  //   status: 'accepted',
+  //   source: 'risk-acceptance',
+  //   description: 'Sem restrições',
+  //   result: {
+  //     vehicle: {
+  //       'license_plate:': null,   // ← possível typo no contrato ('license_plate:' com dois-pontos)
+  //       license_plate_state: null,
+  //       vin: null,
+  //       renavam: null,
+  //       matched: {
+  //         fuel_type: null,
+  //         vin: null,
+  //         year: null,
+  //         external_codes: [],
+  //       },
+  //     },
+  //   },
+  // } as PlateData,
 
   /** Aceita — chassi com valor diferente do padrão (sem external_codes) */
   acceptedAlternativeVin: {
