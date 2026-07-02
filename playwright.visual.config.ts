@@ -17,7 +17,9 @@ import TestConfig from './config/test.config';
 
 export default defineConfig({
   testDir: './tests/spec/visual',
-  timeout: 120_000,
+  // Testes que navegam o funil completo (plan_selection, checkout) precisam de até 5 min
+  // em headless — sem GPU e navegando o QA o cursor pode demorar mais que o habitual.
+  timeout: 300_000,
   expect: {
     timeout: 15_000,
     toHaveScreenshot: {

@@ -72,6 +72,7 @@ test.describe('Visual regression — funil cotação auto', { tag: ['@visual', '
   });
 
   test('plan_selection — cards de plano', async ({ page }) => {
+    test.setTimeout(300_000); // navega o funil completo em headless
     const plans = await navigateToPlans(page);
     await plans.title.waitFor({ state: 'visible', timeout: 45_000 });
 
@@ -88,6 +89,7 @@ test.describe('Visual regression — funil cotação auto', { tag: ['@visual', '
   });
 
   test('checkout — resumo do plano Regular', async ({ page }) => {
+    test.setTimeout(300_000); // navega funil + coberturas + assistências em headless
     const checkout = await navigateToCheckout(page);
     await checkout.title.waitFor({ state: 'visible', timeout: 60_000 });
 
