@@ -69,6 +69,12 @@ yarn-error.log*
 *.trace
 *.zip
 
+# Baselines de visual regression — VERSIONADOS (contrato visual do produto).
+# Exceção explícita à regra *.png acima; diffs e actuals continuam ignorados.
+!tests/__snapshots__/**/*.png
+tests/__snapshots__/**/*-diff.png
+tests/__snapshots__/**/*-actual.png
+
 # ── Cache e temporários ───────────────────────────────────────────────────────
 .cache/
 .tmp/
