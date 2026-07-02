@@ -18,29 +18,40 @@ const ROOT = resolve(__dirname, '..');
 const TEST_RESULTS = join(ROOT, 'test-results');
 const OUTPUT_DIR = join(ROOT, 'docs', 'reports', 'videos');
 
-/** Mapeia parte do nome do diretório de resultado ao nome legível do fluxo */
-const FLOW_MAP: Record<string, string> = {
-  personalizado: 'F2_Plano-Personalizado',
-  'plano-regular': 'F1_Plano-Regular',
-  'regular-ate-emissao': 'F1_Plano-Regular-Emissao',
-  'sem-pagar': 'F1_Plano-Regular-Checkout',
-  'plano-essencial': 'F3_Plano-Essencial',
-  'checkout-com-plano-e': 'F3_Plano-Essencial-Checkout',
-  essencial: 'F3_Plano-Essencial',
-  'auto-1504': 'F4_Plano-Auto1504',
-  'checkout-com-plano-a': 'F4_Plano-Auto1504-Checkout',
-  'guincho-200': 'F3_Essencial-Accordion-Guincho200',
-  'guincho-400': 'F4_Auto1504-Accordion-Guincho400',
-  reparos: 'F4_Auto1504-Accordion-Reparos',
-  'upsells-residencial-e-vida': 'Checkout-Upsells-Residencial-Vida',
-  upsells: 'Checkout-Upsells',
-  'vistoria-online': 'Vistoria-Online',
-  'vistoria-video': 'Vistoria-Video',
-};
+/** Mapeia parte do nome do diretório de resultado ao nome legível do fluxo.
+ * Ordem importa: chaves mais específicas primeiro para evitar match errado. */
+const FLOW_MAP: Array<[string, string]> = [
+  // F2 — Personalizado (match pelo nome do teste, não do spec)
+  ['configura', 'F2_Plano-Personalizado'],
+  ['personalizado', 'F2_Plano-Personalizado'],
+  // F1 — Regular
+  ['regular-ate-emissao', 'F1_Plano-Regular-Emissao'],
+  ['emissao', 'F1_Plano-Regular-Emissao'],
+  ['sem-pagar', 'F1_Plano-Regular-Checkout'],
+  ['plano-regular', 'F1_Plano-Regular'],
+  // F3 — Essencial
+  ['guincho-200', 'F3_Essencial-Accordion-Guincho200'],
+  ['200km', 'F3_Essencial-Accordion-Guincho200'],
+  ['plano-essencial', 'F3_Plano-Essencial'],
+  ['checkout-com-plano-e', 'F3_Plano-Essencial-Checkout'],
+  ['essencial', 'F3_Plano-Essencial'],
+  // F4 — Auto 1504
+  ['reparos', 'F4_Auto1504-Accordion-Reparos'],
+  ['guincho-400', 'F4_Auto1504-Accordion-Guincho400'],
+  ['400km', 'F4_Auto1504-Accordion-Guincho400'],
+  ['auto-1504', 'F4_Plano-Auto1504'],
+  ['1504', 'F4_Plano-Auto1504'],
+  // Cross-sell
+  ['upsells-residencial-e-vida', 'Checkout-Upsells'],
+  ['upsells', 'Checkout-Upsells'],
+  // Vistoria
+  ['vistoria-video', 'Vistoria-Video'],
+  ['vistoria-online', 'Vistoria-Online'],
+];
 
 function resolveFlowName(dirName: string): string {
   const lower = dirName.toLowerCase();
-  for (const [key, name] of Object.entries(FLOW_MAP)) {
+  for (const [key, name] of FLOW_MAP) {
     if (lower.includes(key.toLowerCase())) return name;
   }
   // Fallback: usa primeiros 40 chars do dirname sanitizado
@@ -63,6 +74,8 @@ function main(): void {
 
   mkdirSync(OUTPUT_DIR, { recursive: true });
   const datetime = formatDatetime();
+  /** Contador por nome de fluxo — evita sufixos como _8 ou _10 */
+  const nameCount: Record<string, number> = {};
   let copied = 0;
 
   for (const dir of readdirSync(TEST_RESULTS)) {
@@ -70,13 +83,13 @@ function main(): void {
     if (!existsSync(videoPath)) continue;
 
     const flowName = resolveFlowName(dir);
-    const dest = join(OUTPUT_DIR, `${flowName}_${datetime}.webm`);
+    nameCount[flowName] = (nameCount[flowName] ?? 0) + 1;
 
-    // Não sobrescreve se já existir (múltiplos testes no mesmo segundo)
-    const finalDest = existsSync(dest) ? join(OUTPUT_DIR, `${flowName}_${datetime}_${++copied}.webm`) : dest;
+    const suffix = nameCount[flowName] > 1 ? `_${nameCount[flowName]}` : '';
+    const dest = join(OUTPUT_DIR, `${flowName}_${datetime}${suffix}.webm`);
 
-    copyFileSync(videoPath, finalDest);
-    console.log(`✅ ${dir.slice(0, 50)}...\n   → ${finalDest.replace(ROOT, '.')}`);
+    copyFileSync(videoPath, dest);
+    console.log(`✅ ${dir.slice(0, 50)}...\n   → ${dest.replace(ROOT, '.')}`);
     copied++;
   }
 
