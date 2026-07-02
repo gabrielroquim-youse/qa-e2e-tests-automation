@@ -19,6 +19,7 @@
     "test:keyboard:desktop": "playwright test -c playwright.a11y.config.ts --grep @keyboard --project=desktop",
     "test:visual": "playwright test -c playwright.visual.config.ts",
     "test:visual:update": "playwright test -c playwright.visual.config.ts --update-snapshots",
+    "push:personal": "npm run validate && git push personal HEAD",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{ts,json,yml,md}\"",
