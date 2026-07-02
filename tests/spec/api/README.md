@@ -5,10 +5,7 @@ Testes HTTP **sem browser** que **permanecem aqui** — domínios fora da cotaç
 > **Experiência do usuário (formulário, jornada, checkout, PIX UI)** → `tests/spec/e2e/` neste repo (`ux/`, `payment/`).  
 > **Regras de preço, personalização e webhooks de pagamento** → `qa-api-tests-automation`.
 
-| Arquivo                  | Domínio                        | Tags              |
-| ------------------------ | ------------------------------ | ----------------- |
-| `ciliaClaimAuth.spec.ts` | Autenticação sinistro WhatsApp | `@whatsapp_claim` |
-| `testUtils.spec.ts`      | Massa de dados QA (test-utils) | `@test_utils`     |
+> **Nota:** os specs de sinistro WhatsApp (`ciliaClaimAuth`) e massa QA (`testUtils`) foram migrados para `qa-api-tests-automation` e removidos deste repo. Use os comandos abaixo para executá-los.
 
 ## Cotação Auto (pricing / personalização)
 
